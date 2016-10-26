@@ -1,0 +1,7 @@
+node_modules
+.vscode
+typings
+server.js*
+**/*.js
+!*.config.js
+**/*.js.map
