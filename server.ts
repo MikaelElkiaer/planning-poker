@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var io: SocketIO.Namespace = require('socket.io')(http);
 
 import { User, UserCollection } from './app/model/user';
 import { RoomCollection } from './app/model/room';
