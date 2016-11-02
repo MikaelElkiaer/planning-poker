@@ -5,3 +5,5 @@ server.js*
 **/*.js
 !*.config.js
 **/*.js.map
+yarn-error.log
+yarn.lock
