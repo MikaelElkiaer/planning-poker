@@ -23,8 +23,7 @@
       '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
       // other libraries
       'rxjs': 'npm:rxjs',
-      'angular-2-local-storage': 'npm:angular-2-local-storage',
-      'socket.io-client': 'npm:socket.io-client/socket.io.js'
+      'socket.io-client': 'npm:socket.io-client'
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {
@@ -35,11 +34,8 @@
       rxjs: {
         defaultExtension: 'js'
       },
-      'angular-2-local-storage': {
-        main: 'index.js',
-        defaultExtension: 'js'
-      },
       'socket.io-client': {
+        main: './socket.io.js',
         defaultExtension: 'js'
       }
     }
