@@ -1,0 +1,14 @@
+nav.navbar.navbar-default
+  .container-fluid
+  .navbar-header
+    button.navbar-toggle(type='button', ng-init='isCollapsed = true', ng-click='isCollapsed = !isCollapsed')
+      span.sr-only Toggle navigation
+      span.icon-bar
+      span.icon-bar
+      span.icon-bar
+    a.navbar-brand Spy-brawl
+  .navbar-collapse(ng-class='{ collapse: isCollapsed }')
+    ul.nav.navbar-nav.navbar-right
+      li                        
+        a(style='cursor: pointer;') USERNAME
+<router-outlet></router-outlet>
