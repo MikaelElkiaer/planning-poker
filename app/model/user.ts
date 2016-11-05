@@ -1,5 +1,5 @@
 import { IdGenerator } from './idGenerator';
-var idGenerator = new IdGenerator(require('crypto'));
+var idGenerator = new IdGenerator();
 
 class User {
   private _sid: string;

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as io from 'socket.io-client';
 
 import { UserService } from './user.service';
+import * as DTO from './../model/DTO';
 
 @Injectable()
 class SocketService {
@@ -9,12 +10,12 @@ class SocketService {
 
   constructor(private user: UserService) { }
 
-  connect(userSid) {
+  connect(userSid: string) {
     this.socket = io.connect({ query: `userSid=${userSid}` });
-    this.socket.emit('conn', null, data => {
-      this.user.UserSid = data.userSid;
-      this.user.UserPid = data.userPid;
-      this.user.UserName = data.username;
+    this.socket.emit('conn', null, (user: DTO.UserConnect) => {
+      this.user.UserSid = user.Sid;
+      this.user.UserPid = user.Pid;
+      this.user.UserName = user.UserName;
     });
 
     this.on('error', e => {
