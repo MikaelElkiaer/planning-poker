@@ -1,13 +1,13 @@
 nav.navbar.navbar-default
   .container-fluid
   .navbar-header
-    button.navbar-toggle(type='button', ng-init='isCollapsed = true', ng-click='isCollapsed = !isCollapsed')
+    button.navbar-toggle(type='button', (click)='collapse()')
       span.sr-only Toggle navigation
       span.icon-bar
       span.icon-bar
       span.icon-bar
     a.navbar-brand Spy-brawl
-  .navbar-collapse(ng-class='{ collapse: isCollapsed }')
+  .navbar-collapse([ngClass]='{ collapse: navbarCollapsed }')
     ul.nav.navbar-nav.navbar-right
       li                        
         a(style='cursor: pointer;') USERNAME

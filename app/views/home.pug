@@ -1,1 +1,27 @@
-div home
+.container-fluid
+    .row
+        .col-sm-4.col-sm-offset-4
+            .panel.panel-default
+                .panel-heading
+                    h3.panel-title Menu
+                .panel-body.text-center
+                    form(name='form', (submit)='form.$valid', novalidate)
+                        .input-group
+                            input.form-control(type='text', name='roomId', width='5', placeholder='Room Id',
+                                required, pattern='[0-9a-f]{5}', minlength='5', maxlength='5')
+                            span.input-group-btn
+                                button.btn.btn-default(type='submit')
+                                    | Join Game&nbsp;
+                                    i.fa.fa-arrow-right
+                    button.btn.btn-default(style='width: 100%')
+                        i.fa.fa-plus
+                        | &nbsp;Create Game
+    .row
+        .col-sm-4.col-sm-offset-4
+            .panel.panel-default
+                .panel-heading
+                    h3.panel-title Active Users
+                .panel-body.text-center
+                    span(style='margin: 0px 10px; display: inline-block;')
+                        i.fa.fa-user
+                        | &nbsp;USERNAME
