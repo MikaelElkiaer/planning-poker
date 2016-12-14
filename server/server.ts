@@ -3,10 +3,8 @@ var app = express();
 var http = require('http').Server(app);
 var io: SocketIO.Namespace = require('socket.io')(http);
 
-import { User, UserCollection } from './app/model/user';
-import { RoomCollection } from './app/model/room';
-
-import * as DTO from './app/model/DTO';
+import { Room, RoomCollection, User, UserCollection } from './model';
+import * as DTO from '../DTO';
 
 // Setup of server and routes
 app.disable('view cache');
@@ -14,8 +12,8 @@ app.set('port', (process.env.PORT || 5000));
 app.set('view engine', 'pug');  
 app.use('/app', express.static('app'));
 app.use('/node_modules', express.static('node_modules'));
-app.get('/', (req, res) => { res.render(`${__dirname}/app/index`); });
-app.get('/views/:name', (req, res) => { res.render(`${__dirname}/app/views/${req.params.name}`); });
+app.get('/', (req, res) => { res.render(`${__dirname}/../app/index`); });
+app.get('/views/:name', (req, res) => { res.render(`${__dirname}/../app/views/${req.params.name}`); });
 
 var rooms = new RoomCollection();
 var users = new UserCollection();
@@ -23,50 +21,50 @@ var users = new UserCollection();
 // create new user if needed, otherwise change id for existing user
 io.use((socket, next) => {
   var sid = socket.handshake.query.userSid;
-
-  if (!sid || !users.getUserBySid(sid))
-    users.addUser(socket.id, new User());
+  
+  if (!sid || !users.GetUserBySid(sid))
+    users.AddUser(socket.id, new User());
   else
-    users.changeId(sid, socket.id, true);
-
+    users.ChangeId(sid, socket.id, true);
+  
   next();
 });
 
 // fire up socket handlers
 io.on('connection', socket => {
-  socket.broadcast.emit('user:connect', users.getUserById(socket.id).public);
+  socket.broadcast.emit('user:connect', users.GetUserById(socket.id).Public);
 
   socket.on('conn', (data, callback: (user: DTO.UserConnect) => void) => {
-    var user = users.getUserById(socket.id);
+    var user = users.GetUserById(socket.id);
     callback({
-      Sid: user.sid,
-      Pid: user.pid,
-      UserName: user.username
+      Sid: user.Sid,
+      Pid: user.Pid,
+      UserName: user.UserName
     });
   });
 
   socket.on('disconnect', () => {
-    var user = users.getUserById(socket.id);
-    user.active = false;
-    socket.broadcast.emit('user:disconnect', user.public);
+    var user = users.GetUserById(socket.id);
+    user.Active = false;
+    socket.broadcast.emit('user:disconnect', user.Public);
   });
   
   socket.on('home', (data, callback: (data?: any, error?: string) => any) => {
-    callback({ users: users.getAll() });
+    callback({ users: users.GetAll() });
   });
 
   socket.on('change-username', (data, callback) => {
-    var user = users.getUserById(socket.id);
-    var oldUsername = user.username;
+    var user = users.GetUserById(socket.id);
+    var oldUsername = user.UserName;
     var newUsername = data.newUsername;
 
-    if (User.isValidUsername(newUsername, users)) {
-      user.username = newUsername;
+    if (User.IsValidUserName(newUsername, users)) {
+      user.UserName = newUsername;
 
       callback(null, { newUsername });
 
       io.emit('user:change-username', {
-        pid: user.pid,
+        pid: user.Pid,
         username: newUsername
       });
     }

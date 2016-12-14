@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import * as io from 'socket.io-client';
 
 import { UserService } from './user.service';
-import * as DTO from './../model/DTO';
+import * as DTO from '../../DTO';
 
 @Injectable()
 class SocketService {

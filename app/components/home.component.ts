@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 import { SocketService } from '../services/socket.service';
 import { ValuesPipe } from '../pipes/values.pipe';
-import * as DTO from '../model/DTO';
+import * as DTO from '../../DTO';
 
 @Component({
   templateUrl: 'views/home'
