@@ -2,23 +2,23 @@ import { User } from './user';
 import { UserCollection } from './userCollection';
 
 class RoomUser {
-  private _user: User;
-  private _ready: boolean;
-  private _isHost: boolean;
+  private user: User;
+  private ready: boolean;
+  private isHost: boolean;
   
   constructor(user: User, isHost: boolean = false) {
-    this._user = user;
-    this._ready = isHost;
-    this._isHost = isHost;
+    this.user = user;
+    this.ready = isHost;
+    this.isHost = isHost;
   }
 
-  get User() : User { return this._user; }
-  get Ready() : boolean { return this._ready; }
-  set Ready(value: boolean) { this._ready = value; }
-  get IsHost() : boolean { return this._isHost; }
+  get User() : User { return this.user; }
+  get Ready() : boolean { return this.ready; }
+  set Ready(value: boolean) { this.ready = value; }
+  get IsHost() : boolean { return this.isHost; }
 
   get Public() {
-    return { user: this._user.Public, ready: this._ready, isHost: this._isHost };
+    return { user: this.user.Public, ready: this.ready, isHost: this.isHost };
   }
 }
 

@@ -1,36 +1,37 @@
-import { IdGenerator } from './idGenerator';
 import { UserCollection } from './userCollection';
 
-var idGenerator = new IdGenerator();
-
 class User {
-  private _sid: string;
-  private _pid: string;
-  private _username: string;
-  private _active: boolean;
-  private static _nextUsernumber: number = 1;
+  private sid: string;
+  private pid: string;
+  private username: string;
+  private active: boolean;
+  private static nextUserNumber: number = 1;
   
   constructor() {
-    this._sid = idGenerator.Generate();
-    this._pid = idGenerator.Generate();
-    this._username = User.GetNextUserName();
-    this._active = true;
+    this.sid = User.CreateId();
+    this.pid = User.CreateId();
+    this.username = User.GetNextUserName();
+    this.active = true;
   }
 
-  get Sid() { return this._sid; }
+  get Sid() { return this.sid; }
 
-  get Pid() { return this._pid; }
+  get Pid() { return this.pid; }
 
-  get UserName() { return this._username; }
-  set UserName(username: string) { this._username = username; }
+  get UserName() { return this.username; }
+  set UserName(username: string) { this.username = username; }
 
-  get Active() { return this._active; }
-  set Active(active: boolean) { this._active = active; }
+  get Active() { return this.active; }
+  set Active(active: boolean) { this.active = active; }
 
   get Public() { return { pid: this.Pid, username: this.UserName, active: this.Active }; }
 
   static GetNextUserName() {
-    return `guest${this._nextUsernumber++}`;
+    return `guest${this.nextUserNumber++}`;
+  }
+
+  static CreateId() {
+    return Math.floor((1 + Math.random()) * 0x100000000).toString(16).substring(1);
   }
 
   static IsValidUserName(username: string, users: UserCollection) {
