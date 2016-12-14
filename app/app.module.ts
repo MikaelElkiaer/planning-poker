@@ -6,7 +6,6 @@ import { AppComponent } from './components/app.component';
 import { HomeComponent } from './components/home.component';
 import { UserService } from './services/user.service';
 import { SocketService } from './services/socket.service';
-import { ValuesPipe } from './pipes/values.pipe';
 
 @NgModule({
   imports: [
@@ -15,7 +14,7 @@ import { ValuesPipe } from './pipes/values.pipe';
       { path: '', component: HomeComponent }
     ])
   ],
-  declarations: [ AppComponent, HomeComponent, ValuesPipe ],
+  declarations: [ AppComponent, HomeComponent ],
   bootstrap:    [ AppComponent ],
   providers: [ UserService, SocketService ]
 })

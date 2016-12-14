@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 
 import { SocketService } from '../services/socket.service';
-import { ValuesPipe } from '../pipes/values.pipe';
 import * as DTO from '../../DTO';
 
 @Component({
@@ -10,21 +9,24 @@ import * as DTO from '../../DTO';
 export class HomeComponent {
   users: { [id: string]: DTO.UserPublic } = { };
 
+  public UsersList() {
+    return Object.keys(this.users).map(pid => this.users[pid]);
+  }
+
   constructor(private socket: SocketService) {
     this.socket.emit('home', null, (users: { [id: string]: DTO.UserPublic }) => {
       this.users = users;
+      console.info('Requested home users: %o', users);
     });
 
     this.socket.on('user:connect', (user: DTO.UserPublic) => {
       this.users[user.Pid] = user;
+      console.info('User connected: %o', user);
     });
 
     this.socket.on('user:disconnect', (user: DTO.UserPublic) => {
       delete this.users[user.Pid];
-    });
-
-    this.socket.on('user:create-room', (room: DTO.Room) => {
-      
+      console.info('User disconnected: %o', user);
     });
   }
 }

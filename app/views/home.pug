@@ -23,6 +23,6 @@
                     h3.panel-title Active Users
                 .panel-body.text-center
                     span(style='margin: 0px 10px; display: inline-block;',
-                            *ngFor='let u of users | values')
+                            *ngFor='let u of UsersList()')
                         i.fa.fa-user
                         | &nbsp;{{u.UserName}}

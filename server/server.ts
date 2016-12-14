@@ -32,7 +32,7 @@ io.use((socket, next) => {
 
 // fire up socket handlers
 io.on('connection', socket => {
-  socket.broadcast.emit('user:connect', mapToPublic(users.GetUserById(socket.id)));
+  socket.broadcast.emit('user:connect', mapUserToPublic(users.GetUserById(socket.id)));
 
   socket.on('conn', (data, callback: (user: DTO.UserConnect) => void) => {
     var user = users.GetUserById(socket.id);
@@ -46,11 +46,11 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     var user = users.GetUserById(socket.id);
     user.Active = false;
-    socket.broadcast.emit('user:disconnect', mapToPublic(user));
+    socket.broadcast.emit('user:disconnect', mapUserToPublic(user));
   });
   
   socket.on('home', (data, callback: (data?: any, error?: string) => any) => {
-    callback({ users: users.GetAll() });
+    callback(mapUsersToPublic(users.GetAll()));
   });
 
   socket.on('change-username', (data, callback) => {
@@ -76,9 +76,21 @@ io.on('connection', socket => {
 // start server
 http.listen(app.get('port'), () => console.log(`listening on *:${app.get('port')}`));
 
-function mapToPublic(user: User) {
+function mapUserToPublic(user: User) {
   var userPublic = new DTO.UserPublic();
   userPublic.Pid = user.Pid;
   userPublic.UserName = user.UserName;
   return userPublic;
+}
+
+function mapUsersToPublic(users: { [id: string]: User }): { [id: string]: DTO.UserPublic } {
+  var usersPublic = {};
+  Object.keys(users).forEach(id => {
+    var user = users[id];
+    var userPublic = new DTO.UserPublic();
+    userPublic.Pid = user.Pid;
+    userPublic.UserName = user.UserName;
+    usersPublic[userPublic.Pid] = userPublic;
+  });
+  return usersPublic;
 }
