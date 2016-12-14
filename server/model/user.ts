@@ -24,8 +24,6 @@ class User {
   get Active() { return this.active; }
   set Active(active: boolean) { this.active = active; }
 
-  get Public() { return { pid: this.Pid, username: this.UserName, active: this.Active }; }
-
   static GetNextUserName() {
     return `guest${this.nextUserNumber++}`;
   }

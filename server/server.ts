@@ -32,7 +32,7 @@ io.use((socket, next) => {
 
 // fire up socket handlers
 io.on('connection', socket => {
-  socket.broadcast.emit('user:connect', users.GetUserById(socket.id).Public);
+  socket.broadcast.emit('user:connect', mapToPublic(users.GetUserById(socket.id)));
 
   socket.on('conn', (data, callback: (user: DTO.UserConnect) => void) => {
     var user = users.GetUserById(socket.id);
@@ -46,7 +46,7 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     var user = users.GetUserById(socket.id);
     user.Active = false;
-    socket.broadcast.emit('user:disconnect', user.Public);
+    socket.broadcast.emit('user:disconnect', mapToPublic(user));
   });
   
   socket.on('home', (data, callback: (data?: any, error?: string) => any) => {
@@ -75,3 +75,10 @@ io.on('connection', socket => {
 
 // start server
 http.listen(app.get('port'), () => console.log(`listening on *:${app.get('port')}`));
+
+function mapToPublic(user: User) {
+  var userPublic = new DTO.UserPublic();
+  userPublic.Pid = user.Pid;
+  userPublic.UserName = user.UserName;
+  return userPublic;
+}

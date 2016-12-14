@@ -16,10 +16,6 @@ class RoomUser {
   get Ready() : boolean { return this.ready; }
   set Ready(value: boolean) { this.ready = value; }
   get IsHost() : boolean { return this.isHost; }
-
-  get Public() {
-    return { user: this.user.Public, ready: this.ready, isHost: this.isHost };
-  }
 }
 
 class Room {
@@ -46,7 +42,7 @@ class Room {
   GetAll() {
     var result = {};
     Object.keys(this._users).forEach(pid => {
-      result[pid] = this._users[pid].Public;
+      result[pid] = this._users[pid];
     });
     return result;
   }

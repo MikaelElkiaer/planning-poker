@@ -7,12 +7,12 @@ class UserCollection {
     this.users = {};
   }
 
-  GetAll(inactive: boolean = false) {
+  GetAll(includeInactive: boolean = false): { [id: string]: User } {
     var result = {};
     Object.keys(this.users).forEach(id => {
       var user = this.users[id];
-      if (inactive || user.Active)
-        result[user.Pid] = user.Public;
+      if (includeInactive || user.Active)
+        result[user.Pid] = user;
     });
     return result;
   }
@@ -51,7 +51,7 @@ class UserCollection {
         if (this.users[id].Pid === pid)
           return [id, this.users[id]];
       }
-      return null;
+      return undefined;
   }
 
   GetUserBySid(sid: string) : [string, User] {
@@ -62,7 +62,7 @@ class UserCollection {
           return [id, this.users[id]];
         }
       }
-      return null;
+      return undefined;
   }
 }
 
