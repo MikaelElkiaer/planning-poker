@@ -1,11 +1,13 @@
 import { User } from './user';
 import { UserCollection } from './userCollection';
 import { RoomUser } from './roomUser';
+import { RoomState } from '../../DTO/roomState';
 
 class Room {
   private id: string;
   private isDedicated: boolean;
   private _users: {[id: string]: RoomUser};
+  private state: RoomState = RoomState.WaitingForPlayers;
   
   constructor(host: User, isDedicated: boolean) {
     this.id = host.Pid;
@@ -17,6 +19,8 @@ class Room {
   get Id() { return this.id; }
   get IsDedicated() { return this.isDedicated; }
   get Users() { return this._users; }
+  get State() { return this.state; }
+  set State(value) { this.state = value; }
 
   AddUser(user: User) { this._users[user.Pid] = new RoomUser(user); }
   RemoveUser(pid: string) { delete this._users[pid]; }
