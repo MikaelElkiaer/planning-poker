@@ -71,6 +71,17 @@ io.on('connection', socket => {
     else
       callback(`The new username ${newUsername} is not allowed.`);
   });
+
+  socket.on('create-room', (isDedicated: boolean, callback) => {
+    var user = users.GetUserById(socket.id);
+
+    try {
+      var room = rooms.AddRoom(user, isDedicated);
+      callback(null, user.Pid);
+    } catch (error) {
+      callback(error);
+    }
+  });
 });
 
 // start server

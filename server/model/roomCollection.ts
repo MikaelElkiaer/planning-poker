@@ -1,4 +1,5 @@
 import { Room } from './room';
+import { User } from './user';
 
 class RoomCollection {
   private rooms: { [id: string]: Room };
@@ -8,9 +9,10 @@ class RoomCollection {
 
   get Rooms() { return this.rooms; }
 
-  AddRoom(id: string, room: Room) {
+  AddRoom(host: User, isDedicated: boolean) {
+    var id = host.Pid;
     if (!this.rooms[id])
-      this.rooms[id] = room;
+      this.rooms[id] = new Room(host, isDedicated);
     else
       throw `Room with id ${id} already in roomCollection.`;
   }
