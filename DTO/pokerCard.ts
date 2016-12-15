@@ -1,4 +1,5 @@
 enum PokerCard {
+    None = -1000,
     CoffeeBreak = -2,
     QuestionMark = -1,
     Zero = 0,

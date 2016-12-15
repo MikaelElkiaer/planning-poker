@@ -3,7 +3,7 @@ import { PokerCard } from '../../DTO/pokerCard';
 
 class RoomUser {
   private user: User;
-  private currentCard: PokerCard = PokerCard.QuestionMark;
+  private currentCard: PokerCard = PokerCard.None;
   
   constructor(user: User) {
     this.user = user;
