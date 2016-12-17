@@ -1,6 +1,6 @@
 enum PokerCard {
-    None = -1000,
-    CoffeeBreak = -2,
+    None = -10,
+    CoffeeBreak = -5,
     QuestionMark = -1,
     Zero = 0,
     Half = 12,
@@ -12,7 +12,7 @@ enum PokerCard {
     Thirteen = 13,
     Forty = 40,
     Hundred = 100,
-    Infinity = 1000
+    Infinity = 999
 }
 
 export { PokerCard };
