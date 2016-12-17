@@ -6,7 +6,7 @@
                     h3.panel-title
                         | Game
                         span.pull-right {{ GameId }}
-                .panel-body
+                .panel-body(style='text-align: center')
                     .vote([class.user]='player.Pid === UserPid', *ngFor='let player of PlayersList')
                         .poker-card {{ player.CurrentCard }}
                         span.username
