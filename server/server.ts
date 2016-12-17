@@ -99,7 +99,7 @@ io.on('connection', socket => {
 
     callback(null, mapPlayersToPublic(room.GetAll()));
 
-    socket.broadcast.to(data.gameId).emit('user:join', mapPlayerToPublic(room.GetUserByPid(user.Pid)));
+    socket.broadcast.to(data.gameId).emit('user:join-game', mapPlayerToPublic(room.GetUserByPid(user.Pid)));
   });
 });
 

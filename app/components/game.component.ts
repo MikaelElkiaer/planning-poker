@@ -26,6 +26,11 @@ export class GameComponent implements OnInit {
         console.info('Requested game players: %o', data);
       }
     });
+
+    this.socket.on('user:join-game', (player: DTO.PlayerPublic) => {
+      this.players[player.User.Pid] = player;
+      console.info('Player joined: %o', player);
+    });
   }
 
   get GameId() { return this.gameId; }
