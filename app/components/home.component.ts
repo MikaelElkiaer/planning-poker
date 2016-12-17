@@ -34,6 +34,7 @@ export class HomeComponent {
 
   public OnJoinGame() {
     console.info('Joining game with id: %s', this.joinModel.gameId);
+    this.router.navigate(['/game', this.joinModel.gameId]);
   }
 
   public OnCreateGame() {
