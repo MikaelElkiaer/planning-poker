@@ -9,10 +9,10 @@ class RoomCollection {
 
   get Rooms() { return this.rooms; }
 
-  AddRoom(host: User, isDedicated: boolean) {
+  AddRoom(host: User) {
     var id = host.Pid;
     if (!this.rooms[id])
-      this.rooms[id] = new Room(host, isDedicated);
+      this.rooms[id] = new Room(host);
     else
       throw `Room with id ${id} already in roomCollection.`;
   }

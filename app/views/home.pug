@@ -6,7 +6,7 @@
                     h3.panel-title Menu
                 .panel-body
                     form(name='form', (submit)='form.$valid', novalidate)
-                        .input-group.col-xs-offset-3.col-xs-6
+                        .input-group
                             input.form-control(type='text', name='roomId', width='5', placeholder='Room Id',
                                 required, pattern='[0-9a-f]{5}', minlength='5', maxlength='5')
                             span.input-group-btn
@@ -14,13 +14,11 @@
                                     | Join Game&nbsp;
                                     i.fa.fa-arrow-right1
                     form.form-inline(name='form2', novalidate)
-                        .input-group.col-xs-offset-3.col-xs-6
+                        .input-group
                             span.input-group-btn
                                 button.btn.btn-default(style='width:100%')
                                     i.fa.fa-plus
                                     | &nbsp;Create Game
-                            span.input-group-addon
-                                input(type='checkbox')
     .row
         .col-sm-4.col-sm-offset-4
             .panel.panel-default

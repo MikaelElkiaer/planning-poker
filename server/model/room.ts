@@ -5,19 +5,16 @@ import { RoomState } from '../../DTO/roomState';
 
 class Room {
   private id: string;
-  private isDedicated: boolean;
   private _users: {[id: string]: RoomUser};
   private state: RoomState = RoomState.WaitingForPlayers;
   
-  constructor(host: User, isDedicated: boolean) {
+  constructor(host: User) {
     this.id = host.Pid;
-    this.isDedicated = isDedicated;
     this._users = {};
     this._users[host.Pid] = new RoomUser(host);
   }
 
   get Id() { return this.id; }
-  get IsDedicated() { return this.isDedicated; }
   get Users() { return this._users; }
   get State() { return this.state; }
   set State(value) { this.state = value; }

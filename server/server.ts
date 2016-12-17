@@ -72,11 +72,11 @@ io.on('connection', socket => {
       callback(`The new username ${newUsername} is not allowed.`);
   });
 
-  socket.on('create-room', (isDedicated: boolean, callback) => {
+  socket.on('create-room', (callback) => {
     var user = users.GetUserById(socket.id);
 
     try {
-      var room = rooms.AddRoom(user, isDedicated);
+      var room = rooms.AddRoom(user);
       callback(null, user.Pid);
     } catch (error) {
       callback(error);
