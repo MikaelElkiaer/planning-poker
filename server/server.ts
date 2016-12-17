@@ -86,7 +86,7 @@ io.on('connection', socket => {
   socket.on('join-game', (data, callback) => {
     var room = rooms.GetRoomById(data.gameId);
     if (!room) {
-      callback('Room with doesn\'t exist with id: %s', data.gameId);
+      callback(`Room with doesn\'t exist with id: ${data.gameId}`);
       return;
     }
     socket.join(data.gameId);

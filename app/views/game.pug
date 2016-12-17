@@ -7,6 +7,9 @@
                         | Game
                         span.pull-right {{ GameId }}
                 .panel-body
-                    .span(*ngFor='let p of PlayersList')
-                        i.fa.fa-user
-                        | &nbsp;{{p.User.UserName}}
+                    .vote([class.user]='player.Pid === UserPid', *ngFor='let player of PlayersList')
+                        .poker-card {{ player.CurrentCard }}
+                        span.username
+                            small([hidden]='player.Pid !== HostPid')
+                                span.glyphicon.glyphicon-star
+                            | {{ player.User.UserName }}
