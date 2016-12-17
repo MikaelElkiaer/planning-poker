@@ -72,7 +72,7 @@ io.on('connection', socket => {
       callback(`The new username ${newUsername} is not allowed.`);
   });
 
-  socket.on('create-room', (callback) => {
+  socket.on('create-game', (data, callback) => {
     var user = users.GetUserById(socket.id);
 
     try {

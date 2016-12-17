@@ -11,7 +11,7 @@ export class HomeComponent {
   users: { [id: string]: DTO.UserPublic } = { };
   joinModel: { gameId: string } = { gameId: '' };
 
-  constructor(private socket: SocketService) {
+  constructor(private socket: SocketService, private router: Router) {
     this.socket.emit('home', null, (users: { [id: string]: DTO.UserPublic }) => {
       this.users = users;
       console.info('Requested home users: %o', users);
@@ -38,5 +38,11 @@ export class HomeComponent {
 
   public OnCreateGame() {
     console.info('Creating game');
+    this.socket.emit('create-game', null, (error: string, gameId: string) => {
+      if (error)
+        console.info(error);
+      else
+        this.router.navigate(['/game', gameId]);
+    });
   }
 }
