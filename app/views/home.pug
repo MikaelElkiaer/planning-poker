@@ -5,21 +5,22 @@
                 .panel-heading
                     h3.panel-title Menu
                 .panel-body
-                    form(name='joinForm', novalidate, (submit)='OnJoinGame()', #joinForm='ngForm')
-                        .input-group
-                            input.form-control(type='text', name='gameId', width='8', placeholder='Game Id',
-                                required, pattern='[0-9a-f]{8}', minlength='8', maxlength='8',
-                                [(ngModel)]='joinModel.gameId', #name='ngModel')
-                            span.input-group-btn
-                                button.btn.btn-default(type='submit', [disabled]='!joinForm.form.valid')
-                                    | Join Game&nbsp;
+                    form.form-horizontal(name='joinForm', novalidate, (submit)='OnJoinGame()', #joinForm='ngForm')
+                        .form-group
+                            .col-xs-7
+                                input.form-control(type='text', name='gameId', width='8', placeholder='Game Id',
+                                    required, pattern='[0-9a-f]{8}', minlength='8', maxlength='8',
+                                    [(ngModel)]='joinModel.gameId', #name='ngModel')
+                            .col-xs-5
+                                button.btn.btn-default(style='width: 100%', type='submit', [disabled]='!joinForm.form.valid')
                                     i.fa.fa-arrow-right
-                    form.form-inline(name='createForm', novalidate, (submit)='OnCreateGame()')
-                        .input-group
-                            span.input-group-btn
-                                button.btn.btn-default(type='submit', style='width:100%')
+                                    | &nbsp;Join
+                    form.form-horizontal(name='createForm', style='margin-top: 50px;', novalidate, (submit)='OnCreateGame()')
+                        .form-group
+                            .col-xs-offset-7.col-xs-5
+                                button.btn.btn-default(style='width: 100%', type='submit')
                                     i.fa.fa-plus
-                                    | &nbsp;Create Game
+                                    | &nbsp;Create
     .row
         .col-sm-4.col-sm-offset-4
             .panel.panel-default
