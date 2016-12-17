@@ -3,7 +3,7 @@ var app = express();
 var http = require('http').Server(app);
 var io: SocketIO.Namespace = require('socket.io')(http);
 
-import { Game, GameCollection, User, UserCollection } from './model';
+import { Game, GameCollection, User, UserCollection, Player } from './model';
 import * as DTO from '../DTO';
 
 // Setup of server and routes
@@ -82,6 +82,25 @@ io.on('connection', socket => {
       callback(error);
     }
   });
+
+  socket.on('join-game', (data, callback) => {
+    var room = rooms.GetRoomById(data.gameId);
+    if (!room) {
+      callback('Room with doesn\'t exist with id: %s', data.gameId);
+      return;
+    }
+    socket.join(data.gameId);
+
+    var user = users.GetUserById(socket.id);
+
+    if (!room.GetUserByPid(user.Pid)) {
+      room.AddUser(user);
+    }
+
+    callback(null, mapPlayersToPublic(room.GetAll()));
+
+    socket.broadcast.to(data.gameId).emit('user:join', mapPlayerToPublic(room.GetUserByPid(user.Pid)));
+  });
 });
 
 // start server
@@ -104,4 +123,23 @@ function mapUsersToPublic(users: { [id: string]: User }): { [id: string]: DTO.Us
     usersPublic[userPublic.Pid] = userPublic;
   });
   return usersPublic;
+}
+
+function mapPlayerToPublic(player: Player): DTO.PlayerPublic {
+  var playerPublic = new DTO.PlayerPublic();
+  playerPublic.User = mapUserToPublic(player.User);
+  playerPublic.CurrentCard = player.CurrentCard;
+  return playerPublic;
+}
+
+function mapPlayersToPublic(players: { [id: string]: Player }): { [id: string]: DTO.PlayerPublic } {
+  var playersPublic = {};
+  Object.keys(players).forEach(id => {
+    var player = players[id];
+    var playerPublic = new DTO.PlayerPublic();
+    playerPublic.User = mapUserToPublic(player.User);
+    playerPublic.CurrentCard = player.CurrentCard;
+    playersPublic[playerPublic.User.Pid] = playerPublic;
+  });
+  return playersPublic;
 }

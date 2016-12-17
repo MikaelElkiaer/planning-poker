@@ -7,4 +7,6 @@
                         | Game
                         span.pull-right {{ GameId }}
                 .panel-body
-                    | x
+                    .span(*ngFor='let p of PlayersList')
+                        i.fa.fa-user
+                        | &nbsp;{{p.User.UserName}}
