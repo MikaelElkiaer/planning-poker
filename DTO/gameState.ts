@@ -1,7 +1,7 @@
-enum RoomState {
+enum GameState {
     WaitingForPlayers,
     Voting,
     VoteResults
 }
 
-export { RoomState };
+export { GameState };

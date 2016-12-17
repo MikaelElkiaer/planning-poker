@@ -3,7 +3,7 @@ var app = express();
 var http = require('http').Server(app);
 var io: SocketIO.Namespace = require('socket.io')(http);
 
-import { Room, RoomCollection, User, UserCollection } from './model';
+import { Game, GameCollection, User, UserCollection } from './model';
 import * as DTO from '../DTO';
 
 // Setup of server and routes
@@ -15,7 +15,7 @@ app.use('/node_modules', express.static('node_modules'));
 app.get('/', (req, res) => { res.render(`${__dirname}/../app/index`); });
 app.get('/views/:name', (req, res) => { res.render(`${__dirname}/../app/views/${req.params.name}`); });
 
-var rooms = new RoomCollection();
+var rooms = new GameCollection();
 var users = new UserCollection();
 
 // create new user if needed, otherwise change id for existing user

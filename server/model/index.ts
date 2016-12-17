@@ -1,4 +1,4 @@
-export * from './room';
-export * from './roomCollection';
+export * from './game';
+export * from './gameCollection';
 export * from './user';
 export * from './userCollection';
