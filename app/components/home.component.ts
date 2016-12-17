@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { SocketService } from '../services/socket.service';
 import * as DTO from '../../DTO';
@@ -8,10 +9,7 @@ import * as DTO from '../../DTO';
 })
 export class HomeComponent {
   users: { [id: string]: DTO.UserPublic } = { };
-
-  public UsersList() {
-    return Object.keys(this.users).map(pid => this.users[pid]);
-  }
+  joinModel: { gameId: string } = { gameId: '' };
 
   constructor(private socket: SocketService) {
     this.socket.emit('home', null, (users: { [id: string]: DTO.UserPublic }) => {
@@ -28,5 +26,17 @@ export class HomeComponent {
       delete this.users[user.Pid];
       console.info('User disconnected: %o', user);
     });
+  }
+
+  public UsersList() {
+    return Object.keys(this.users).map(pid => this.users[pid]);
+  }
+
+  public OnJoinGame() {
+    console.info('Joining game with id: %s', this.joinModel.gameId);
+  }
+
+  public OnCreateGame() {
+    console.info('Creating game');
   }
 }
