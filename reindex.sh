@@ -1,15 +1,12 @@
 #!/bin/sh
 
-INDEXFILES=$(find ./ -name "index.ts")
-
-for f in $INDEXFILES
+for f in $(find ./ -name "index.ts")
 do
   echo "Indexing: $(dirname $f)"
   > $f
-  FILES=$(ls $(dirname $f) | grep -P '^(?!index)(.*)\.ts')
-  for ff in $FILES
+  for ff in $(ls $(dirname $f) | grep -P '^(?!index)(.*)\.ts')
   do
-    echo "-- File: $ff"
+    echo "-- Added: $ff"
     echo "export * from './${ff%.*}'" >> $f
   done
 done
