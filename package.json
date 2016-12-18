@@ -2,7 +2,8 @@
   "name": "planning-poker",
   "version": "1.0.0",
   "scripts": {
-    "start": "nodemon ./server/server.js --ext js --watch ./server --watch ./DTO --delay 3 & tsc -w"
+    "start": "nodemon ./server/server.js --ext js --watch ./server --watch ./DTO --delay 3 & tsc -w",
+    "reindex": "./reindex.sh"
   },
   "licenses": [
     {
