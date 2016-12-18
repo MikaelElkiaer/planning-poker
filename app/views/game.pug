@@ -9,7 +9,7 @@
                     h4.panel-title
                         | Game: {{ gameId }}
                 .panel-body(style='text-align: center')
-                    .vote([class.user]='player.pid === userPid', *ngFor='let player of playersList')
+                    .vote([class.user]='player.user.pid === userPid', *ngFor='let player of playersList')
                         .poker-card {{ player.currentCard | cardText }}
                         span.username
                             small([hidden]='player.pid !== hostPid')
