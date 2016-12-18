@@ -1,6 +1,6 @@
 import { UserCollection } from './userCollection';
 
-class User {
+export class User {
   private sid: string;
   private pid: string;
   private username: string;
@@ -45,5 +45,3 @@ class User {
     return true;
   }
 }
-
-export { User };

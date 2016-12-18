@@ -1,6 +1,6 @@
 import { User } from './user';
 
-class UserCollection {
+export class UserCollection {
   private users: { [id: string]: User };
   
   constructor () {
@@ -65,5 +65,3 @@ class UserCollection {
       return undefined;
   }
 }
-
-export { UserCollection };

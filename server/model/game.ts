@@ -3,7 +3,7 @@ import { UserCollection } from './userCollection';
 import { Player } from './player';
 import { GameState } from '../../DTO/gameState';
 
-class Game {
+export class Game {
   private id: string;
   private _users: {[id: string]: Player};
   private state: GameState = GameState.WaitingForPlayers;
@@ -42,5 +42,3 @@ class Game {
     return result;
   }
 }
-
-export { Game };

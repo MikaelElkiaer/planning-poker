@@ -1,7 +1,7 @@
 import { Game } from './game';
 import { User } from './user';
 
-class GameCollection {
+export class GameCollection {
   private rooms: { [id: string]: Game };
   constructor() {
     this.rooms = {};
@@ -26,5 +26,3 @@ class GameCollection {
 
   GetRoomById(id: string) : Game { return this.rooms[id]; }
 }
-
-export { GameCollection };

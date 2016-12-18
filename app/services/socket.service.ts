@@ -5,7 +5,7 @@ import { UserService } from './user.service';
 import * as DTO from '../../DTO';
 
 @Injectable()
-class SocketService {
+export class SocketService {
   private socket: SocketIOClient.Socket;
 
   constructor(private user: UserService) { }
@@ -38,7 +38,4 @@ class SocketService {
       callback.apply(this.socket, cArgs);
     });
   }
-
 }
-
-export { SocketService };

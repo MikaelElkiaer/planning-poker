@@ -1,7 +1,7 @@
 import { User } from './user';
 import { PokerCard } from '../../DTO/pokerCard';
 
-class Player {
+export class Player {
   private user: User;
   private currentCard: PokerCard = PokerCard.None;
   
@@ -12,5 +12,3 @@ class Player {
   get User() : User { return this.user; }
   get CurrentCard() : PokerCard { return this.currentCard; }
 }
-
-export { Player };

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 @Injectable()
-class UserService {
+export class UserService {
   private readonly USER_SID_KEY = "UserSid";
   private readonly USER_PID_KEY = "UserPid";
   private readonly USER_USERNAME_KEY = "UserName";
@@ -30,5 +30,3 @@ class UserService {
     localStorage.setItem(this.USER_USERNAME_KEY, value);
   }
 }
-
-export { UserService };
