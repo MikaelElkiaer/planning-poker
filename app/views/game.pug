@@ -3,9 +3,11 @@
         .col-sm-4.col-sm-offset-4
             .panel.panel-default
                 .panel-heading
-                    h3.panel-title
-                        | Game
-                        span.pull-right {{ gameId }}
+                    .btn-group.pull-right
+                        button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px')
+                            span.glyphicon.glyphicon-play
+                    h4.panel-title
+                        | Game: {{ gameId }}
                 .panel-body(style='text-align: center')
                     .vote([class.user]='player.pid === userPid', *ngFor='let player of playersList')
                         .poker-card {{ player.currentCard }}
