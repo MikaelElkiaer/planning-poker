@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import * as io from 'socket.io-client';
 
 import { UserService } from './user.service';
-import * as DTO from '../../DTO';
+import { UserConnect }  from '../../DTO/userConnect';
 
 @Injectable()
 export class SocketService {
@@ -12,7 +12,7 @@ export class SocketService {
 
   connect(userSid: string) {
     this.socket = io.connect({ query: `userSid=${userSid}` });
-    this.socket.emit('conn', null, (user: DTO.UserConnect) => {
+    this.socket.emit('conn', null, (user: UserConnect) => {
       this.user.userSid = user.sid;
       this.user.userPid = user.pid;
       this.user.userName = user.userName;

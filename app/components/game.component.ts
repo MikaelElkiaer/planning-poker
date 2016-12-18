@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { GameState, PlayerPublic } from '../../DTO';
+import { GameState } from '../../DTO/gameState';
+import { PlayerPublic } from '../../DTO/playerPublic';
 import { SocketService } from '../services/socket.service';
 import { UserService } from '../services/user.service';
 
