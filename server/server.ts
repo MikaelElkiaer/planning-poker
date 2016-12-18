@@ -115,9 +115,10 @@ io.on('connection', socket => {
 
     room.state = data.gameState;
 
-    var result = { gameState: room.state, players: null };
-    if (room.state == DTO.GameState.VoteResults)
-      result.players = mapPlayersToPublic(room.getAll(), true);
+    if (room.state === DTO.GameState.Voting || room.state === DTO.GameState.Waiting)
+      room.resetCards();
+
+    var result = { gameState: room.state, players: mapPlayersToPublic(room.getAll(), true) };
     
     socket.broadcast.to(room.id).emit('host:change-game-state', result);
   });
@@ -164,7 +165,7 @@ function mapUsersToPublic(users: { [id: string]: User }): { [id: string]: DTO.Us
 function mapPlayerToPublic(player: Player, isVoting: boolean): DTO.PlayerPublic {
   var playerPublic = new DTO.PlayerPublic();
   playerPublic.user = mapUserToPublic(player.user);
-  playerPublic.currentCard = isVoting ? DTO.PokerCard.Hidden : player.currentCard;
+  playerPublic.currentCard = (player.currentCard !== DTO.PokerCard.NotPicked && isVoting) ? DTO.PokerCard.Picked : player.currentCard;
   return playerPublic;
 }
 
@@ -174,7 +175,7 @@ function mapPlayersToPublic(players: { [id: string]: Player }, isVoting: boolean
     var player = players[id];
     var playerPublic = new DTO.PlayerPublic();
     playerPublic.user = mapUserToPublic(player.user);
-    playerPublic.currentCard = isVoting ? DTO.PokerCard.Hidden : player.currentCard;
+    playerPublic.currentCard = (player.currentCard !== DTO.PokerCard.NotPicked && isVoting) ? DTO.PokerCard.Picked : player.currentCard;
     playersPublic[playerPublic.user.pid] = playerPublic;
   });
   return playersPublic;

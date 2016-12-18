@@ -1,6 +1,6 @@
 export enum PokerCard {
-    Hidden = -99,
-    None = -10,
+    NotPicked = -99,
+    Picked = -10,
     CoffeeBreak = -5,
     QuestionMark = -1,
     Zero = 0,

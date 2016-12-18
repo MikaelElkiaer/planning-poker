@@ -7,7 +7,7 @@ export class Player {
   set currentCard(value) { this._currentCard = value; }
 
   private _user: User;
-  private _currentCard: PokerCard = PokerCard.None;
+  private _currentCard: PokerCard = PokerCard.NotPicked;
   
   constructor(user: User) {
     this._user = user;

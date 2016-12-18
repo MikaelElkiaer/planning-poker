@@ -2,6 +2,7 @@ import { User } from './user';
 import { UserCollection } from './userCollection';
 import { Player } from './player';
 import { GameState } from '../../DTO/gameState';
+import { PokerCard } from '../../DTO/pokerCard';
 
 export class Game {
   get id() { return this._id; }
@@ -36,5 +37,9 @@ export class Game {
       result[pid] = this._users[pid];
     });
     return result;
+  }
+
+  resetCards(): void {
+    Object.keys(this._users).forEach(pid => this._users[pid].currentCard = PokerCard.NotPicked);
   }
 }
