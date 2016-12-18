@@ -24,6 +24,6 @@ import { SocketService } from './services/socket.service';
 })
 export class AppModule {
   constructor(private socket: SocketService, private user: UserService) {
-    socket.connect(user.UserSid);
+    socket.connect(user.userSid);
   }
 }

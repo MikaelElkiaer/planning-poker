@@ -1,7 +1,5 @@
-enum GameState {
-    WaitingForPlayers,
+export enum GameState {
+    Waiting,
     Voting,
     VoteResults
 }
-
-export { GameState };

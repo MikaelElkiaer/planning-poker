@@ -5,7 +5,7 @@
                 .panel-heading
                     h3.panel-title Menu
                 .panel-body
-                    form.form-horizontal(name='joinForm', novalidate, (submit)='OnJoinGame()', #joinForm='ngForm')
+                    form.form-horizontal(name='joinForm', novalidate, (submit)='onJoinGame()', #joinForm='ngForm')
                         .form-group
                             .col-xs-7
                                 input.form-control(type='text', name='gameId', width='8', placeholder='Game Id',
@@ -15,7 +15,7 @@
                                 button.btn.btn-default(style='width: 100%', type='submit', [disabled]='!joinForm.form.valid')
                                     i.fa.fa-arrow-right
                                     | &nbsp;Join
-                    form.form-horizontal(name='createForm', style='margin-top: 50px;', novalidate, (submit)='OnCreateGame()')
+                    form.form-horizontal(name='createForm', style='margin-top: 50px;', novalidate, (submit)='onCreateGame()')
                         .form-group
                             .col-xs-offset-7.col-xs-5
                                 button.btn.btn-default(style='width: 100%', type='submit')
@@ -28,6 +28,6 @@
                     h3.panel-title Active Users
                 .panel-body.text-center
                     span(style='margin: 0px 10px; display: inline-block;',
-                            *ngFor='let u of UsersList()')
+                            *ngFor='let user of usersList')
                         i.fa.fa-user
-                        | &nbsp;{{u.UserName}}
+                        | &nbsp;{{user.userName}}

@@ -22,49 +22,49 @@ var users = new UserCollection();
 io.use((socket, next) => {
   var sid = socket.handshake.query.userSid;
   
-  if (!sid || !users.GetUserBySid(sid))
-    users.AddUser(socket.id, new User());
+  if (!sid || !users.getUserBySid(sid))
+    users.addUser(socket.id, new User());
   else
-    users.ChangeId(sid, socket.id, true);
+    users.changeId(sid, socket.id, true);
   
   next();
 });
 
 // fire up socket handlers
 io.on('connection', socket => {
-  socket.broadcast.emit('user:connect', mapUserToPublic(users.GetUserById(socket.id)));
+  socket.broadcast.emit('user:connect', mapUserToPublic(users.getUserById(socket.id)));
 
   socket.on('conn', (data, callback: (user: DTO.UserConnect) => void) => {
-    var user = users.GetUserById(socket.id);
+    var user = users.getUserById(socket.id);
     callback({
-      Sid: user.Sid,
-      Pid: user.Pid,
-      UserName: user.UserName
+      sid: user.sid,
+      pid: user.pid,
+      userName: user.userName
     });
   });
 
   socket.on('disconnect', () => {
-    var user = users.GetUserById(socket.id);
-    user.Active = false;
+    var user = users.getUserById(socket.id);
+    user.active = false;
     socket.broadcast.emit('user:disconnect', mapUserToPublic(user));
   });
   
   socket.on('home', (data, callback: (data?: any, error?: string) => any) => {
-    callback(mapUsersToPublic(users.GetAll()));
+    callback(mapUsersToPublic(users.getAll()));
   });
 
   socket.on('change-username', (data, callback) => {
-    var user = users.GetUserById(socket.id);
-    var oldUsername = user.UserName;
+    var user = users.getUserById(socket.id);
+    var oldUsername = user.userName;
     var newUsername = data.newUsername;
 
-    if (User.IsValidUserName(newUsername, users)) {
-      user.UserName = newUsername;
+    if (User.isValidUserName(newUsername, users)) {
+      user.userName = newUsername;
 
       callback(null, { newUsername });
 
       io.emit('user:change-username', {
-        pid: user.Pid,
+        pid: user.pid,
         username: newUsername
       });
     }
@@ -73,33 +73,33 @@ io.on('connection', socket => {
   });
 
   socket.on('create-game', (data, callback) => {
-    var user = users.GetUserById(socket.id);
+    var user = users.getUserById(socket.id);
 
     try {
-      var room = rooms.AddRoom(user);
-      callback(null, user.Pid);
+      var room = rooms.addRoom(user);
+      callback(null, user.pid);
     } catch (error) {
       callback(error);
     }
   });
 
   socket.on('join-game', (data, callback) => {
-    var room = rooms.GetRoomById(data.gameId);
+    var room = rooms.getRoomById(data.gameId);
     if (!room) {
       callback(`Room with doesn\'t exist with id: ${data.gameId}`);
       return;
     }
     socket.join(data.gameId);
 
-    var user = users.GetUserById(socket.id);
+    var user = users.getUserById(socket.id);
 
-    if (!room.GetUserByPid(user.Pid)) {
-      room.AddUser(user);
+    if (!room.getUserByPid(user.pid)) {
+      room.addUser(user);
     }
 
-    callback(null, mapPlayersToPublic(room.GetAll()));
+    callback(null, mapPlayersToPublic(room.getAll()));
 
-    socket.broadcast.to(data.gameId).emit('user:join-game', mapPlayerToPublic(room.GetUserByPid(user.Pid)));
+    socket.broadcast.to(data.gameId).emit('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid)));
   });
 });
 
@@ -108,8 +108,8 @@ http.listen(app.get('port'), () => console.log(`listening on *:${app.get('port')
 
 function mapUserToPublic(user: User) {
   var userPublic = new DTO.UserPublic();
-  userPublic.Pid = user.Pid;
-  userPublic.UserName = user.UserName;
+  userPublic.pid = user.pid;
+  userPublic.userName = user.userName;
   return userPublic;
 }
 
@@ -118,17 +118,17 @@ function mapUsersToPublic(users: { [id: string]: User }): { [id: string]: DTO.Us
   Object.keys(users).forEach(id => {
     var user = users[id];
     var userPublic = new DTO.UserPublic();
-    userPublic.Pid = user.Pid;
-    userPublic.UserName = user.UserName;
-    usersPublic[userPublic.Pid] = userPublic;
+    userPublic.pid = user.pid;
+    userPublic.userName = user.userName;
+    usersPublic[userPublic.pid] = userPublic;
   });
   return usersPublic;
 }
 
 function mapPlayerToPublic(player: Player): DTO.PlayerPublic {
   var playerPublic = new DTO.PlayerPublic();
-  playerPublic.User = mapUserToPublic(player.User);
-  playerPublic.CurrentCard = player.CurrentCard;
+  playerPublic.user = mapUserToPublic(player.user);
+  playerPublic.currentCard = player.currentCard;
   return playerPublic;
 }
 
@@ -137,9 +137,9 @@ function mapPlayersToPublic(players: { [id: string]: Player }): { [id: string]: 
   Object.keys(players).forEach(id => {
     var player = players[id];
     var playerPublic = new DTO.PlayerPublic();
-    playerPublic.User = mapUserToPublic(player.User);
-    playerPublic.CurrentCard = player.CurrentCard;
-    playersPublic[playerPublic.User.Pid] = playerPublic;
+    playerPublic.user = mapUserToPublic(player.user);
+    playerPublic.currentCard = player.currentCard;
+    playersPublic[playerPublic.user.pid] = playerPublic;
   });
   return playersPublic;
 }

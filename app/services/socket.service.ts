@@ -5,7 +5,7 @@ import { UserService } from './user.service';
 import * as DTO from '../../DTO';
 
 @Injectable()
-class SocketService {
+export class SocketService {
   private socket: SocketIOClient.Socket;
 
   constructor(private user: UserService) { }
@@ -13,9 +13,9 @@ class SocketService {
   connect(userSid: string) {
     this.socket = io.connect({ query: `userSid=${userSid}` });
     this.socket.emit('conn', null, (user: DTO.UserConnect) => {
-      this.user.UserSid = user.Sid;
-      this.user.UserPid = user.Pid;
-      this.user.UserName = user.UserName;
+      this.user.userSid = user.sid;
+      this.user.userPid = user.pid;
+      this.user.userName = user.userName;
     });
 
     this.on('error', e => {
@@ -38,7 +38,4 @@ class SocketService {
       callback.apply(this.socket, cArgs);
     });
   }
-
 }
-
-export { SocketService };

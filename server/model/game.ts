@@ -3,26 +3,25 @@ import { UserCollection } from './userCollection';
 import { Player } from './player';
 import { GameState } from '../../DTO/gameState';
 
-class Game {
-  private id: string;
+export class Game {
+  get id() { return this._id; }
+  get users() { return this._users; }
+  state: GameState = GameState.Waiting;
+  
+  private _id: string;
   private _users: {[id: string]: Player};
-  private state: GameState = GameState.WaitingForPlayers;
   
   constructor(host: User) {
-    this.id = host.Pid;
+    this._id = host.pid;
     this._users = {};
-    this._users[host.Pid] = new Player(host);
+    this._users[host.pid] = new Player(host);
   }
 
-  get Id() { return this.id; }
-  get Users() { return this._users; }
-  get State() { return this.state; }
-  set State(value) { this.state = value; }
+  addUser(user: User) { this._users[user.pid] = new Player(user); }
+  
+  removeUser(pid: string) { delete this._users[pid]; }
 
-  AddUser(user: User) { this._users[user.Pid] = new Player(user); }
-  RemoveUser(pid: string) { delete this._users[pid]; }
-
-  GetUserByPid(pid: string) : Player {
+  getUserByPid(pid: string) : Player {
     var roomUser = this._users[pid];
     if (!roomUser)
       return undefined;
@@ -30,11 +29,11 @@ class Game {
     return roomUser;
   }
 
-  GetHost(): Player {
-    return this._users[this.id];
+  getHost(): Player {
+    return this._users[this._id];
   }
 
-  GetAll(): {[id: string]: Player} {
+  getAll(): {[id: string]: Player} {
     var result = {};
     Object.keys(this._users).forEach(pid => {
       result[pid] = this._users[pid];
@@ -42,5 +41,3 @@ class Game {
     return result;
   }
 }
-
-export { Game };

@@ -1,16 +1,14 @@
 import { User } from './user';
 import { PokerCard } from '../../DTO/pokerCard';
 
-class Player {
-  private user: User;
-  private currentCard: PokerCard = PokerCard.None;
+export class Player {
+  get user() { return this._user; }
+  get currentCard() { return this._currentCard; }
+
+  private _user: User;
+  private _currentCard: PokerCard = PokerCard.None;
   
   constructor(user: User) {
-    this.user = user;
+    this._user = user;
   }
-
-  get User() : User { return this.user; }
-  get CurrentCard() : PokerCard { return this.currentCard; }
 }
-
-export { Player };

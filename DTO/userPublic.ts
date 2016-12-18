@@ -1,4 +1,4 @@
 export class UserPublic {
-    Pid: string;
-    UserName: string;
+    pid: string;
+    userName: string;
 }

@@ -1,4 +1,4 @@
-enum PokerCard {
+export enum PokerCard {
     None = -10,
     CoffeeBreak = -5,
     QuestionMark = -1,
@@ -14,5 +14,3 @@ enum PokerCard {
     Hundred = 100,
     Infinity = 999
 }
-
-export { PokerCard };
