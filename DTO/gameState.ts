@@ -1,5 +1,5 @@
 export enum GameState {
-    WaitingForPlayers,
+    Waiting,
     Voting,
     VoteResults
 }

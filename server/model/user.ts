@@ -1,38 +1,35 @@
 import { UserCollection } from './userCollection';
 
 export class User {
-  private sid: string;
-  private pid: string;
-  private username: string;
-  private active: boolean;
+  get sid() { return this._sid; }
+  get pid() { return this._pid; }
+  get userName() { return this._userName; }
+  set userName(username: string) { this._userName = username; }
+  get active() { return this._active; }
+  set active(active: boolean) { this._active = active; }
+
+  private _sid: string;
+  private _pid: string;
+  private _userName: string;
+  private _active: boolean;
   private static nextUserNumber: number = 1;
   
   constructor() {
-    this.sid = User.CreateId();
-    this.pid = User.CreateId();
-    this.username = User.GetNextUserName();
-    this.active = true;
+    this._sid = User.createId();
+    this._pid = User.createId();
+    this._userName = User.getNextUserName();
+    this._active = true;
   }
 
-  get Sid() { return this.sid; }
-
-  get Pid() { return this.pid; }
-
-  get UserName() { return this.username; }
-  set UserName(username: string) { this.username = username; }
-
-  get Active() { return this.active; }
-  set Active(active: boolean) { this.active = active; }
-
-  static GetNextUserName() {
+  static getNextUserName() {
     return `guest${this.nextUserNumber++}`;
   }
 
-  static CreateId() {
+  static createId() {
     return Math.floor((1 + Math.random()) * 0x100000000).toString(16).substring(1);
   }
 
-  static IsValidUserName(username: string, users: UserCollection) {
+  static isValidUserName(username: string, users: UserCollection) {
     var regex = /^\w{2,12}$/;
     if (!regex.test(username))
       return false;

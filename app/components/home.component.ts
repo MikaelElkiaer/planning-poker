@@ -10,6 +10,9 @@ import * as DTO from '../../DTO';
 export class HomeComponent {
   users: { [id: string]: DTO.UserPublic } = { };
   joinModel: { gameId: string } = { gameId: '' };
+  get usersList() {
+    return Object.keys(this.users).map(pid => this.users[pid]);
+  }
 
   constructor(private socket: SocketService, private router: Router) {
     this.socket.emit('home', null, (users: { [id: string]: DTO.UserPublic }) => {
@@ -18,26 +21,22 @@ export class HomeComponent {
     });
 
     this.socket.on('user:connect', (user: DTO.UserPublic) => {
-      this.users[user.Pid] = user;
+      this.users[user.pid] = user;
       console.info('User connected: %o', user);
     });
 
     this.socket.on('user:disconnect', (user: DTO.UserPublic) => {
-      delete this.users[user.Pid];
+      delete this.users[user.pid];
       console.info('User disconnected: %o', user);
     });
   }
 
-  public UsersList() {
-    return Object.keys(this.users).map(pid => this.users[pid]);
-  }
-
-  public OnJoinGame() {
+  onJoinGame() {
     console.info('Joining game with id: %s', this.joinModel.gameId);
     this.router.navigate(['/game', this.joinModel.gameId]);
   }
 
-  public OnCreateGame() {
+  onCreateGame() {
     console.info('Creating game');
     this.socket.emit('create-game', null, (error: string, gameId: string) => {
       if (error)

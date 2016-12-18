@@ -11,7 +11,7 @@ export class AppComponent {
   userName: string = '';
 
   constructor(private user: UserService) {
-    this.userName = user.UserName;
+    this.userName = user.userName;
   }
 
   collapse() {

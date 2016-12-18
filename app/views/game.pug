@@ -5,11 +5,11 @@
                 .panel-heading
                     h3.panel-title
                         | Game
-                        span.pull-right {{ GameId }}
+                        span.pull-right {{ gameId }}
                 .panel-body(style='text-align: center')
-                    .vote([class.user]='player.Pid === UserPid', *ngFor='let player of PlayersList')
-                        .poker-card {{ player.CurrentCard }}
+                    .vote([class.user]='player.pid === userPid', *ngFor='let player of playersList')
+                        .poker-card {{ player.currentCard }}
                         span.username
-                            small([hidden]='player.Pid !== HostPid')
+                            small([hidden]='player.pid !== hostPid')
                                 span.glyphicon.glyphicon-star
-                            | {{ player.User.UserName }}
+                            | {{ player.user.userName }}

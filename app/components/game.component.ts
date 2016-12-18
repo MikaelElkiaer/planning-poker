@@ -50,18 +50,27 @@ import { UserService } from '../services/user.service';
             }`]
 })
 export class GameComponent implements OnInit {
-  private gameId: string;
+  get gameId() { return this._gameId; }
+  get userPid() { return this.user.userPid; }
+  get hostPid() { return this._hostPid; }
+  get playersList() {
+    return Object.keys(this.players)
+      .map(pid => this.players[pid])
+      .sort((a, b) => this.strcmp(a.user.userName, b.user.userName));
+  }
+
+  private _gameId: string;
   private players: { [id: string]: DTO.PlayerPublic } = {};
-  private hostPid: string = '';
+  private _hostPid: string = '';
 
   constructor(private route: ActivatedRoute, private socket: SocketService, private user: UserService) {
     
   }
 
   ngOnInit() {
-    this.gameId = this.route.snapshot.params['id'];
+    this._gameId = this.route.snapshot.params['id'];
 
-    this.socket.emit('join-game', { gameId: this.gameId }, (error, data) => {
+    this.socket.emit('join-game', { gameId: this._gameId }, (error, data) => {
       if (error)
         console.info(error);
       else {
@@ -71,18 +80,10 @@ export class GameComponent implements OnInit {
     });
 
     this.socket.on('user:join-game', (player: DTO.PlayerPublic) => {
-      this.players[player.User.Pid] = player;
+      this.players[player.user.pid] = player;
       console.info('Player joined: %o', player);
     });
   }
-
-  get GameId() { return this.gameId; }
-  get UserPid() { return this.user.UserPid; }
-  get HostPid() { return this.hostPid; }
-  get PlayersList() {
-    return Object.keys(this.players)
-      .map(pid => this.players[pid])
-      .sort((a, b) => this.strcmp(a.User.UserName, b.User.UserName)); }
 
   private strcmp(a: string, b: string) {
     return (a == b) ? 0 : ((a > b) ? 1 : -1);

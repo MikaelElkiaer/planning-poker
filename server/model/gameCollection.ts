@@ -2,27 +2,30 @@ import { Game } from './game';
 import { User } from './user';
 
 export class GameCollection {
-  private rooms: { [id: string]: Game };
+  get rooms() { return this._rooms; }
+  
+  private _rooms: { [id: string]: Game };
+
   constructor() {
-    this.rooms = {};
+    this._rooms = {};
   }
 
-  get Rooms() { return this.rooms; }
-
-  AddRoom(host: User) {
-    var id = host.Pid;
-    if (!this.rooms[id])
-      this.rooms[id] = new Game(host);
+  addRoom(host: User) {
+    var id = host.pid;
+    if (!this._rooms[id])
+      this._rooms[id] = new Game(host);
     else
       throw `Room with id ${id} already in roomCollection.`;
   }
 
-  RemoveRoom(id: string) {
-    if (this.rooms[id])
-      delete this.rooms[id];
+  removeRoom(id: string) {
+    if (this._rooms[id])
+      delete this._rooms[id];
     else
       throw `Room with id ${id} not in roomCollection.`;
   }
 
-  GetRoomById(id: string) : Game { return this.rooms[id]; }
+  getRoomById(id: string) : Game {
+    return this._rooms[id];
+  }
 }
