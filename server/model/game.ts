@@ -6,6 +6,7 @@ import { GameState } from '../../DTO/gameState';
 export class Game {
   get id() { return this._id; }
   get users() { return this._users; }
+  get host() { return this._users[this._id]; }
   state: GameState = GameState.Waiting;
   
   private _id: string;
@@ -27,10 +28,6 @@ export class Game {
       return undefined;
 
     return roomUser;
-  }
-
-  getHost(): Player {
-    return this._users[this._id];
   }
 
   getAll(): {[id: string]: Player} {

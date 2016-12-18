@@ -97,9 +97,45 @@ io.on('connection', socket => {
       room.addUser(user);
     }
 
-    callback(null, mapPlayersToPublic(room.getAll()));
+    var hideCards = room.state != DTO.GameState.VoteResults;
 
-    socket.broadcast.to(data.gameId).emit('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid)));
+    callback(null, mapPlayersToPublic(room.getAll(), hideCards));
+
+    socket.broadcast.to(room.id).emit('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid), hideCards));
+  });
+
+  socket.on('change-game-state', (data, callback) => {
+    var user = users.getUserById(socket.id);
+    var room = rooms.getRoomById(data.gameId);
+
+    if (room.host.user.sid !== user.sid) {
+      callback('Only host can change game state');
+      return;
+    }
+
+    room.state = data.gameState;
+
+    var result = { gameState: room.state, players: null };
+    if (room.state == DTO.GameState.VoteResults)
+      result.players = mapPlayersToPublic(room.getAll(), true);
+    
+    socket.broadcast.to(room.id).emit('host:change-game-state', result);
+  });
+
+  socket.on('choose-card', (data, callback) => {
+    var user = users.getUserById(socket.id);
+    var room = rooms.getRoomById(data.gameId);
+
+    if (room.state != DTO.GameState.Voting)
+    {
+      callback('Cards can only be chosen in voting state')
+      return;
+    }
+
+    var roomUser= room.getUserByPid(user.pid);
+    roomUser.currentCard = data.newCard;
+
+    socket.broadcast.to(room.id).emit('user:choose-card', mapPlayerToPublic(roomUser, true));
   });
 });
 
@@ -125,20 +161,20 @@ function mapUsersToPublic(users: { [id: string]: User }): { [id: string]: DTO.Us
   return usersPublic;
 }
 
-function mapPlayerToPublic(player: Player): DTO.PlayerPublic {
+function mapPlayerToPublic(player: Player, isVoting: boolean): DTO.PlayerPublic {
   var playerPublic = new DTO.PlayerPublic();
   playerPublic.user = mapUserToPublic(player.user);
-  playerPublic.currentCard = player.currentCard;
+  playerPublic.currentCard = isVoting ? DTO.PokerCard.Hidden : player.currentCard;
   return playerPublic;
 }
 
-function mapPlayersToPublic(players: { [id: string]: Player }): { [id: string]: DTO.PlayerPublic } {
+function mapPlayersToPublic(players: { [id: string]: Player }, isVoting: boolean): { [id: string]: DTO.PlayerPublic } {
   var playersPublic = {};
   Object.keys(players).forEach(id => {
     var player = players[id];
     var playerPublic = new DTO.PlayerPublic();
     playerPublic.user = mapUserToPublic(player.user);
-    playerPublic.currentCard = player.currentCard;
+    playerPublic.currentCard = isVoting ? DTO.PokerCard.Hidden : player.currentCard;
     playersPublic[playerPublic.user.pid] = playerPublic;
   });
   return playersPublic;
