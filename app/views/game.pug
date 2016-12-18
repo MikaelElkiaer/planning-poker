@@ -5,7 +5,7 @@
                 .panel-heading
                     .btn-group.pull-right
                         button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px')
-                            span.glyphicon.glyphicon-play
+                            span.fa([ngClass]='{ "fa-stop": isVoting, "fa-play": !isVoting }')
                     h4.panel-title
                         | Game: {{ gameId }}
                 .panel-body(style='text-align: center')
@@ -13,5 +13,5 @@
                         .poker-card {{ player.currentCard }}
                         span.username
                             small([hidden]='player.pid !== hostPid')
-                                span.glyphicon.glyphicon-star
+                                span.fa.fa-star
                             | {{ player.user.userName }}

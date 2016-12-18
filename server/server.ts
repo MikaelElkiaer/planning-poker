@@ -11,9 +11,10 @@ app.disable('view cache');
 app.set('port', (process.env.PORT || 5000));
 app.set('view engine', 'pug');  
 app.use('/app', express.static('app'));
+app.use('/DTO', express.static('DTO'));
 app.use('/node_modules', express.static('node_modules'));
 app.get('/views/:name', (req, res) => { res.render(`${__dirname}/../app/views/${req.params.name}`); });
-app.get('*', (req, res) => { res.render(`${__dirname}/../app/index`); });
+app.get(['/', '/game/:id'], (req, res) => { res.render(`${__dirname}/../app/index`); });
 
 var rooms = new GameCollection();
 var users = new UserCollection();

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import * as DTO from '../../DTO';
+import { GameState, PlayerPublic } from '../../DTO';
 import { SocketService } from '../services/socket.service';
 import { UserService } from '../services/user.service';
 
@@ -58,9 +58,11 @@ export class GameComponent implements OnInit {
       .map(pid => this.players[pid])
       .sort((a, b) => this.strcmp(a.user.userName, b.user.userName));
   }
+  get isVoting() { return this.state === GameState.Voting; }
+  state: GameState = GameState.Waiting;
 
   private _gameId: string;
-  private players: { [id: string]: DTO.PlayerPublic } = {};
+  private players: { [id: string]: PlayerPublic } = {};
   private _hostPid: string = '';
 
   constructor(private route: ActivatedRoute, private socket: SocketService, private user: UserService) {
@@ -79,7 +81,7 @@ export class GameComponent implements OnInit {
       }
     });
 
-    this.socket.on('user:join-game', (player: DTO.PlayerPublic) => {
+    this.socket.on('user:join-game', (player: PlayerPublic) => {
       this.players[player.user.pid] = player;
       console.info('Player joined: %o', player);
     });

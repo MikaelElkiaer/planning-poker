@@ -1,4 +1,4 @@
-export enum PokerCard {
+export const enum PokerCard {
     NotPicked = -99,
     Picked = -10,
     CoffeeBreak = -5,
