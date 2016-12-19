@@ -87,6 +87,25 @@ export class GameComponent implements OnInit {
       this.players[player.user.pid] = player;
       console.info('Player joined: %o', player);
     });
+
+    this.socket.on('host:change-game-state', (data) => {
+      this.state = data.gameState;
+      this.players = data.players;
+      console.info('Host changed game state: %s', this.state);
+    });
+  }
+
+  startStopGame() {
+    var newState = this.state === GameState.Voting ? GameState.Waiting : GameState.Voting;
+    this.socket.emit('change-game-state', { gameId: this._gameId, gameState: newState }, (error, data) => {
+      if (error)
+        console.info(error);
+      else {
+        this.state = data.gameState;
+        this.players = data.players;
+        console.info('Game state changed: %s', this.state);
+      }
+    });
   }
 
   private strcmp(a: string, b: string) {

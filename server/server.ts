@@ -98,7 +98,7 @@ io.on('connection', socket => {
       room.addUser(user);
     }
 
-    var hideCards = room.state != DTO.GameState.VoteResults;
+    var hideCards = room.state === DTO.GameState.Voting;
 
     callback(null, { players: mapPlayersToPublic(room.getAll(), hideCards), hostPid: room.host.user.pid });
 
@@ -120,6 +120,8 @@ io.on('connection', socket => {
       room.resetCards();
 
     var result = { gameState: room.state, players: mapPlayersToPublic(room.getAll(), true) };
+
+    callback(null, result);
     
     socket.broadcast.to(room.id).emit('host:change-game-state', result);
   });

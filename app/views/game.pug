@@ -4,7 +4,7 @@
             .panel.panel-default
                 .panel-heading
                     .btn-group.pull-right(*ngIf='userPid === hostPid')
-                        button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px')
+                        button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='startStopGame()')
                             span.fa([ngClass]='{ "fa-stop": isVoting, "fa-play": !isVoting }')
                     h4.panel-title
                         | Game: {{ gameId }}
