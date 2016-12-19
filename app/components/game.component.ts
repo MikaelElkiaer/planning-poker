@@ -29,8 +29,9 @@ import { UserService } from '../services/user.service';
             div.poker-card {
               box-shadow: 2px 2px 4px #bbbbbb;
               margin: auto;
+              padding-top: 50%;
               width: 70px;
-              line-height: 100px;
+              height: 100px;
               font-size: 28px;
               text-align: center;
               border: 2px solid black;

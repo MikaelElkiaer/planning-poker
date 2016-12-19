@@ -10,7 +10,7 @@
                         | Game: {{ gameId }}
                 .panel-body(style='text-align: center')
                     .vote([class.user]='player.user.pid === userPid', *ngFor='let player of playersList')
-                        .poker-card {{ player.currentCard | cardText }}
+                        .poker-card([innerHtml]='player.currentCard | cardText')
                         span.username
                             small([hidden]='player.pid !== hostPid')
                                 span.fa.fa-star

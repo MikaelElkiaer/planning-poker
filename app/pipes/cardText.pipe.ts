@@ -7,15 +7,15 @@ export class CardTextPipe implements PipeTransform {
   transform(value: PokerCard): string {
     switch (value) {
       case PokerCard.NotPicked:
-        return 'n';
+        return '<span class="fa fa-thumbs-o-down vcenter"></span>';
       case PokerCard.Picked:
-        return 'y';
+        return '<span class="fa fa-thumbs-o-up vcenter"></span>';
       case PokerCard.CoffeeBreak:
-        return 'c';
+        return '<span class="fa fa-coffee vcenter"></span>';
       case PokerCard.QuestionMark:
-        return '?';
+        return '<span class="fa fa-question vcenter></span>';
       case PokerCard.Half:
-        return '.5';
+        return '&frac12;';
       default:
         return value.toString();
     }
