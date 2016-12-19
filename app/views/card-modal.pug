@@ -1,0 +1,6 @@
+.modal-header
+  button.close(type='button', aria-label='Close', (click)='activeModal.dismiss()')
+    span(aria-hidden='true') &times;
+  h4.modal-title Hi there!
+.modal-body
+  p([innerHtml]='currentCard | cardText')

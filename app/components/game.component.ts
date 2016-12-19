@@ -1,10 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { GameState } from '../../DTO/gameState';
 import { PlayerPublic } from '../../DTO/playerPublic';
 import { SocketService } from '../services/socket.service';
 import { UserService } from '../services/user.service';
+import { CardModalComponent } from './card-modal.component';
 
 @Component({
   templateUrl: 'views/game',
@@ -66,7 +68,7 @@ export class GameComponent implements OnInit {
   private players: { [id: string]: PlayerPublic } = {};
   private _hostPid: string = '';
 
-  constructor(private route: ActivatedRoute, private socket: SocketService, private user: UserService) {
+  constructor(private route: ActivatedRoute, private socket: SocketService, private user: UserService, private modalService: NgbModal) {
     
   }
 
@@ -105,6 +107,17 @@ export class GameComponent implements OnInit {
         this.players = data.players;
         console.info('Game state changed: %s', this.state);
       }
+    });
+  }
+
+  cardModal() {
+    const modalRef = this.modalService.open(CardModalComponent, { size: 'lg' });
+    modalRef.componentInstance.currentCard = this.players[this.userPid].currentCard;
+
+    modalRef.result.then(card => {
+      this.players[this.userPid].currentCard = card;
+    }, () => {
+      return;
     });
   }
 
