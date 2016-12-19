@@ -3,7 +3,7 @@
         .col-sm-4.col-sm-offset-4
             .panel.panel-default
                 .panel-heading
-                    .btn-group.pull-right
+                    .btn-group.pull-right(*ngIf='userPid === hostPid')
                         button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px')
                             span.fa([ngClass]='{ "fa-stop": isVoting, "fa-play": !isVoting }')
                     h4.panel-title
@@ -12,6 +12,6 @@
                     .vote([class.user]='player.user.pid === userPid', *ngFor='let player of playersList')
                         .poker-card([innerHtml]='player.currentCard | cardText')
                         span.username
-                            small([hidden]='player.pid !== hostPid')
-                                span.fa.fa-star
+                            small(*ngIf='player.user.pid === hostPid')
+                                span.fa.fa-star &nbsp;
                             | {{ player.user.userName }}

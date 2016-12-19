@@ -100,7 +100,7 @@ io.on('connection', socket => {
 
     var hideCards = room.state != DTO.GameState.VoteResults;
 
-    callback(null, mapPlayersToPublic(room.getAll(), hideCards));
+    callback(null, { players: mapPlayersToPublic(room.getAll(), hideCards), hostPid: room.host.user.pid });
 
     socket.broadcast.to(room.id).emit('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid), hideCards));
   });

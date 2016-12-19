@@ -77,8 +77,9 @@ export class GameComponent implements OnInit {
       if (error)
         console.info(error);
       else {
-        this.players = data;
-        console.info('Requested game players: %o', data);
+        this.players = data.players;
+        this._hostPid = data.hostPid;
+        console.info('Requested game: %o', data);
       }
     });
 
