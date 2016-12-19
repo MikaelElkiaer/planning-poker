@@ -100,7 +100,7 @@ io.on('connection', socket => {
 
     var hideCards = room.state === DTO.GameState.Voting;
 
-    callback(null, { players: mapPlayersToPublic(room.getAll(), hideCards), hostPid: room.host.user.pid });
+    callback(null, { players: mapPlayersToPublic(room.getAll(), hideCards), hostPid: room.host.user.pid, gameState: room.state });
 
     socket.broadcast.to(room.id).emit('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid), hideCards));
   });
@@ -116,10 +116,10 @@ io.on('connection', socket => {
 
     room.state = data.gameState;
 
-    if (room.state === DTO.GameState.Voting || room.state === DTO.GameState.Waiting)
+    if (room.state === DTO.GameState.Voting)
       room.resetCards();
 
-    var result = { gameState: room.state, players: mapPlayersToPublic(room.getAll(), true) };
+    var result = { gameState: room.state, players: mapPlayersToPublic(room.getAll(), false) };
 
     callback(null, result);
     
@@ -130,7 +130,7 @@ io.on('connection', socket => {
     var user = users.getUserById(socket.id);
     var room = rooms.getRoomById(data.gameId);
 
-    if (room.state != DTO.GameState.Voting)
+    if (room.state !== DTO.GameState.Voting)
     {
       callback('Cards can only be chosen in voting state')
       return;
@@ -138,6 +138,8 @@ io.on('connection', socket => {
 
     var roomUser= room.getUserByPid(user.pid);
     roomUser.currentCard = data.newCard;
+
+    callback();
 
     socket.broadcast.to(room.id).emit('user:choose-card', mapPlayerToPublic(roomUser, true));
   });

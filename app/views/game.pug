@@ -10,7 +10,7 @@ template(ngbModalContainer)
                     h4.panel-title
                         | Game: {{ gameId }}
                 .panel-body(style='text-align: center')
-                    .vote([class.user]='player.user.pid === userPid', *ngFor='let player of playersList', (click)='player.user.pid === userPid && cardModal()')
+                    .vote([ngClass]='{ user: player.user.pid === userPid, pickable: isVoting }', *ngFor='let player of playersList', (click)='isVoting && player.user.pid === userPid && cardModal()')
                         .poker-card([innerHtml]='player.currentCard | cardText')
                         span.username
                             small(*ngIf='player.user.pid === hostPid')

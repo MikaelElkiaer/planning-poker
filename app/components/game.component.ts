@@ -23,7 +23,7 @@ import { CardModalComponent } from './card-modal.component';
               color: #357ebd;
             }
 
-            .user:hover, .pickable:hover {
+            .pickable:hover {
               background-color: #f5f5f5;
               cursor:  pointer;
             }
@@ -76,13 +76,14 @@ export class GameComponent implements OnInit {
     this._gameId = this.route.snapshot.params['id'];
 
     this.socket.emit('join-game', { gameId: this._gameId }, (error, data) => {
-      if (error)
+      if (error) {
         console.info(error);
-      else {
-        this.players = data.players;
-        this._hostPid = data.hostPid;
-        console.info('Requested game: %o', data);
+        return;
       }
+      this.players = data.players;
+      this._hostPid = data.hostPid;
+      this.state = data.gameState;
+      console.info('Requested game: %o', data);
     });
 
     this.socket.on('user:join-game', (player: PlayerPublic) => {
@@ -94,6 +95,11 @@ export class GameComponent implements OnInit {
       this.state = data.gameState;
       this.players = data.players;
       console.info('Host changed game state: %s', this.state);
+    });
+
+    this.socket.on('user:choose-card', (data) => {
+      this.players[data.user.pid] = data;
+      console.info('Player chose card: %s', data);
     });
   }
 
@@ -115,7 +121,14 @@ export class GameComponent implements OnInit {
     modalRef.componentInstance.currentCard = this.players[this.userPid].currentCard;
 
     modalRef.result.then(card => {
-      this.players[this.userPid].currentCard = card;
+      this.socket.emit('choose-card', { gameId: this._gameId, newCard: card }, (error, data) => {
+        if (error) {
+          console.info(error);
+          return;
+        }
+        this.players[this.userPid].currentCard = card;
+        console.info('Selected card: %s', card);
+      });
     }, () => {
       return;
     });
