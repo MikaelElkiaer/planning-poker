@@ -3,4 +3,5 @@
     span(aria-hidden='true') &times;
   h4.modal-title Hi there!
 .modal-body
-  p([innerHtml]='currentCard | cardText')
+  .vote.pickable([class.selected]='card === currentCard', *ngFor='let card of pickableCards', (click)='activeModal.close(card)')
+    .poker-card([innerHtml]='card | cardText')
