@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "nodemon ./server/server.js --ext js --watch ./server --watch ./DTO --delay 3 & tsc -w",
-    "reindex": "./reindex.sh"
+    "reindex": "./reindex.sh",
+    "postinstall": "tsc"
   },
   "licenses": [
     {
@@ -22,6 +23,11 @@
     "@angular/router": "~3.1.1",
     "@angular/upgrade": "~2.1.1",
     "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.15",
+    "@types/core-js": "~0.9.34",
+    "@types/express": "~4.0.33",
+    "@types/node": "~6.0.45",
+    "@types/socket.io": "^1.4.27",
+    "@types/socket.io-client": "^1.4.27",
     "bootstrap": "~3.3.7",
     "core-js": "~2.4.1",
     "crypto": "^0.0.3",
@@ -32,15 +38,10 @@
     "rxjs": "5.0.0-beta.12",
     "socket.io": "~1.5.1",
     "systemjs": "0.19.39",
+    "typescript": "~2.1.4",
     "zone.js": "~0.6.25"
   },
   "devDependencies": {
-    "@types/core-js": "~0.9.34",
-    "@types/express": "~4.0.33",
-    "@types/node": "~6.0.45",
-    "@types/socket.io": "^1.4.27",
-    "@types/socket.io-client": "^1.4.27",
-    "nodemon": "~1.11.0",
-    "typescript": "~2.1.4"
+    "nodemon": "~1.11.0"
   }
 }
