@@ -17,7 +17,6 @@ export class SocketService {
       this.user.userPid = user.pid;
       this.user.userName = user.userName;
     });
-
     this.on('error', e => {
       var error = JSON.parse(e);
     });
@@ -37,5 +36,9 @@ export class SocketService {
       var cArgs = args;
       callback.apply(this.socket, cArgs);
     });
+  }
+
+  removeAllListeners() {
+    this.socket.removeAllListeners();
   }
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { SocketService } from '../services/socket.service';
@@ -7,7 +7,7 @@ import { UserPublic } from '../../DTO/userPublic';
 @Component({
   templateUrl: 'views/home'
 })
-export class HomeComponent {
+export class HomeComponent implements OnDestroy {
   users: { [id: string]: UserPublic } = { };
   joinModel: { gameId: string } = { gameId: '' };
   get usersList() {
@@ -29,6 +29,10 @@ export class HomeComponent {
       delete this.users[user.pid];
       console.info('User disconnected: %o', user);
     });
+  }
+
+  ngOnDestroy() {
+    this.socket.removeAllListeners();
   }
 
   onJoinGame() {

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -52,7 +52,7 @@ import { CardModalComponent } from './card-modal.component';
               font-weight: bold;
             }`]
 })
-export class GameComponent implements OnInit {
+export class GameComponent implements OnDestroy, OnInit {
   get gameId() { return this._gameId; }
   get userPid() { return this.user.userPid; }
   get hostPid() { return this._hostPid; }
@@ -101,6 +101,10 @@ export class GameComponent implements OnInit {
       this.players[data.user.pid] = data;
       console.info('Player chose card: %s', data);
     });
+  }
+
+  ngOnDestroy() {
+    this.socket.removeAllListeners();
   }
 
   startStopGame() {
