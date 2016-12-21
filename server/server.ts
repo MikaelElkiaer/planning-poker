@@ -54,20 +54,17 @@ io.on('connection', socket => {
     callback(mapUsersToPublic(users.getAll()));
   });
 
-  socket.on('change-username', (data, callback) => {
+  socket.on('change-username', (newUsername, callback) => {
     var user = users.getUserById(socket.id);
     var oldUsername = user.userName;
-    var newUsername = data.newUsername;
+    var newUsername = newUsername;
 
     if (User.isValidUserName(newUsername, users)) {
       user.userName = newUsername;
 
-      callback(null, { newUsername });
+      callback(null, newUsername);
 
-      io.emit('user:change-username', {
-        pid: user.pid,
-        username: newUsername
-      });
+      io.emit('user:change-username', mapUserToPublic(user));
     }
     else
       callback(`The new username ${newUsername} is not allowed.`);

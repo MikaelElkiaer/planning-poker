@@ -101,13 +101,26 @@ export class GameComponent implements OnDestroy, OnInit {
     });
 
     this.socket.on('user:connect', (user: UserPublic) => {
-      if (this.players[user.pid])
-        this.players[user.pid].user.active = true;
+      if (!this.players[user.pid])
+        return;
+
+      this.players[user.pid].user.active = true;
+      console.info('Player becamse active: %o', this.players[user.pid]);
     });
 
     this.socket.on('user:disconnect', (user: UserPublic) => {
-      if (this.players[user.pid])
-        this.players[user.pid].user.active = false;
+      if (!this.players[user.pid])
+        return;
+      
+      this.players[user.pid].user.active = false;
+      console.info('Player becamse inactive: %o', this.players[user.pid]);
+    });
+
+    this.socket.on('user:change-username', (user: UserPublic) => {
+      if (!this.players[user.pid])
+        return;
+      
+      this.players[user.pid].user.userName = user.userName;
     });
 
     this.socket.on('host:change-game-state', (data) => {

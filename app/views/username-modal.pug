@@ -1,0 +1,9 @@
+.modal-header
+  button.close(type='button', aria-label='Close', (click)='activeModal.dismiss()')
+    span(aria-hidden='true') &times;
+  h4.modal-title Change username
+.modal-body
+  input.form-control(type='text', autofocus, [(ngModel)]='userName')
+.modal-footer
+  button.btn.btn-success.pull-right(type='button', (click)='activeModal.close(userName)')
+    | Save

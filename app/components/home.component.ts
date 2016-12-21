@@ -29,6 +29,10 @@ export class HomeComponent implements OnDestroy {
       delete this.users[user.pid];
       console.info('User disconnected: %o', user);
     });
+
+    this.socket.on('user:change-username', (user: UserPublic) => {
+      this.users[user.pid].userName = user.userName;
+    });
   }
 
   ngOnDestroy() {
