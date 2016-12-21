@@ -152,6 +152,7 @@ function mapUserToPublic(user: User) {
   var userPublic = new DTO.UserPublic();
   userPublic.pid = user.pid;
   userPublic.userName = user.userName;
+  userPublic.active = user.active;
   return userPublic;
 }
 
@@ -162,6 +163,7 @@ function mapUsersToPublic(users: { [id: string]: User }): { [id: string]: DTO.Us
     var userPublic = new DTO.UserPublic();
     userPublic.pid = user.pid;
     userPublic.userName = user.userName;
+    userPublic.active = user.active;
     usersPublic[userPublic.pid] = userPublic;
   });
   return usersPublic;

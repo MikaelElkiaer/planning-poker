@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { GameState } from '../../DTO/gameState';
+import { UserPublic } from '../../DTO/userPublic';
 import { PlayerPublic } from '../../DTO/playerPublic';
 import { SocketService } from '../services/socket.service';
 import { UserService } from '../services/user.service';
@@ -50,6 +51,14 @@ import { CardModalComponent } from './card-modal.component';
               border-color: #357ebd;
               color: #357ebd;
               font-weight: bold;
+            }
+            
+            .inactive {
+              color: #ff4136;
+            }
+            
+            .username.inactive {
+              font-style: italic;
             }`]
 })
 export class GameComponent implements OnDestroy, OnInit {
@@ -89,6 +98,16 @@ export class GameComponent implements OnDestroy, OnInit {
     this.socket.on('user:join-game', (player: PlayerPublic) => {
       this.players[player.user.pid] = player;
       console.info('Player joined: %o', player);
+    });
+
+    this.socket.on('user:connect', (user: UserPublic) => {
+      if (this.players[user.pid])
+        this.players[user.pid].user.active = true;
+    });
+
+    this.socket.on('user:disconnect', (user: UserPublic) => {
+      if (this.players[user.pid])
+        this.players[user.pid].user.active = false;
     });
 
     this.socket.on('host:change-game-state', (data) => {
