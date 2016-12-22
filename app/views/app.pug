@@ -11,5 +11,5 @@ nav.navbar.navbar-default
   .navbar-collapse([ngClass]='{ collapse: navbarCollapsed }')
     ul.nav.navbar-nav.navbar-right
       li                        
-        a {{ userName }}
+        a(style='cursor: pointer;', (click)='userNameModal()') {{ userName }}
 <router-outlet></router-outlet>
