@@ -9,7 +9,7 @@ import { UserPublic } from '../../DTO/userPublic';
 })
 export class HomeComponent implements OnDestroy {
   users: { [id: string]: UserPublic } = { };
-  joinModel: { gameId: string } = { gameId: '' };
+  joinModel: { gameId: string, spectate: boolean } = { gameId: '', spectate: false };
   get usersList() {
     return Object.keys(this.users).map(pid => this.users[pid]);
   }
@@ -40,8 +40,8 @@ export class HomeComponent implements OnDestroy {
   }
 
   onJoinGame() {
-    console.info('Joining game with id: %s', this.joinModel.gameId);
-    this.router.navigate(['/game', this.joinModel.gameId]);
+    console.info('Joining game: ', this.joinModel);
+    this.router.navigate(['/game', this.joinModel.gameId], { queryParams: { spectate: this.joinModel.spectate }});
   }
 
   onCreateGame() {

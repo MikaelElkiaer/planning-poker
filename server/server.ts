@@ -89,17 +89,20 @@ io.on('connection', socket => {
     }
     socket.join(data.gameId);
 
-    var user = users.getUserById(socket.id);
+    if (!data.spectate) {
+      var user = users.getUserById(socket.id);
 
-    if (!room.getUserByPid(user.pid)) {
-      room.addUser(user);
+      if (!room.getUserByPid(user.pid)) {
+        room.addUser(user);
+      }
     }
 
     var hideCards = room.state === DTO.GameState.Voting;
 
     callback(null, { players: mapPlayersToPublic(room.getAll(), hideCards), hostPid: room.host.user.pid, gameState: room.state });
 
-    socket.broadcast.to(room.id).emit('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid), hideCards));
+    if (!data.spectate)
+      socket.broadcast.to(room.id).emit('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid), hideCards));
   });
 
   socket.on('change-game-state', (data, callback) => {

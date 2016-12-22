@@ -8,9 +8,16 @@
                     form.form-horizontal(name='joinForm', novalidate, (submit)='onJoinGame()', #joinForm='ngForm')
                         .form-group
                             .col-xs-7
-                                input.form-control(type='text', name='gameId', width='8', placeholder='Game Id',
+                                .input-group
+                                    input.form-control(type='text', name='gameId', width='8', placeholder='Game Id',
                                     required, pattern='[0-9a-f]{8}', minlength='8', maxlength='8',
                                     [(ngModel)]='joinModel.gameId', #name='ngModel')
+                                    span.input-group-addon(style='padding: 0px 9px;')
+                                        .checkbox
+                                            label
+                                                input(type='checkbox', name='spectate', [(ngModel)]='joinModel.spectate', #name='ngModel')
+                                                span.fa.fa-user-secret
+                                        
                             .col-xs-5
                                 button.btn.btn-default(style='width: 100%', type='submit', [disabled]='!joinForm.form.valid')
                                     i.fa.fa-arrow-right

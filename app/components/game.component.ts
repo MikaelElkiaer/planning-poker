@@ -74,6 +74,7 @@ export class GameComponent implements OnDestroy, OnInit {
   state: GameState = GameState.Waiting;
 
   private _gameId: string;
+  private spectate: boolean;
   private players: { [id: string]: PlayerPublic } = {};
   private _hostPid: string = '';
 
@@ -83,8 +84,9 @@ export class GameComponent implements OnDestroy, OnInit {
 
   ngOnInit() {
     this._gameId = this.route.snapshot.params['id'];
+    this.spectate = this.route.snapshot.queryParams['spectate'];
 
-    this.socket.emit('join-game', { gameId: this._gameId }, (error, data) => {
+    this.socket.emit('join-game', { gameId: this._gameId, spectate: this.spectate }, (error, data) => {
       if (error) {
         console.info(error);
         return;
@@ -105,7 +107,7 @@ export class GameComponent implements OnDestroy, OnInit {
         return;
 
       this.players[user.pid].user.active = true;
-      console.info('Player becamse active: %o', this.players[user.pid]);
+      console.info('Player became active: %o', this.players[user.pid]);
     });
 
     this.socket.on('user:disconnect', (user: UserPublic) => {
