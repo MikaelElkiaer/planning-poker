@@ -1,5 +1,7 @@
 export class UserPublic {
-    pid: string;
-    userName: string;
-    active: boolean;
+    constructor(
+        public pid: string,
+        public userName: string,
+        public active: boolean
+    ) {}
 }

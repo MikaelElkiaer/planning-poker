@@ -1,5 +1,7 @@
 export class UserConnect {
-    pid: string;
-    sid: string;
-    userName: string;
+    constructor(
+        public pid: string,
+        public sid: string,
+        public userName: string
+    ) {}
 }

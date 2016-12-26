@@ -152,40 +152,26 @@ io.on('connection', socket => {
 server.listen(app.get('port'), () => console.log(`listening on *:${app.get('port')}`));
 
 function mapUserToPublic(user: User) {
-  var userPublic = new DTO.UserPublic();
-  userPublic.pid = user.pid;
-  userPublic.userName = user.userName;
-  userPublic.active = user.active;
-  return userPublic;
+  return new DTO.UserPublic(user.pid, user.userName, user.active);
 }
 
 function mapUsersToPublic(users: { [id: string]: User }): { [id: string]: DTO.UserPublic } {
   var usersPublic = {};
   Object.keys(users).forEach(id => {
-    var user = users[id];
-    var userPublic = new DTO.UserPublic();
-    userPublic.pid = user.pid;
-    userPublic.userName = user.userName;
-    userPublic.active = user.active;
+    var userPublic = mapUserToPublic(users[id]);
     usersPublic[userPublic.pid] = userPublic;
   });
   return usersPublic;
 }
 
 function mapPlayerToPublic(player: Player, isVoting: boolean): DTO.PlayerPublic {
-  var playerPublic = new DTO.PlayerPublic();
-  playerPublic.user = mapUserToPublic(player.user);
-  playerPublic.currentCard = (player.currentCard !== DTO.PokerCard.NotPicked && isVoting) ? DTO.PokerCard.Picked : player.currentCard;
-  return playerPublic;
+  return new DTO.PlayerPublic(player.user, (player.currentCard !== DTO.PokerCard.NotPicked && isVoting) ? DTO.PokerCard.Picked : player.currentCard);
 }
 
 function mapPlayersToPublic(players: { [id: string]: Player }, isVoting: boolean): { [id: string]: DTO.PlayerPublic } {
   var playersPublic = {};
   Object.keys(players).forEach(id => {
-    var player = players[id];
-    var playerPublic = new DTO.PlayerPublic();
-    playerPublic.user = mapUserToPublic(player.user);
-    playerPublic.currentCard = (player.currentCard !== DTO.PokerCard.NotPicked && isVoting) ? DTO.PokerCard.Picked : player.currentCard;
+    var playerPublic = mapPlayerToPublic(players[id], isVoting);
     playersPublic[playerPublic.user.pid] = playerPublic;
   });
   return playersPublic;
