@@ -1,10 +1,13 @@
-var express = require('express');
-var app = express();
-var http = require('http').Server(app);
-var io: SocketIO.Namespace = require('socket.io')(http);
+import * as express from 'express';
+import * as http from 'http';
+import * as socketio from 'socket.io';
 
 import { Game, GameCollection, User, UserCollection, Player } from './model';
 import * as DTO from '../DTO';
+
+const app = express();
+const server = http.createServer(app);
+const io = socketio(server);
 
 // Setup of server and routes
 app.disable('view cache');
@@ -146,7 +149,7 @@ io.on('connection', socket => {
 });
 
 // start server
-http.listen(app.get('port'), () => console.log(`listening on *:${app.get('port')}`));
+server.listen(app.get('port'), () => console.log(`listening on *:${app.get('port')}`));
 
 function mapUserToPublic(user: User) {
   var userPublic = new DTO.UserPublic();
