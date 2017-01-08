@@ -19,8 +19,8 @@ export class HomeComponent implements OnDestroy {
   }
 
   constructor(private socket: SocketService, private router: Router) {
-    this.socket.emit<null,UserPublic[]>('home', { data: null }, response => {
-      this.users = response.data.reduce((prev, cur) => prev[cur.pid] = cur, {});
+    this.socket.emit<null,{[id: string]: UserPublic}>('home', { data: null }, response => {
+      this.users = response.data;
       console.info('Requested home users: %o', response.data);
     });
 

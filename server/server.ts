@@ -47,14 +47,15 @@ io.on('connection', socket => {
     return new DTO.UserConnect(user.pid, user.sid, user.userName);
   });
 
-  socket.on('disconnect', () => {
+  socketService.on<null, null>('disconnect', () => {
     var user = users.getUserById(socket.id);
     user.active = false;
-    socket.broadcast.emit('user:disconnect', mapUserToPublic(user));
+    socketService.emitAllExceptSender('user:disconnect', mapUserToPublic(user));
+    return null;
   });
 
-  socket.on('home', (data, callback: (data?: any, error?: string) => any) => {
-    callback(mapUsersToPublic(users.getAll()));
+  socketService.on<null, {[id: string]: DTO.UserPublic}>('home', data => {
+    return mapUsersToPublic(users.getAll());
   });
 
   socket.on('change-username', (newUsername, callback) => {
