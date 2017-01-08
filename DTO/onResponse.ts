@@ -1,3 +1,3 @@
 export interface IOnResponse<T> {
-    data: T
+    (data: T): void
 }
