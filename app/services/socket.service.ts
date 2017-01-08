@@ -15,23 +15,23 @@ export class SocketService {
 
   connect(userSid: string) {
     this.socket = io.connect({ query: `userSid=${userSid}` });
-    this.emit<null, UserConnect>('conn', null, (data, error) => {
-      this.user.userSid = data.sid;
-      this.user.userPid = data.pid;
-      this.user.userName = data.userName;
+    this.emit<null, UserConnect>('conn', null, response => {
+      this.user.userSid = response.data.sid;
+      this.user.userPid = response.data.pid;
+      this.user.userName = response.data.userName;
     });
   }
 
-  emit<T, S>(eventName: string, request: IEmitRequest<T>, response: IEmitResponse<S>) {
+  emit<T, S>(eventName: string, request: IEmitRequest<T>, callback: (arg: IEmitResponse<S>) => void) {
     this.socket.emit(eventName, request.data, (...args) => {
       var cArgs = args;
-      if (response) {
-        response.apply(this.socket, cArgs);
+      if (callback) {
+        callback.apply(this.socket, cArgs);
       }
     });
   }
 
-  on<T>(eventName, callback: IOnResponse<T>) {
+  on<T>(eventName, callback: (arg: IOnResponse<T>) => void) {
     this.socket.on(eventName, (...args) => {
       var cArgs = args;
       callback.apply(this.socket, cArgs);

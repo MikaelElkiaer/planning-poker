@@ -5,6 +5,10 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GameState } from '../../DTO/gameState';
 import { UserPublic } from '../../DTO/userPublic';
 import { PlayerPublic } from '../../DTO/playerPublic';
+import { GamePublic } from '../../DTO/gamePublic';
+import { JoinGame } from '../../DTO/joinGame';
+import { ChangeGameState } from '../../DTO/changeGameState';
+import { ChooseCard } from '../../DTO/chooseCard';
 import { SocketService } from '../services/socket.service';
 import { UserService } from '../services/user.service';
 import { CardModalComponent } from './card-modal.component';
@@ -86,54 +90,54 @@ export class GameComponent implements OnDestroy, OnInit {
     this._gameId = this.route.snapshot.params['id'];
     this.spectate = this.route.snapshot.queryParams['spectate'];
 
-    this.socket.emit('join-game', { gameId: this._gameId, spectate: this.spectate }, (error, data) => {
-      if (error) {
-        console.info(error);
+    this.socket.emit<JoinGame,GamePublic>('join-game', { data: new JoinGame(this._gameId, this.spectate) }, response => {
+      if (response.error) {
+        console.info(response.error);
         return;
       }
-      this.players = data.players;
-      this._hostPid = data.hostPid;
-      this.state = data.gameState;
-      console.info('Requested game: %o', data);
+      this.players = response.data.players;
+      this._hostPid = response.data.hostPid;
+      this.state = response.data.gameState;
+      console.info('Requested game: %o', response.data);
     });
 
-    this.socket.on('user:join-game', (player: PlayerPublic) => {
-      this.players[player.user.pid] = player;
-      console.info('Player joined: %o', player);
+    this.socket.on<PlayerPublic>('user:join-game', response => {
+      this.players[response.data.user.pid] = response.data;
+      console.info('Player joined: %o', response.data);
     });
 
-    this.socket.on('user:connect', (user: UserPublic) => {
-      if (!this.players[user.pid])
+    this.socket.on<UserPublic>('user:connect', response => {
+      if (!this.players[response.data.pid])
         return;
 
-      this.players[user.pid].user.active = true;
-      console.info('Player became active: %o', this.players[user.pid]);
+      this.players[response.data.pid].user.active = true;
+      console.info('Player became active: %o', this.players[response.data.pid]);
     });
 
-    this.socket.on('user:disconnect', (user: UserPublic) => {
-      if (!this.players[user.pid])
-        return;
-      
-      this.players[user.pid].user.active = false;
-      console.info('Player becamse inactive: %o', this.players[user.pid]);
-    });
-
-    this.socket.on('user:change-username', (user: UserPublic) => {
-      if (!this.players[user.pid])
+    this.socket.on<UserPublic>('user:disconnect', response => {
+      if (!this.players[response.data.pid])
         return;
       
-      this.players[user.pid].user.userName = user.userName;
+      this.players[response.data.pid].user.active = false;
+      console.info('Player becamse inactive: %o', this.players[response.data.pid]);
     });
 
-    this.socket.on('host:change-game-state', (data) => {
-      this.state = data.gameState;
-      this.players = data.players;
+    this.socket.on<UserPublic>('user:change-username', response => {
+      if (!this.players[response.data.pid])
+        return;
+      
+      this.players[response.data.pid].user.userName = response.data.userName;
+    });
+
+    this.socket.on<GamePublic>('host:change-game-state', response => {
+      this.state = response.data.gameState;
+      this.players = response.data.players;
       console.info('Host changed game state: %s', this.state);
     });
 
-    this.socket.on('user:choose-card', (data) => {
-      this.players[data.user.pid] = data;
-      console.info('Player chose card: %s', data);
+    this.socket.on<PlayerPublic>('user:choose-card', response => {
+      this.players[response.data.user.pid] = response.data;
+      console.info('Player chose card: %s', response.data);
     });
   }
 
@@ -143,12 +147,12 @@ export class GameComponent implements OnDestroy, OnInit {
 
   startStopGame() {
     var newState = this.state === GameState.Voting ? GameState.Waiting : GameState.Voting;
-    this.socket.emit('change-game-state', { gameId: this._gameId, gameState: newState }, (error, data) => {
-      if (error)
-        console.info(error);
+    this.socket.emit<ChangeGameState,GamePublic>('change-game-state', { data: new ChangeGameState(this._gameId, newState) }, response => {
+      if (response.error)
+        console.info(response.error);
       else {
-        this.state = data.gameState;
-        this.players = data.players;
+        this.state = response.data.gameState;
+        this.players = response.data.players;
         console.info('Game state changed: %s', this.state);
       }
     });
@@ -159,9 +163,9 @@ export class GameComponent implements OnDestroy, OnInit {
     modalRef.componentInstance.currentCard = this.players[this.userPid].currentCard;
 
     modalRef.result.then(card => {
-      this.socket.emit('choose-card', { gameId: this._gameId, newCard: card }, (error, data) => {
-        if (error) {
-          console.info(error);
+      this.socket.emit<ChooseCard,null>('choose-card', { data: new ChooseCard(this._gameId, card) }, response => {
+        if (response.error) {
+          console.info(response.error);
           return;
         }
         this.players[this.userPid].currentCard = card;

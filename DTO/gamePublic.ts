@@ -1,6 +1,11 @@
 import { GameState } from './gameState';
+import { PlayerPublic } from './playerPublic';
 
 export class GamePublic {
-    gameId: string;
-    gameState: GameState;
+    constructor(
+        public gameId: string,
+        public gameState: GameState,
+        public hostPid: string,
+        public players: { [id: string]: PlayerPublic }
+    ) {}
 }

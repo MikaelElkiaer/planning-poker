@@ -31,16 +31,16 @@ export class AppComponent implements OnInit {
     modalRef.componentInstance.userName = this.user.userName;
 
     modalRef.result.then(userName => {
-      this.socket.emit('change-username', userName, (error, newUserName) => {
-        if (error) {
-          console.info(error);
+      this.socket.emit<string,string>('change-username', userName, response => {
+        if (response.error) {
+          console.info(response.error);
           return;
         }
 
-        this.user.userName = newUserName;
-        this.userName = newUserName;
+        this.user.userName = response.data;
+        this.userName = response.data;
         this.user.hasChangedName = '1';
-        console.info('Changed userName to: ', newUserName);
+        console.info('Changed userName to: ', response.data);
       });
       return;
     }, () => {
