@@ -1,3 +1,4 @@
 export interface IEmitResponse<T> {
-    (data: T, error?: string): void
+    data: T;
+    error?: string;
 }
