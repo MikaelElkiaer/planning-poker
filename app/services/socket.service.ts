@@ -15,7 +15,7 @@ export class SocketService {
 
   connect(userSid: string) {
     this.socket = io.connect({ query: `userSid=${userSid}` });
-    this.emit<null, UserConnect>('conn', null, response => {
+    this.emit<null, UserConnect>('conn', { data: null }, response => {
       this.user.userSid = response.data.sid;
       this.user.userPid = response.data.pid;
       this.user.userName = response.data.userName;
