@@ -3,6 +3,9 @@ import * as io from 'socket.io-client';
 
 import { UserService } from './user.service';
 import { UserConnect }  from '../../DTO/userConnect';
+import { IEmitRequest } from '../../DTO/emitRequest';
+import { IEmitResponse } from '../../DTO/emitResponse';
+import { IOnResponse } from '../../DTO/onResponse';
 
 @Injectable()
 export class SocketService {
@@ -12,18 +15,15 @@ export class SocketService {
 
   connect(userSid: string) {
     this.socket = io.connect({ query: `userSid=${userSid}` });
-    this.socket.emit('conn', null, (user: UserConnect) => {
-      this.user.userSid = user.sid;
-      this.user.userPid = user.pid;
-      this.user.userName = user.userName;
-    });
-    this.on('error', e => {
-      var error = JSON.parse(e);
+    this.emit<null, UserConnect>('conn', { data: null }, response => {
+      this.user.userSid = response.data.sid;
+      this.user.userPid = response.data.pid;
+      this.user.userName = response.data.userName;
     });
   }
 
-  emit(eventName, data, callback) {
-    this.socket.emit(eventName, data, (...args) => {
+  emit<T, S>(eventName: string, request: IEmitRequest<T>, callback: (arg: IEmitResponse<S>) => void) {
+    this.socket.emit(eventName, request, (...args) => {
       var cArgs = args;
       if (callback) {
         callback.apply(this.socket, cArgs);
@@ -31,7 +31,7 @@ export class SocketService {
     });
   }
 
-  on(eventName, callback) {
+  on<T>(eventName, callback: (arg: IOnResponse<T>) => void) {
     this.socket.on(eventName, (...args) => {
       var cArgs = args;
       callback.apply(this.socket, cArgs);

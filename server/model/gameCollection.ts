@@ -12,8 +12,11 @@ export class GameCollection {
 
   addRoom(host: User) {
     var id = host.pid;
-    if (!this._rooms[id])
-      this._rooms[id] = new Game(host);
+    if (!this._rooms[id]) {
+      var game = new Game(host);
+      this._rooms[id] = game;
+      return game;
+    }
     else
       throw `Room with id ${id} already in roomCollection.`;
   }

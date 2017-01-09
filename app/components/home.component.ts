@@ -3,6 +3,10 @@ import { Router } from '@angular/router';
 
 import { SocketService } from '../services/socket.service';
 import { UserPublic } from '../../DTO/userPublic';
+import { GamePublic } from '../../DTO/gamePublic';
+import { IEmitRequest } from '../../DTO/emitRequest';
+import { IEmitResponse } from '../../DTO/emitResponse';
+import { IOnResponse } from '../../DTO/onResponse';
 
 @Component({
   templateUrl: 'views/home'
@@ -15,23 +19,23 @@ export class HomeComponent implements OnDestroy {
   }
 
   constructor(private socket: SocketService, private router: Router) {
-    this.socket.emit('home', null, (users: { [id: string]: UserPublic }) => {
-      this.users = users;
-      console.info('Requested home users: %o', users);
+    this.socket.emit<null,{[id: string]: UserPublic}>('home', { data: null }, response => {
+      this.users = response.data;
+      console.info('Requested home users: %o', response.data);
     });
 
-    this.socket.on('user:connect', (user: UserPublic) => {
-      this.users[user.pid] = user;
-      console.info('User connected: %o', user);
+    this.socket.on<UserPublic>('user:connect', response => {
+      this.users[response.data.pid] = response.data;
+      console.info('User connected: %o', response.data);
     });
 
-    this.socket.on('user:disconnect', (user: UserPublic) => {
-      delete this.users[user.pid];
-      console.info('User disconnected: %o', user);
+    this.socket.on<UserPublic>('user:disconnect', response => {
+      delete this.users[response.data.pid];
+      console.info('User disconnected: %o', response.data);
     });
 
-    this.socket.on('user:change-username', (user: UserPublic) => {
-      this.users[user.pid].userName = user.userName;
+    this.socket.on<UserPublic>('user:change-username', response => {
+      this.users[response.data.pid].userName = response.data.userName;
     });
   }
 
@@ -46,11 +50,11 @@ export class HomeComponent implements OnDestroy {
 
   onCreateGame() {
     console.info('Creating game');
-    this.socket.emit('create-game', null, (error: string, gameId: string) => {
-      if (error)
-        console.info(error);
+    this.socket.emit<null, GamePublic>('create-game', null, response => {
+      if (response.error)
+        console.info(response.error);
       else
-        this.router.navigate(['/game', gameId]);
+        this.router.navigate(['/game', response.data.gameId]);
     });
   }
 }

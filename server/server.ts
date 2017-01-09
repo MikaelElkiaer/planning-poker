@@ -3,6 +3,7 @@ import * as http from 'http';
 import * as socketio from 'socket.io';
 
 import { Game, GameCollection, User, UserCollection, Player } from './model';
+import { SocketService } from './services/socketService';
 import * as DTO from '../DTO';
 
 const app = express();
@@ -12,7 +13,7 @@ const io = socketio(server);
 // Setup of server and routes
 app.disable('view cache');
 app.set('port', (process.env.PORT || 5000));
-app.set('view engine', 'pug');  
+app.set('view engine', 'pug');
 app.use('/app', express.static('app'));
 app.use('/DTO', express.static('DTO'));
 app.use('/node_modules', express.static('node_modules'));
@@ -22,129 +23,122 @@ app.get(['/', '/game/:id'], (req, res) => { res.render(`${__dirname}/../app/inde
 var rooms = new GameCollection();
 var users = new UserCollection();
 
+
 // create new user if needed, otherwise change id for existing user
 io.use((socket, next) => {
   var sid = socket.handshake.query.userSid;
-  
+
   if (!sid || !users.getUserBySid(sid))
     users.addUser(socket.id, new User());
   else
     users.changeId(sid, socket.id, true);
-  
+
   next();
 });
 
 // fire up socket handlers
 io.on('connection', socket => {
-  socket.broadcast.emit('user:connect', mapUserToPublic(users.getUserById(socket.id)));
+  var socketService = new SocketService(io, socket);
+  
+  socketService.emitAllExceptSender('user:connect', mapUserToPublic(users.getUserById(socket.id)));
 
-  socket.on('conn', (data, callback: (user: DTO.UserConnect) => void) => {
+  socketService.on<null, DTO.UserConnect>('conn', () => {
     var user = users.getUserById(socket.id);
-    callback({
-      sid: user.sid,
-      pid: user.pid,
-      userName: user.userName
-    });
+    return new DTO.UserConnect(user.pid, user.sid, user.userName);
   });
 
-  socket.on('disconnect', () => {
+  socketService.on<null, null>('disconnect', () => {
     var user = users.getUserById(socket.id);
     user.active = false;
-    socket.broadcast.emit('user:disconnect', mapUserToPublic(user));
-  });
-  
-  socket.on('home', (data, callback: (data?: any, error?: string) => any) => {
-    callback(mapUsersToPublic(users.getAll()));
+    socketService.emitAllExceptSender('user:disconnect', mapUserToPublic(user));
+    return null;
   });
 
-  socket.on('change-username', (newUsername, callback) => {
+  socketService.on<null, {[id: string]: DTO.UserPublic}>('home', request => {
+    return mapUsersToPublic(users.getAll());
+  });
+
+  socketService.on<string,string>('change-username', request => {
     var user = users.getUserById(socket.id);
     var oldUsername = user.userName;
-    var newUsername = newUsername;
+    var newUsername = request.data;
 
     if (User.isValidUserName(newUsername, users)) {
       user.userName = newUsername;
+      
+      socketService.emitAll<DTO.UserPublic>('user:change-username', mapUserToPublic(user));
 
-      callback(null, newUsername);
-
-      io.emit('user:change-username', mapUserToPublic(user));
+      return newUsername;
     }
     else
-      callback(`The new username ${newUsername} is not allowed.`);
+      throw `The new username ${newUsername} is not allowed.`;
   });
 
-  socket.on('create-game', (data, callback) => {
+  socketService.on<null, DTO.GamePublic>('create-game', request => {
     var user = users.getUserById(socket.id);
-
+    
     try {
-      var room = rooms.addRoom(user);
-      callback(null, user.pid);
+      var game = rooms.addRoom(user);
+      return mapGameToPublic(game);
     } catch (error) {
-      callback(error);
+      throw error;
     }
   });
 
-  socket.on('join-game', (data, callback) => {
-    var room = rooms.getRoomById(data.gameId);
+  socketService.on<DTO.JoinGame, DTO.GamePublic>('join-game', request => {
+    var room = rooms.getRoomById(request.data.gameId);
     if (!room) {
-      callback(`Room with doesn\'t exist with id: ${data.gameId}`);
-      return;
+      throw (`Room with doesn\'t exist with id: ${request.data.gameId}`);
     }
-    socket.join(data.gameId);
+    socketService.join(request.data.gameId);
+    
+    var hideCards = room.state === DTO.GameState.Voting;
 
-    if (!data.spectate) {
+    if (!request.data.spectate) {
       var user = users.getUserById(socket.id);
 
       if (!room.getUserByPid(user.pid)) {
         room.addUser(user);
       }
+      
+      socketService.emitAllInRoomExceptSender('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid), hideCards), room.id);
     }
 
-    var hideCards = room.state === DTO.GameState.Voting;
-
-    callback(null, { players: mapPlayersToPublic(room.getAll(), hideCards), hostPid: room.host.user.pid, gameState: room.state });
-
-    if (!data.spectate)
-      socket.broadcast.to(room.id).emit('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid), hideCards));
+    return mapGameToPublic(room);
   });
 
-  socket.on('change-game-state', (data, callback) => {
+  socketService.on<DTO.ChangeGameState, null>('change-game-state', request => {
     var user = users.getUserById(socket.id);
-    var room = rooms.getRoomById(data.gameId);
+    var room = rooms.getRoomById(request.data.gameId);
 
     if (room.host.user.sid !== user.sid) {
-      callback('Only host can change game state');
-      return;
+      throw 'Only host can change game state';
     }
 
-    room.state = data.gameState;
+    room.state = request.data.gameState;
 
     if (room.state === DTO.GameState.Voting)
       room.resetCards();
 
-    var result = { gameState: room.state, players: mapPlayersToPublic(room.getAll(), false) };
+    socketService.emitAllInRoom('host:change-game-state', mapGameToPublic(room), room.id);
 
-    callback(null, result);
-    
-    socket.broadcast.to(room.id).emit('host:change-game-state', result);
+    return null;
   });
 
-  socket.on('choose-card', (data, callback) => {
+  socketService.on<DTO.ChooseCard,null>('choose-card', request => {
     var user = users.getUserById(socket.id);
-    var room = rooms.getRoomById(data.gameId);
+    var room = rooms.getRoomById(request.data.gameId);
 
-    if (room.state !== DTO.GameState.Voting)
-    {
-      callback('Cards can only be chosen in voting state')
-      return;
+    if (room.state !== DTO.GameState.Voting) {
+      throw 'Cards can only be chosen in voting state';
     }
 
-    var roomUser= room.getUserByPid(user.pid);
-    roomUser.currentCard = data.newCard;
+    var roomUser = room.getUserByPid(user.pid);
+    roomUser.currentCard = request.data.newCard;
 
-    callback();
+    socketService.emitAllInRoomExceptSender('user:choose-card', mapPlayerToPublic(roomUser, true), room.id);
 
-    socket.broadcast.to(room.id).emit('user:choose-card', mapPlayerToPublic(roomUser, true));
+    return null;
   });
 });
 
@@ -152,41 +146,39 @@ io.on('connection', socket => {
 server.listen(app.get('port'), () => console.log(`listening on *:${app.get('port')}`));
 
 function mapUserToPublic(user: User) {
-  var userPublic = new DTO.UserPublic();
-  userPublic.pid = user.pid;
-  userPublic.userName = user.userName;
-  userPublic.active = user.active;
-  return userPublic;
+  return new DTO.UserPublic(user.pid, user.userName, user.active);
 }
 
 function mapUsersToPublic(users: { [id: string]: User }): { [id: string]: DTO.UserPublic } {
   var usersPublic = {};
   Object.keys(users).forEach(id => {
-    var user = users[id];
-    var userPublic = new DTO.UserPublic();
-    userPublic.pid = user.pid;
-    userPublic.userName = user.userName;
-    userPublic.active = user.active;
+    var userPublic = mapUserToPublic(users[id]);
     usersPublic[userPublic.pid] = userPublic;
   });
   return usersPublic;
 }
 
 function mapPlayerToPublic(player: Player, isVoting: boolean): DTO.PlayerPublic {
-  var playerPublic = new DTO.PlayerPublic();
-  playerPublic.user = mapUserToPublic(player.user);
-  playerPublic.currentCard = (player.currentCard !== DTO.PokerCard.NotPicked && isVoting) ? DTO.PokerCard.Picked : player.currentCard;
-  return playerPublic;
+  return new DTO.PlayerPublic(player.user, (player.currentCard !== DTO.PokerCard.NotPicked && isVoting) ? DTO.PokerCard.Picked : player.currentCard);
 }
 
 function mapPlayersToPublic(players: { [id: string]: Player }, isVoting: boolean): { [id: string]: DTO.PlayerPublic } {
   var playersPublic = {};
   Object.keys(players).forEach(id => {
-    var player = players[id];
-    var playerPublic = new DTO.PlayerPublic();
-    playerPublic.user = mapUserToPublic(player.user);
-    playerPublic.currentCard = (player.currentCard !== DTO.PokerCard.NotPicked && isVoting) ? DTO.PokerCard.Picked : player.currentCard;
+    var playerPublic = mapPlayerToPublic(players[id], isVoting);
     playersPublic[playerPublic.user.pid] = playerPublic;
   });
   return playersPublic;
+}
+
+function mapGameToPublic(game: Game): DTO.GamePublic {
+  return new DTO.GamePublic(
+    game.id,
+    game.state,
+    game.host.user.pid,
+    Object.keys(game.users).reduce((prev, cur) => {
+      prev[cur] = new DTO.PlayerPublic(mapUserToPublic(game.users[cur].user), game.users[cur].currentCard);
+      return prev
+    }, {})
+  );
 }
