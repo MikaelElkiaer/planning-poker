@@ -85,30 +85,28 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on('join-game', (data, callback) => {
-    var room = rooms.getRoomById(data.gameId);
+  socketService.on<DTO.JoinGame, DTO.GamePublic>('join-game', request => {
+    var room = rooms.getRoomById(request.data.gameId);
     if (!room) {
-      callback(`Room with doesn\'t exist with id: ${data.gameId}`);
-      return;
+      throw (`Room with doesn\'t exist with id: ${request.data.gameId}`);
     }
-    socket.join(data.gameId);
+    socket.join(request.data.gameId);
+    
+    var hideCards = room.state === DTO.GameState.Voting;
 
-    if (!data.spectate) {
+    if (!request.data.spectate) {
       var user = users.getUserById(socket.id);
 
       if (!room.getUserByPid(user.pid)) {
         room.addUser(user);
       }
+      
+      socket.broadcast.to(room.id).emit('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid), hideCards));
     }
 
-    var hideCards = room.state === DTO.GameState.Voting;
-
-    callback(null, { players: mapPlayersToPublic(room.getAll(), hideCards), hostPid: room.host.user.pid, gameState: room.state });
-
-    if (!data.spectate)
-      socket.broadcast.to(room.id).emit('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid), hideCards));
+    return mapGameToPublic(room);
   });
-//
+
   socket.on('change-game-state', (data, callback) => {
     var user = users.getUserById(socket.id);
     var room = rooms.getRoomById(data.gameId);
@@ -182,6 +180,9 @@ function mapGameToPublic(game: Game): DTO.GamePublic {
     game.id,
     game.state,
     game.host.user.pid,
-    Object.keys(game.users).reduce((prev, cur) => prev[cur] = new DTO.PlayerPublic(mapUserToPublic(game.users[cur].user), game.users[cur].currentCard), {})
+    Object.keys(game.users).reduce((prev, cur) => {
+      prev[cur] = new DTO.PlayerPublic(mapUserToPublic(game.users[cur].user), game.users[cur].currentCard);
+      return prev
+    }, {})
   );
 }
