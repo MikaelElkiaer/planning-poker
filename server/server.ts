@@ -90,7 +90,7 @@ io.on('connection', socket => {
     if (!room) {
       throw (`Room with doesn\'t exist with id: ${request.data.gameId}`);
     }
-    socket.join(request.data.gameId);
+    socketService.join(request.data.gameId);
     
     var hideCards = room.state === DTO.GameState.Voting;
 
@@ -101,48 +101,44 @@ io.on('connection', socket => {
         room.addUser(user);
       }
       
-      socket.broadcast.to(room.id).emit('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid), hideCards));
+      socketService.emitAllInRoomExceptSender('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid), hideCards), room.id);
     }
 
     return mapGameToPublic(room);
   });
 
-  socket.on('change-game-state', (data, callback) => {
+  socketService.on<DTO.ChangeGameState, null>('change-game-state', request => {
     var user = users.getUserById(socket.id);
-    var room = rooms.getRoomById(data.gameId);
+    var room = rooms.getRoomById(request.data.gameId);
 
     if (room.host.user.sid !== user.sid) {
-      callback('Only host can change game state');
-      return;
+      throw 'Only host can change game state';
     }
 
-    room.state = data.gameState;
+    room.state = request.data.gameState;
 
     if (room.state === DTO.GameState.Voting)
       room.resetCards();
 
-    var result = { gameState: room.state, players: mapPlayersToPublic(room.getAll(), false) };
+    socketService.emitAllInRoom('host:change-game-state', mapGameToPublic(room), room.id);
 
-    callback(null, result);
-
-    socket.broadcast.to(room.id).emit('host:change-game-state', result);
+    return null;
   });
 
-  socket.on('choose-card', (data, callback) => {
+  socketService.on<DTO.ChooseCard,null>('choose-card', request => {
     var user = users.getUserById(socket.id);
-    var room = rooms.getRoomById(data.gameId);
+    var room = rooms.getRoomById(request.data.gameId);
 
     if (room.state !== DTO.GameState.Voting) {
-      callback('Cards can only be chosen in voting state')
-      return;
+      throw 'Cards can only be chosen in voting state';
     }
 
     var roomUser = room.getUserByPid(user.pid);
-    roomUser.currentCard = data.newCard;
+    roomUser.currentCard = request.data.newCard;
 
-    callback();
+    socketService.emitAllInRoomExceptSender('user:choose-card', mapPlayerToPublic(roomUser, true), room.id);
 
-    socket.broadcast.to(room.id).emit('user:choose-card', mapPlayerToPublic(roomUser, true));
+    return null;
   });
 });
 

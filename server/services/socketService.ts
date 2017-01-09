@@ -9,7 +9,7 @@ export class SocketService {
     }
 
     emitAll<T>(eventName: string, data: T) {
-        var response: DTO.IEmitResponse<T> = { data, error: null };
+        var response: DTO.IEmitResponse<T> = { data };
         this.io.emit(eventName, response);
     }
 
@@ -17,11 +17,19 @@ export class SocketService {
         this.socket.broadcast.emit(eventName, { data });
     }
 
+    emitAllInRoom<T>(eventName: string, data: T, roomId: string) {
+        this.io.in(roomId).emit(eventName, { data });
+    }
+
+    emitAllInRoomExceptSender<T>(eventName: string, data: T, roomId: string) {
+        this.socket.broadcast.to(roomId).emit(eventName, { data });
+    }
+
     on<T,S>(eventName: string, cb: (request: DTO.IEmitRequest<T>) => S) {
         this.socket.on(eventName, (data, callback) => {
             if (callback) {
                 try {
-                    callback({ data: cb(data), error: null });
+                    callback({ data: cb(data) });
                 } catch (error) {
                     callback({ data: null, error });
                 }
@@ -30,6 +38,6 @@ export class SocketService {
     }
 
     join(roomId: string) {
-
+        this.socket.join(roomId);
     }
 }

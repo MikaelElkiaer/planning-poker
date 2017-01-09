@@ -150,11 +150,6 @@ export class GameComponent implements OnDestroy, OnInit {
     this.socket.emit<ChangeGameState,GamePublic>('change-game-state', { data: new ChangeGameState(this._gameId, newState) }, response => {
       if (response.error)
         console.info(response.error);
-      else {
-        this.state = response.data.gameState;
-        this.players = response.data.players;
-        console.info('Game state changed: %s', this.state);
-      }
     });
   }
 
