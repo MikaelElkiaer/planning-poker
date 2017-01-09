@@ -9,7 +9,7 @@ export class SocketService {
     }
 
     emitAll<T>(eventName: string, data: T) {
-        var response: DTO.IEmitResponse<T> = { data };
+        var response: DTO.IEmitResponse<T> = { data, error: null };
         this.io.emit(eventName, response);
     }
 
@@ -19,10 +19,12 @@ export class SocketService {
 
     on<T,S>(eventName: string, cb: (request: DTO.IEmitRequest<T>) => S) {
         this.socket.on(eventName, (data, callback) => {
-            try {
-                callback({ data: cb(data) });
-            } catch (error) {
-                callback({ data: null, error });
+            if (callback) {
+                try {
+                    callback({ data: cb(data), error: null });
+                } catch (error) {
+                    callback({ data: null, error });
+                }
             }
         });
     }

@@ -30,8 +30,8 @@ export class AppComponent implements OnInit {
     const modalRef = this.modalService.open(UserNameModalComponent, { size: 'lg' });
     modalRef.componentInstance.userName = this.user.userName;
 
-    modalRef.result.then(userName => {
-      this.socket.emit<string,string>('change-username', userName, response => {
+    modalRef.result.then((userName: string) => {
+      this.socket.emit<string,string>('change-username', { data: userName }, response => {
         if (response.error) {
           console.info(response.error);
           return;

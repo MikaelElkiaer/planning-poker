@@ -54,34 +54,34 @@ io.on('connection', socket => {
     return null;
   });
 
-  socketService.on<null, {[id: string]: DTO.UserPublic}>('home', data => {
+  socketService.on<null, {[id: string]: DTO.UserPublic}>('home', request => {
     return mapUsersToPublic(users.getAll());
   });
 
-  socket.on('change-username', (newUsername, callback) => {
+  socketService.on<string,string>('change-username', request => {
     var user = users.getUserById(socket.id);
     var oldUsername = user.userName;
-    var newUsername = newUsername;
+    var newUsername = request.data;
 
     if (User.isValidUserName(newUsername, users)) {
       user.userName = newUsername;
-
-      callback(null, newUsername);
-
+      
       io.emit('user:change-username', mapUserToPublic(user));
+
+      return newUsername;
     }
     else
-      callback(`The new username ${newUsername} is not allowed.`);
+      throw `The new username ${newUsername} is not allowed.`;
   });
 
-  socket.on('create-game', (data, callback) => {
+  socketService.on<null, DTO.GamePublic>('create-game', request => {
     var user = users.getUserById(socket.id);
-
+    
     try {
-      var room = rooms.addRoom(user);
-      callback(null, user.pid);
+      var game = rooms.addRoom(user);
+      return mapGameToPublic(game);
     } catch (error) {
-      callback(error);
+      throw error;
     }
   });
 
@@ -108,7 +108,7 @@ io.on('connection', socket => {
     if (!data.spectate)
       socket.broadcast.to(room.id).emit('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid), hideCards));
   });
-
+//
   socket.on('change-game-state', (data, callback) => {
     var user = users.getUserById(socket.id);
     var room = rooms.getRoomById(data.gameId);
@@ -175,4 +175,13 @@ function mapPlayersToPublic(players: { [id: string]: Player }, isVoting: boolean
     playersPublic[playerPublic.user.pid] = playerPublic;
   });
   return playersPublic;
+}
+
+function mapGameToPublic(game: Game): DTO.GamePublic {
+  return new DTO.GamePublic(
+    game.id,
+    game.state,
+    game.host.user.pid,
+    Object.keys(game.users).reduce((prev, cur) => prev[cur] = new DTO.PlayerPublic(mapUserToPublic(game.users[cur].user), game.users[cur].currentCard), {})
+  );
 }
