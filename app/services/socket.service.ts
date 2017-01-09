@@ -23,7 +23,7 @@ export class SocketService {
   }
 
   emit<T, S>(eventName: string, request: IEmitRequest<T>, callback: (arg: IEmitResponse<S>) => void) {
-    this.socket.emit(eventName, request.data, (...args) => {
+    this.socket.emit(eventName, request, (...args) => {
       var cArgs = args;
       if (callback) {
         callback.apply(this.socket, cArgs);

@@ -66,7 +66,7 @@ io.on('connection', socket => {
     if (User.isValidUserName(newUsername, users)) {
       user.userName = newUsername;
       
-      io.emit('user:change-username', mapUserToPublic(user));
+      socketService.emitAll<DTO.UserPublic>('user:change-username', mapUserToPublic(user));
 
       return newUsername;
     }
