@@ -5,8 +5,19 @@ import { Mapper } from '../utils/mapper';
 
 export class UserService {
     constructor(private io: SocketIO.Server, private socket: SocketIO.Socket, private socketService: Services.SocketService,
-            private users: Model.UserCollection) {
+        private users: Model.UserCollection) {
         this.initialize();
+    }
+
+    static handleNewSocket(socket: SocketIO.Socket, next: (error?: any) => void, users: Model.UserCollection) {
+        var sid = socket.handshake.query.userSid;
+
+        if (!sid || !users.getUserBySid(sid))
+            users.addUser(socket.id, new Model.User());
+        else
+            users.changeId(sid, socket.id, true);
+
+        next();
     }
 
     private initialize() {

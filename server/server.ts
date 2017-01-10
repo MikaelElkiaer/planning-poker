@@ -26,14 +26,7 @@ var users = new UserCollection();
 
 // Set handler for new sockets
 io.use((socket, next) => {
-  var sid = socket.handshake.query.userSid;
-
-  if (!sid || !users.getUserBySid(sid))
-    users.addUser(socket.id, new User());
-  else
-    users.changeId(sid, socket.id, true);
-
-  next();
+  UserService.handleNewSocket(socket, next, users);
 });
 
 // Initialize services
