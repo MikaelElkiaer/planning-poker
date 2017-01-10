@@ -1,11 +1,11 @@
-import * as Model from '../model';
-import * as Services from '../services';
+import { GameCollection, UserCollection } from '../model';
+import { SocketService } from '../services';
 import * as Dto from '../../shared/dto';
 import { Mapper } from '../utils/mapper';
 
 export class GameService {
-    constructor(private io: SocketIO.Server, private socket: SocketIO.Socket, private socketService: Services.SocketService,
-        private users: Model.UserCollection, private games: Model.GameCollection) {
+    constructor(private io: SocketIO.Server, private socket: SocketIO.Socket, private socketService: SocketService,
+        private users: UserCollection, private games: GameCollection) {
         this.initialize();
     }
 

@@ -1,5 +1,5 @@
-import { User } from './user';
-import { PokerCard } from '../../shared/dto/pokerCard';
+import { User } from './';
+import * as Dto from '../../shared/dto';
 
 export class Player {
   get user() { return this._user; }
@@ -7,7 +7,7 @@ export class Player {
   set currentCard(value) { this._currentCard = value; }
 
   private _user: User;
-  private _currentCard: PokerCard = PokerCard.NotPicked;
+  private _currentCard: Dto.PokerCard = Dto.PokerCard.NotPicked;
   
   constructor(user: User) {
     this._user = user;

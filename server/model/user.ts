@@ -1,4 +1,4 @@
-import { UserCollection } from './userCollection';
+import { UserCollection } from './';
 
 export class User {
   get sid() { return this._sid; }

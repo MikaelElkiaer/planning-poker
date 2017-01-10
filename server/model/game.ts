@@ -1,14 +1,11 @@
-import { User } from './user';
-import { UserCollection } from './userCollection';
-import { Player } from './player';
-import { GameState } from '../../shared/dto/gameState';
-import { PokerCard } from '../../shared/dto/pokerCard';
+import { User, UserCollection, Player } from './';
+import * as Dto from '../../shared/dto';
 
 export class Game {
   get id() { return this._id; }
   get players() { return this._players; }
   get host() { return this._players[this._id]; }
-  state: GameState = GameState.Waiting;
+  state: Dto.GameState = Dto.GameState.Waiting;
   
   private _id: string;
   private _players: {[id: string]: Player};
@@ -40,6 +37,6 @@ export class Game {
   }
 
   resetCards(): void {
-    Object.keys(this._players).forEach(pid => this._players[pid].currentCard = PokerCard.NotPicked);
+    Object.keys(this._players).forEach(pid => this._players[pid].currentCard = Dto.PokerCard.NotPicked);
   }
 }

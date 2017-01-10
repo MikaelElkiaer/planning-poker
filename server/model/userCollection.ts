@@ -1,4 +1,4 @@
-import { User } from './user';
+import { User } from './';
 
 export class UserCollection {
   private users: { [id: string]: User };

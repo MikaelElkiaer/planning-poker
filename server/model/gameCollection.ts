@@ -1,5 +1,4 @@
-import { Game } from './game';
-import { User } from './user';
+import { Game, User } from './';
 
 export class GameCollection {
   get games() { return this._games; }
