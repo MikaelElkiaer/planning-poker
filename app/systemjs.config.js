@@ -12,7 +12,7 @@
     map: {
       // our app is within the app folder
       app: 'app',
-      DTO: 'DTO',
+      dto: 'dto',
       // angular bundles
       '@angular/core': 'npm:@angular/core/bundles/core.umd.js',
       '@angular/common': 'npm:@angular/common/bundles/common.umd.js',
@@ -33,7 +33,7 @@
         main: './main.js',
         defaultExtension: 'js'
       },
-      DTO: {
+      dto: {
         defaultExtension: 'js'
       },
       rxjs: {
