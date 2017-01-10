@@ -20,7 +20,7 @@ app.use('/node_modules', express.static('node_modules'));
 app.get('/views/:name', (req, res) => { res.render(`${__dirname}/../app/views/${req.params.name}`); });
 app.get(['/', '/game/:id'], (req, res) => { res.render(`${__dirname}/../app/index`); });
 
-var rooms = new GameCollection();
+var games = new GameCollection();
 var users = new UserCollection();
 
 
@@ -78,7 +78,7 @@ io.on('connection', socket => {
     var user = users.getUserById(socket.id);
     
     try {
-      var game = rooms.addRoom(user);
+      var game = games.addGame(user);
       return mapGameToPublic(game);
     } catch (error) {
       throw error;
@@ -86,30 +86,30 @@ io.on('connection', socket => {
   });
 
   socketService.on<DTO.JoinGame, DTO.GamePublic>('join-game', request => {
-    var room = rooms.getRoomById(request.data.gameId);
-    if (!room) {
-      throw (`Room with doesn\'t exist with id: ${request.data.gameId}`);
+    var game = games.getGameById(request.data.gameId);
+    if (!game) {
+      throw (`Game doesn\'t exist with id: ${request.data.gameId}`);
     }
     socketService.join(request.data.gameId);
     
-    var hideCards = room.state === DTO.GameState.Voting;
+    var hideCards = game.state === DTO.GameState.Voting;
 
     if (!request.data.spectate) {
       var user = users.getUserById(socket.id);
 
-      if (!room.getUserByPid(user.pid)) {
-        room.addUser(user);
+      if (!game.getUserByPid(user.pid)) {
+        game.addUser(user);
       }
       
-      socketService.emitAllInRoomExceptSender('user:join-game', mapPlayerToPublic(room.getUserByPid(user.pid), hideCards), room.id);
+      socketService.emitAllInRoomExceptSender('user:join-game', mapPlayerToPublic(game.getUserByPid(user.pid), hideCards), game.id);
     }
 
-    return mapGameToPublic(room);
+    return mapGameToPublic(game);
   });
 
   socketService.on<DTO.ChangeGameState, null>('change-game-state', request => {
     var user = users.getUserById(socket.id);
-    var room = rooms.getRoomById(request.data.gameId);
+    var room = games.getGameById(request.data.gameId);
 
     if (room.host.user.sid !== user.sid) {
       throw 'Only host can change game state';
@@ -127,7 +127,7 @@ io.on('connection', socket => {
 
   socketService.on<DTO.ChooseCard,null>('choose-card', request => {
     var user = users.getUserById(socket.id);
-    var room = rooms.getRoomById(request.data.gameId);
+    var room = games.getGameById(request.data.gameId);
 
     if (room.state !== DTO.GameState.Voting) {
       throw 'Cards can only be chosen in voting state';
