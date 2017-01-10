@@ -34,6 +34,9 @@ export class SocketService {
                     callback({ data: null, error });
                 }
             }
+            else {
+                cb(data);
+            }
         });
     }
 
