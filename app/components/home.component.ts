@@ -2,11 +2,11 @@ import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { SocketService } from '../services/socket.service';
-import { UserPublic } from '../../DTO/userPublic';
-import { GamePublic } from '../../DTO/gamePublic';
-import { IEmitRequest } from '../../DTO/emitRequest';
-import { IEmitResponse } from '../../DTO/emitResponse';
-import { IOnResponse } from '../../DTO/onResponse';
+import { UserPublic } from '../../dto/userPublic';
+import { GamePublic } from '../../dto/gamePublic';
+import { IEmitRequest } from '../../dto/emitRequest';
+import { IEmitResponse } from '../../dto/emitResponse';
+import { IOnResponse } from '../../dto/onResponse';
 
 @Component({
   templateUrl: 'views/home'

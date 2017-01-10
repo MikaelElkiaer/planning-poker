@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import * as io from 'socket.io-client';
 
 import { UserService } from './user.service';
-import { UserConnect }  from '../../DTO/userConnect';
-import { IEmitRequest } from '../../DTO/emitRequest';
-import { IEmitResponse } from '../../DTO/emitResponse';
-import { IOnResponse } from '../../DTO/onResponse';
+import { UserConnect }  from '../../dto/userConnect';
+import { IEmitRequest } from '../../dto/emitRequest';
+import { IEmitResponse } from '../../dto/emitResponse';
+import { IOnResponse } from '../../dto/onResponse';
 
 @Injectable()
 export class SocketService {

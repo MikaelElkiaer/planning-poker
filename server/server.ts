@@ -4,7 +4,7 @@ import * as socketio from 'socket.io';
 
 import { Game, GameCollection, User, UserCollection, Player } from './model';
 import { SocketService } from './services/socketService';
-import * as Dto from '../DTO';
+import * as Dto from '../dto';
 
 const app = express();
 const server = http.createServer(app);
@@ -15,7 +15,7 @@ app.disable('view cache');
 app.set('port', (process.env.PORT || 5000));
 app.set('view engine', 'pug');
 app.use('/app', express.static('app'));
-app.use('/DTO', express.static('DTO'));
+app.use('/dto', express.static('dto'));
 app.use('/node_modules', express.static('node_modules'));
 app.get('/views/:name', (req, res) => { res.render(`${__dirname}/../app/views/${req.params.name}`); });
 app.get(['/', '/game/:id'], (req, res) => { res.render(`${__dirname}/../app/index`); });
