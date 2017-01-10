@@ -1,5 +1,5 @@
 import * as Model from '../model';
-import * as Dto from '../../dto';
+import * as Dto from '../../shared/dto';
 
 export class Mapper {
 

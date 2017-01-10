@@ -1,6 +1,6 @@
 import * as Model from '../model';
 import * as Services from '../services';
-import * as Dto from '../../dto';
+import * as Dto from '../../shared/dto';
 import { Mapper } from '../utils/mapper';
 
 export class UserService {

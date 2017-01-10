@@ -1,15 +1,12 @@
 import * as socketio from 'socket.io';
 
-import { GameCollection, UserCollection, User } from '../model/';
-import * as Dto from '../../dto';
+import { IEmitRequest, IEmitResponse, IOnResponse } from '../../shared/message';
 
 export class SocketService {
-    constructor(private io: SocketIO.Server, private socket: SocketIO.Socket) {
-
-    }
+    constructor(private io: SocketIO.Server, private socket: SocketIO.Socket) { }
 
     emitAll<T>(eventName: string, data: T) {
-        var response: Dto.IEmitResponse<T> = { data };
+        var response: IEmitResponse<T> = { data };
         this.io.emit(eventName, response);
     }
 
@@ -25,7 +22,7 @@ export class SocketService {
         this.socket.broadcast.to(roomId).emit(eventName, { data });
     }
 
-    on<T,S>(eventName: string, cb: (request: Dto.IEmitRequest<T>) => S) {
+    on<T,S>(eventName: string, cb: (request: IEmitRequest<T>) => S) {
         this.socket.on(eventName, (data, callback) => {
             if (callback) {
                 try {

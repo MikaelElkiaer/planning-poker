@@ -1,5 +1,5 @@
 import { User } from './user';
-import { PokerCard } from '../../dto/pokerCard';
+import { PokerCard } from '../../shared/dto/pokerCard';
 
 export class Player {
   get user() { return this._user; }

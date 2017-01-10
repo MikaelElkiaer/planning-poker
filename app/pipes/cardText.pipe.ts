@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { PokerCard } from '../../dto/pokerCard';
+import { PokerCard } from '../../shared/dto/pokerCard';
 
 @Pipe({name: 'cardText'})
 export class CardTextPipe implements PipeTransform {

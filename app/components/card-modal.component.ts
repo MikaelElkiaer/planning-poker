@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {NgbModal, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
-import { PokerCard } from '../../dto/pokerCard';
+import { PokerCard } from '../../shared/dto/pokerCard';
 
 @Component({
   selector: 'card-modal-component',

@@ -3,11 +3,11 @@ import { Router } from '@angular/router';
 import { ToasterService } from 'angular2-toaster';
 
 import { SocketService } from '../services/socket.service';
-import { UserPublic } from '../../dto/userPublic';
-import { GamePublic } from '../../dto/gamePublic';
-import { IEmitRequest } from '../../dto/emitRequest';
-import { IEmitResponse } from '../../dto/emitResponse';
-import { IOnResponse } from '../../dto/onResponse';
+import { UserPublic } from '../../shared/dto/userPublic';
+import { GamePublic } from '../../shared/dto/gamePublic';
+import { IEmitRequest } from '../../shared/message/emitRequest';
+import { IEmitResponse } from '../../shared/message/emitResponse';
+import { IOnResponse } from '../../shared/message/onResponse';
 
 @Component({
   templateUrl: 'views/home'

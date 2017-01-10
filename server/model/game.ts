@@ -1,8 +1,8 @@
 import { User } from './user';
 import { UserCollection } from './userCollection';
 import { Player } from './player';
-import { GameState } from '../../dto/gameState';
-import { PokerCard } from '../../dto/pokerCard';
+import { GameState } from '../../shared/dto/gameState';
+import { PokerCard } from '../../shared/dto/pokerCard';
 
 export class Game {
   get id() { return this._id; }
