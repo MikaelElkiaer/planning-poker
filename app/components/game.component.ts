@@ -1,6 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToasterService } from 'angular2-toaster';
 
 import { GameState } from '../../dto/gameState';
 import { UserPublic } from '../../dto/userPublic';
@@ -82,7 +83,8 @@ export class GameComponent implements OnDestroy, OnInit {
   private players: { [id: string]: PlayerPublic } = {};
   private _hostPid: string = '';
 
-  constructor(private route: ActivatedRoute, private socket: SocketService, private user: UserService, private modalService: NgbModal) {
+  constructor(private route: ActivatedRoute, private router: Router, private socket: SocketService, private user: UserService,
+        private modalService: NgbModal, private toaster: ToasterService) {
     
   }
 
@@ -92,7 +94,8 @@ export class GameComponent implements OnDestroy, OnInit {
 
     this.socket.emit<JoinGame,GamePublic>('join-game', { data: new JoinGame(this._gameId, this.spectate) }, response => {
       if (response.error) {
-        console.info(response.error);
+        this.toaster.pop('error', null, response.error);
+        this.router.navigate(['']);
         return;
       }
       this.players = response.data.players;
@@ -149,7 +152,7 @@ export class GameComponent implements OnDestroy, OnInit {
     var newState = this.state === GameState.Voting ? GameState.Waiting : GameState.Voting;
     this.socket.emit<ChangeGameState,GamePublic>('change-game-state', { data: new ChangeGameState(this._gameId, newState) }, response => {
       if (response.error)
-        console.info(response.error);
+        this.toaster.pop('error', null, response.error);
     });
   }
 
@@ -160,7 +163,7 @@ export class GameComponent implements OnDestroy, OnInit {
     modalRef.result.then(card => {
       this.socket.emit<ChooseCard,null>('choose-card', { data: new ChooseCard(this._gameId, card) }, response => {
         if (response.error) {
-          console.info(response.error);
+          this.toaster.pop('error', null, response.error);
           return;
         }
         this.players[this.userPid].currentCard = card;

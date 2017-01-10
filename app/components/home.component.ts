@@ -1,5 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { ToasterService } from 'angular2-toaster';
 
 import { SocketService } from '../services/socket.service';
 import { UserPublic } from '../../dto/userPublic';
@@ -18,7 +19,7 @@ export class HomeComponent implements OnDestroy {
     return Object.keys(this.users).map(pid => this.users[pid]);
   }
 
-  constructor(private socket: SocketService, private router: Router) {
+  constructor(private socket: SocketService, private router: Router, private toaster: ToasterService) {
     this.socket.emit<null,{[id: string]: UserPublic}>('home', { data: null }, response => {
       this.users = response.data;
       console.info('Requested home users: %o', response.data);
@@ -52,7 +53,7 @@ export class HomeComponent implements OnDestroy {
     console.info('Creating game');
     this.socket.emit<null, GamePublic>('create-game', null, response => {
       if (response.error)
-        console.info(response.error);
+        this.toaster.pop('error', null, response.error);
       else
         this.router.navigate(['/game', response.data.gameId]);
     });
