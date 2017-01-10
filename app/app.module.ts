@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule }   from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ToasterModule } from 'angular2-toaster';
 
 import { AppComponent } from './components/app.component';
 import { HomeComponent } from './components/home.component';
@@ -21,7 +22,8 @@ import { SocketService } from './services/socket.service';
       { path: '', component: HomeComponent },
       { path: 'game/:id', component: GameComponent }
     ]),
-    NgbModule.forRoot()
+    NgbModule.forRoot(),
+    ToasterModule
   ],
   declarations: [ AppComponent, HomeComponent, GameComponent, CardModalComponent, UserNameModalComponent, CardTextPipe ],
   bootstrap:    [ AppComponent ],
