@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToasterService } from 'angular2-toaster';
 
 import { SocketService } from '../services/socket.service';
 import { UserService } from '../services/user.service';
@@ -13,7 +14,7 @@ export class AppComponent implements OnInit {
   navbarCollapsed: boolean = true;
   userName: string = '';
 
-  constructor(private user: UserService, private socket: SocketService, private modalService: NgbModal) {
+  constructor(private user: UserService, private socket: SocketService, private modalService: NgbModal, private toaster: ToasterService) {
     this.userName = user.userName;
   }
 
@@ -33,7 +34,7 @@ export class AppComponent implements OnInit {
     modalRef.result.then((userName: string) => {
       this.socket.emit<string,string>('change-username', { data: userName }, response => {
         if (response.error) {
-          console.info(response.error);
+          this.toaster.pop('error', null, response.error);
           return;
         }
 

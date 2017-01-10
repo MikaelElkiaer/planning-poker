@@ -1,4 +1,5 @@
 template(ngbModalContainer)
+toaster-container
 nav.navbar.navbar-default
   .container-fluid
   .navbar-header
@@ -12,4 +13,4 @@ nav.navbar.navbar-default
     ul.nav.navbar-nav.navbar-right
       li                        
         a(style='cursor: pointer;', (click)='userNameModal()') {{ userName }}
-<router-outlet></router-outlet>
+router-outlet

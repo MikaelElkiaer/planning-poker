@@ -25,7 +25,8 @@
       // other libraries
       'rxjs': 'npm:rxjs',
       'socket.io-client': 'npm:socket.io-client/dist',
-      '@ng-bootstrap/ng-bootstrap': 'node_modules/@ng-bootstrap/ng-bootstrap/bundles'
+      '@ng-bootstrap/ng-bootstrap': 'npm:@ng-bootstrap/ng-bootstrap/bundles',
+      'angular2-toaster': 'npm:angular2-toaster/bundles'
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {
@@ -45,6 +46,10 @@
       },
       '@ng-bootstrap/ng-bootstrap': {
         main: 'ng-bootstrap.js',
+        defaultExtension: 'js'
+      },
+      'angular2-toaster': {
+        main: 'angular2-toaster.umd.js',
         defaultExtension: 'js'
       }
     }
