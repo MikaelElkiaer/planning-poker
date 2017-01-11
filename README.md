@@ -7,7 +7,6 @@
 ## Prerequisites
 
 * Node (https://nodejs.org/en/)
-* NPM (Comes with node.js, but remember to `npm install npm -g`)
 
 ## Starting a local server
 
