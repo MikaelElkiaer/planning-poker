@@ -140,6 +140,11 @@ export class GameComponent implements OnDestroy, OnInit {
       this.players[response.data.user.pid] = response.data;
       console.info('Player chose card: %o', response.data);
     });
+
+    this.socket.on<Dto.PlayerPublic>('user:leave-game', response => {
+      delete this.players[response.data.user.pid];
+      console.info('Player left: %o', response.data);
+    });
   }
 
   ngOnDestroy() {

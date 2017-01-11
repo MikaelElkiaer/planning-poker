@@ -30,12 +30,18 @@ export class GameService {
 
             var hideCards = game.state === Dto.GameState.Voting;
 
+            var user = this.users.getUserById(this.socket.id);
             if (!request.data.spectate) {
-                var user = this.users.getUserById(this.socket.id);
-
                 if (!game.getPlayerByPid(user.pid)) {
                     game.addPlayer(user);
                     this.socketService.emitAllInRoomExceptSender('user:join-game', Mapper.mapPlayerToPublic(game.getPlayerByPid(user.pid), hideCards), game.id);
+                }
+            }
+            else {
+                var player = game.getPlayerByPid(user.pid);
+                if (player) {
+                    game.removePlayer(user.pid);
+                    this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(player, hideCards), game.id);
                 }
             }
 
