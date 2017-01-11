@@ -36,7 +36,13 @@ export class HomeComponent implements OnDestroy {
     });
 
     this.socket.on<UserPublic>('user:change-username', response => {
-      this.users[response.data.pid].userName = response.data.userName;
+      var user = this.users[response.data.pid];
+
+      var oldUserName = user.userName;
+      var newUserName = response.data.userName;
+
+      this.users[response.data.pid].userName = newUserName;
+      console.log('User changed name: "%s" -> "%s"', oldUserName, newUserName);
     });
   }
 
@@ -54,8 +60,10 @@ export class HomeComponent implements OnDestroy {
     this.socket.emit<null, GamePublic>('create-game', null, response => {
       if (response.error)
         this.toaster.pop('error', null, response.error);
-      else
+      else {
+        console.info('Created game: %o', response.data);
         this.router.navigate(['/game', response.data.gameId]);
+      }
     });
   }
 }

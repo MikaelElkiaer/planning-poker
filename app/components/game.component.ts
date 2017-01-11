@@ -101,7 +101,7 @@ export class GameComponent implements OnDestroy, OnInit {
       this.players = response.data.players;
       this._hostPid = response.data.hostPid;
       this.state = response.data.gameState;
-      console.info('Requested game: %o', response.data);
+      console.info('Joined game: %o', response.data);
     });
 
     this.socket.on<PlayerPublic>('user:join-game', response => {
@@ -114,7 +114,7 @@ export class GameComponent implements OnDestroy, OnInit {
         return;
 
       this.players[response.data.pid].user.active = true;
-      console.info('Player became active: %o', this.players[response.data.pid]);
+      console.info('Player active: %o', this.players[response.data.pid]);
     });
 
     this.socket.on<UserPublic>('user:disconnect', response => {
@@ -122,25 +122,30 @@ export class GameComponent implements OnDestroy, OnInit {
         return;
       
       this.players[response.data.pid].user.active = false;
-      console.info('Player becamse inactive: %o', this.players[response.data.pid]);
+      console.info('Player inactive: %o', this.players[response.data.pid]);
     });
 
     this.socket.on<UserPublic>('user:change-username', response => {
-      if (!this.players[response.data.pid])
+      var player = this.players[response.data.pid];
+
+      if (!player)
         return;
       
-      this.players[response.data.pid].user.userName = response.data.userName;
+      var oldName = player.user.userName;
+      var newName = response.data.userName;
+      this.players[response.data.pid].user.userName = newName;
+      console.info('Player changed name: "%s" -> "%s"', oldName, newName)
     });
 
     this.socket.on<GamePublic>('host:change-game-state', response => {
       this.state = response.data.gameState;
       this.players = response.data.players;
-      console.info('Host changed game state: %s', this.state);
+      console.info('Host changed game state: %o', response.data);
     });
 
     this.socket.on<PlayerPublic>('user:choose-card', response => {
       this.players[response.data.user.pid] = response.data;
-      console.info('Player chose card: %s', response.data);
+      console.info('Player chose card: %o', response.data);
     });
   }
 
