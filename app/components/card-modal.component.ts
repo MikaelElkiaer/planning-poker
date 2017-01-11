@@ -1,7 +1,7 @@
-import {Component, Input} from '@angular/core';
-import {NgbModal, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import { Component, Input } from '@angular/core';
+import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { PokerCard } from '../../shared/dto/pokerCard';
+import * as Dto from '../../shared/dto';
 
 @Component({
   selector: 'card-modal-component',
@@ -44,23 +44,23 @@ import { PokerCard } from '../../shared/dto/pokerCard';
             }`]
 })
 export class CardModalComponent {
-  @Input() currentCard: PokerCard = PokerCard.NotPicked;
+  @Input() currentCard: Dto.PokerCard = Dto.PokerCard.NotPicked;
 
-  pickableCards: PokerCard[] = [
-    PokerCard.NotPicked,
-    PokerCard.CoffeeBreak,
-    PokerCard.QuestionMark,
-    PokerCard.Zero,
-    PokerCard.Half,
-    PokerCard.One,
-    PokerCard.Two,
-    PokerCard.Three,
-    PokerCard.Five,
-    PokerCard.Eight,
-    PokerCard.Thirteen,
-    PokerCard.Forty,
-    PokerCard.Hundred,
-    PokerCard.Infinity
+  pickableCards: Dto.PokerCard[] = [
+    Dto.PokerCard.NotPicked,
+    Dto.PokerCard.CoffeeBreak,
+    Dto.PokerCard.QuestionMark,
+    Dto.PokerCard.Zero,
+    Dto.PokerCard.Half,
+    Dto.PokerCard.One,
+    Dto.PokerCard.Two,
+    Dto.PokerCard.Three,
+    Dto.PokerCard.Five,
+    Dto.PokerCard.Eight,
+    Dto.PokerCard.Thirteen,
+    Dto.PokerCard.Forty,
+    Dto.PokerCard.Hundred,
+    Dto.PokerCard.Infinity
   ];
 
   constructor(public activeModal: NgbActiveModal) {}

@@ -3,16 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToasterService } from 'angular2-toaster';
 
-import { GameState } from '../../shared/dto/gameState';
-import { UserPublic } from '../../shared/dto/userPublic';
-import { PlayerPublic } from '../../shared/dto/playerPublic';
-import { GamePublic } from '../../shared/dto/gamePublic';
-import { JoinGame } from '../../shared/dto/joinGame';
-import { ChangeGameState } from '../../shared/dto/changeGameState';
-import { ChooseCard } from '../../shared/dto/chooseCard';
-import { SocketService } from '../services/socket.service';
-import { UserService } from '../services/user.service';
-import { CardModalComponent } from './card-modal.component';
+import * as Dto from '../../shared/dto/index';
+import { SocketService, UserService } from '../services/index';
+import { CardModalComponent } from './index';
 
 @Component({
   templateUrl: 'views/game',
@@ -75,12 +68,12 @@ export class GameComponent implements OnDestroy, OnInit {
       .map(pid => this.players[pid])
       .sort((a, b) => this.strcmp(a.user.userName, b.user.userName));
   }
-  get isVoting() { return this.state === GameState.Voting; }
-  state: GameState = GameState.Waiting;
+  get isVoting() { return this.state === Dto.GameState.Voting; }
+  state: Dto.GameState = Dto.GameState.Waiting;
 
   private _gameId: string;
   private spectate: boolean;
-  private players: { [id: string]: PlayerPublic } = {};
+  private players: { [id: string]: Dto.PlayerPublic } = {};
   private _hostPid: string = '';
 
   constructor(private route: ActivatedRoute, private router: Router, private socket: SocketService, private user: UserService,
@@ -92,7 +85,7 @@ export class GameComponent implements OnDestroy, OnInit {
     this._gameId = this.route.snapshot.params['id'];
     this.spectate = this.route.snapshot.queryParams['spectate'] == "true";
 
-    this.socket.emit<JoinGame,GamePublic>('join-game', { data: new JoinGame(this._gameId, this.spectate) }, response => {
+    this.socket.emit<Dto.JoinGame, Dto.GamePublic>('join-game', { data: new Dto.JoinGame(this._gameId, this.spectate) }, response => {
       if (response.error) {
         this.toaster.pop('error', null, response.error);
         this.router.navigate(['']);
@@ -104,12 +97,12 @@ export class GameComponent implements OnDestroy, OnInit {
       console.info('Joined game: %o', response.data);
     });
 
-    this.socket.on<PlayerPublic>('user:join-game', response => {
+    this.socket.on<Dto.PlayerPublic>('user:join-game', response => {
       this.players[response.data.user.pid] = response.data;
       console.info('Player joined: %o', response.data);
     });
 
-    this.socket.on<UserPublic>('user:connect', response => {
+    this.socket.on<Dto.UserPublic>('user:connect', response => {
       if (!this.players[response.data.pid])
         return;
 
@@ -117,7 +110,7 @@ export class GameComponent implements OnDestroy, OnInit {
       console.info('Player active: %o', this.players[response.data.pid]);
     });
 
-    this.socket.on<UserPublic>('user:disconnect', response => {
+    this.socket.on<Dto.UserPublic>('user:disconnect', response => {
       if (!this.players[response.data.pid])
         return;
       
@@ -125,7 +118,7 @@ export class GameComponent implements OnDestroy, OnInit {
       console.info('Player inactive: %o', this.players[response.data.pid]);
     });
 
-    this.socket.on<UserPublic>('user:change-username', response => {
+    this.socket.on<Dto.UserPublic>('user:change-username', response => {
       var player = this.players[response.data.pid];
 
       if (!player)
@@ -137,13 +130,13 @@ export class GameComponent implements OnDestroy, OnInit {
       console.info('Player changed name: "%s" -> "%s"', oldName, newName)
     });
 
-    this.socket.on<GamePublic>('host:change-game-state', response => {
+    this.socket.on<Dto.GamePublic>('host:change-game-state', response => {
       this.state = response.data.gameState;
       this.players = response.data.players;
       console.info('Host changed game state: %o', response.data);
     });
 
-    this.socket.on<PlayerPublic>('user:choose-card', response => {
+    this.socket.on<Dto.PlayerPublic>('user:choose-card', response => {
       this.players[response.data.user.pid] = response.data;
       console.info('Player chose card: %o', response.data);
     });
@@ -154,8 +147,8 @@ export class GameComponent implements OnDestroy, OnInit {
   }
 
   startStopGame() {
-    var newState = this.state === GameState.Voting ? GameState.Waiting : GameState.Voting;
-    this.socket.emit<ChangeGameState,GamePublic>('change-game-state', { data: new ChangeGameState(this._gameId, newState) }, response => {
+    var newState = this.state === Dto.GameState.Voting ? Dto.GameState.Waiting : Dto.GameState.Voting;
+    this.socket.emit<Dto.ChangeGameState, Dto.GamePublic>('change-game-state', { data: new Dto.ChangeGameState(this._gameId, newState) }, response => {
       if (response.error)
         this.toaster.pop('error', null, response.error);
     });
@@ -166,7 +159,7 @@ export class GameComponent implements OnDestroy, OnInit {
     modalRef.componentInstance.currentCard = this.players[this.userPid].currentCard;
 
     modalRef.result.then(card => {
-      this.socket.emit<ChooseCard,null>('choose-card', { data: new ChooseCard(this._gameId, card) }, response => {
+      this.socket.emit<Dto.ChooseCard, null>('choose-card', { data: new Dto.ChooseCard(this._gameId, card) }, response => {
         if (response.error) {
           this.toaster.pop('error', null, response.error);
           return;

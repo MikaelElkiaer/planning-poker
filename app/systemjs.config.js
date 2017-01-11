@@ -12,7 +12,8 @@
     map: {
       // our app is within the app folder
       app: 'app',
-      shared: 'shared',
+      dto: 'shared/dto',
+      message: 'shared/message',
       // angular bundles
       '@angular/core': 'npm:@angular/core/bundles/core.umd.js',
       '@angular/common': 'npm:@angular/common/bundles/common.umd.js',
@@ -24,32 +25,25 @@
       '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
       // other libraries
       'rxjs': 'npm:rxjs',
-      'socket.io-client': 'npm:socket.io-client/dist',
-      '@ng-bootstrap/ng-bootstrap': 'npm:@ng-bootstrap/ng-bootstrap/bundles',
-      'angular2-toaster': 'npm:angular2-toaster/bundles'
+      'socket.io-client': 'npm:socket.io-client/dist/socket.io.js',
+      '@ng-bootstrap/ng-bootstrap': 'npm:@ng-bootstrap/ng-bootstrap/bundles/ng-bootstrap.js',
+      'angular2-toaster': 'npm:angular2-toaster/bundles/angular2-toaster.umd.js'
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {
       app: {
-        main: './main.js',
+        main: './main',
         defaultExtension: 'js'
       },
-      shared: {
+      dto: {
+        main: './index',
+        defaultExtension: 'js'
+      },
+      message: {
+        main: './index',
         defaultExtension: 'js'
       },
       rxjs: {
-        defaultExtension: 'js'
-      },
-      'socket.io-client': {
-        main: './socket.io.js',
-        defaultExtension: 'js'
-      },
-      '@ng-bootstrap/ng-bootstrap': {
-        main: 'ng-bootstrap.js',
-        defaultExtension: 'js'
-      },
-      'angular2-toaster': {
-        main: 'angular2-toaster.umd.js',
         defaultExtension: 'js'
       }
     }
