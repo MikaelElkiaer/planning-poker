@@ -90,7 +90,7 @@ export class GameComponent implements OnDestroy, OnInit {
 
   ngOnInit() {
     this._gameId = this.route.snapshot.params['id'];
-    this.spectate = this.route.snapshot.queryParams['spectate'];
+    this.spectate = this.route.snapshot.queryParams['spectate'] == "true";
 
     this.socket.emit<JoinGame,GamePublic>('join-game', { data: new JoinGame(this._gameId, this.spectate) }, response => {
       if (response.error) {
