@@ -17,7 +17,7 @@ export class Mapper {
     }
 
     public static mapPlayerToPublic(player: Model.Player, isVoting: boolean): Dto.PlayerPublic {
-        return new Dto.PlayerPublic(player.user, (player.currentCard !== Dto.PokerCard.NotPicked && isVoting) ? Dto.PokerCard.Picked : player.currentCard);
+        return new Dto.PlayerPublic(this.mapUserToPublic(player.user), (player.currentCard !== Dto.PokerCard.NotPicked && isVoting) ? Dto.PokerCard.Picked : player.currentCard);
     }
 
     public static mapPlayersToPublic(players: { [id: string]: Model.Player }, isVoting: boolean): { [id: string]: Dto.PlayerPublic } {
