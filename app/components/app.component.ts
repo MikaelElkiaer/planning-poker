@@ -15,7 +15,8 @@ export class AppComponent implements OnInit {
   toasterConfig: ToasterConfig = new ToasterConfig({
     limit: 5,
     timeout: 5000,
-    mouseoverTimerStop: true
+    mouseoverTimerStop: true,
+    preventDuplicates: true
   });
 
   constructor(private user: UserService, private socket: SocketService, private modalService: NgbModal, private toaster: ToasterService) {
