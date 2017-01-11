@@ -9,7 +9,8 @@
             "request": "attach",
             "name": "Attach to Process",
             "port": 5858,
-            "processId": "${command.PickProcess}"
+            "processId": "${command.PickProcess}",
+            "sourceMaps": true
         }
     ]
 }
