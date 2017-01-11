@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToasterService } from 'angular2-toaster';
+import { ToasterService, ToasterConfig } from 'angular2-toaster';
 
 import { SocketService, UserService } from '../services/index';
 import { UserNameModalComponent } from './index';
@@ -12,6 +12,11 @@ import { UserNameModalComponent } from './index';
 export class AppComponent implements OnInit {
   navbarCollapsed: boolean = true;
   userName: string = '';
+  toasterConfig: ToasterConfig = new ToasterConfig({
+    limit: 5,
+    timeout: 5000,
+    mouseoverTimerStop: true
+  });
 
   constructor(private user: UserService, private socket: SocketService, private modalService: NgbModal, private toaster: ToasterService) {
     this.userName = user.userName;
