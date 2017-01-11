@@ -35,9 +35,8 @@ export class GameService {
 
                 if (!game.getPlayerByPid(user.pid)) {
                     game.addPlayer(user);
+                    this.socketService.emitAllInRoomExceptSender('user:join-game', Mapper.mapPlayerToPublic(game.getPlayerByPid(user.pid), hideCards), game.id);
                 }
-
-                this.socketService.emitAllInRoomExceptSender('user:join-game', Mapper.mapPlayerToPublic(game.getPlayerByPid(user.pid), hideCards), game.id);
             }
 
             return Mapper.mapGameToPublic(game);
