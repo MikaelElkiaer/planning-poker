@@ -38,6 +38,9 @@ export class GameService {
                 }
             }
             else {
+                if (game.host.user.sid === user.sid)
+                    throw `A host cannot spectate his own game`;
+
                 var player = game.getPlayerByPid(user.pid);
                 if (player) {
                     game.removePlayer(user.pid);
