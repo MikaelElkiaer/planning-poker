@@ -5,7 +5,7 @@ import { ToasterService } from 'angular2-toaster';
 
 import * as Dto from '../../shared/dto/index';
 import { SocketService, UserService } from '../services/index';
-import { CardModalComponent } from './index';
+import { CardModalComponent, KickModalComponent } from './index';
 
 @Component({
   templateUrl: 'views/game',
@@ -69,6 +69,7 @@ export class GameComponent implements OnDestroy, OnInit {
       .sort((a, b) => this.strcmp(a.user.userName, b.user.userName));
   }
   get isVoting() { return this.state === Dto.GameState.Voting; }
+  get isHost() { return this.hostPid === this.userPid; }
   state: Dto.GameState = Dto.GameState.Waiting;
 
   private _gameId: string;
@@ -142,8 +143,14 @@ export class GameComponent implements OnDestroy, OnInit {
     });
 
     this.socket.on<Dto.PlayerPublic>('user:leave-game', response => {
-      delete this.players[response.data.user.pid];
-      console.info('Player left: %o', response.data);
+      if (response.data.user.pid === this.userPid) {
+        this.toaster.pop('warning', null, `You were kicked from game with id: ${this.gameId}`);
+        this.router.navigate(['']);
+      }
+      else {
+        delete this.players[response.data.user.pid];
+        console.info('Player left: %o', response.data);
+      }
     });
   }
 
@@ -166,6 +173,25 @@ export class GameComponent implements OnDestroy, OnInit {
         return;
       }
       this.router.navigate(['']);
+      console.log('Left game: %s', this.gameId);
+    });
+  }
+
+  kickModal(player: Dto.PlayerPublic) {
+    const modalRef = this.modalService.open(KickModalComponent, { size: 'sm' });
+    modalRef.componentInstance.player = player;
+
+    modalRef.result.then(() => {
+      this.socket.emit<Dto.KickPlayer, null>('kick-player', { data: new Dto.KickPlayer(this._gameId, player.user.pid) }, response => {
+        if (response.error) {
+          this.toaster.pop('error', null, response.error);
+          return;
+        }
+        delete this.players[player.user.pid];
+        console.info('Kicked player: %o', player);
+      });
+    }, () => {
+      return;
     });
   }
 

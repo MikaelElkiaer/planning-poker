@@ -99,5 +99,22 @@ export class GameService {
 
             return null;
         });
+
+        this.socketService.on<Dto.KickPlayer, null>('kick-player', request => {
+            var user = this.users.getUserById(this.socket.id);
+            var game = this.games.getGameById(request.data.gameId);
+            
+            if (game.host.user.sid !== user.sid) {
+                throw 'Only host can change game state';
+            }
+
+            var playerToBeKicked = game.getPlayerByPid(request.data.pid);
+            game.removePlayer(request.data.pid);
+            
+            var hideCards = game.state === Dto.GameState.Voting;
+            this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(playerToBeKicked, hideCards), game.id);
+
+            return null;
+        });
     }
 }

@@ -3,18 +3,19 @@
         .col-sm-4.col-sm-offset-4
             .panel.panel-default
                 .panel-heading
-                    .btn-group.pull-right(*ngIf='userPid === hostPid')
+                    .btn-group.pull-right(*ngIf='isHost')
                         button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='startStopGame()',
                         placement='top', [ngbTooltip]='isVoting ? "Stop" : "Start"')
                             span.fa([ngClass]='{ "fa-stop": isVoting, "fa-play": !isVoting }')
-                    .btn-group.pull-right(*ngIf='userPid !== hostPid')
+                    .btn-group.pull-right(*ngIf='!isHost')
                         button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='leaveGame()',
                         placement='top', ngbTooltip='Leave')
                             span.fa.fa-sign-out
                     h4.panel-title
                         | Game: {{ gameId }}
                 .panel-body(style='text-align: center')
-                    .vote([ngClass]='{ user: player.user.pid === userPid, pickable: isVoting }', *ngFor='let player of playersList', (click)='isVoting && player.user.pid === userPid && cardModal()')
+                    .vote([ngClass]='{ user: player.user.pid === userPid, pickable: isVoting || isHost }', *ngFor='let player of playersList',
+                    (click)='(isVoting && player.user.pid === userPid && cardModal()) || (!(player.user.pid === userPid) && isHost && kickModal(player))')
                         .poker-card([innerHtml]='player.currentCard | cardText')
                         span.username([class.inactive]='!player.user.active')
                             small(*ngIf='player.user.pid === hostPid')
