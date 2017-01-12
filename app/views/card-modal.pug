@@ -2,6 +2,6 @@
   button.close(type='button', aria-label='Close', (click)='activeModal.dismiss()')
     span(aria-hidden='true') &times;
   h4.modal-title Pick a card
-.modal-body
+.modal-body(style='text-align: center;')
   .vote.pickable([class.selected]='card === currentCard', *ngFor='let card of pickableCards', (click)='activeModal.close(card)')
     .poker-card([innerHtml]='card | cardText')
