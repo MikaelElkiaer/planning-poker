@@ -6,6 +6,9 @@
                     .btn-group.pull-right(*ngIf='userPid === hostPid')
                         button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='startStopGame()')
                             span.fa([ngClass]='{ "fa-stop": isVoting, "fa-play": !isVoting }')
+                    .btn-group.pull-right(*ngIf='userPid !== hostPid')
+                        button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='leaveGame()')
+                            span.fa.fa-sign-out
                     h4.panel-title
                         | Game: {{ gameId }}
                 .panel-body(style='text-align: center')

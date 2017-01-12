@@ -159,6 +159,16 @@ export class GameComponent implements OnDestroy, OnInit {
     });
   }
 
+  leaveGame() {
+    this.socket.emit<Dto.LeaveGame, null>('leave-game', { data: new Dto.LeaveGame(this._gameId)}, response => {
+      if (response.error) {
+        this.toaster.pop('error', null, response.error);
+        return;
+      }
+      this.router.navigate(['']);
+    });
+  }
+
   cardModal() {
     const modalRef = this.modalService.open(CardModalComponent, { size: 'lg' });
     modalRef.componentInstance.currentCard = this.players[this.userPid].currentCard;

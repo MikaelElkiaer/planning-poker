@@ -84,5 +84,20 @@ export class GameService {
 
             return null;
         });
+
+        this.socketService.on<Dto.LeaveGame, null>('leave-game', request => {
+            var user = this.users.getUserById(this.socket.id);
+            var game = this.games.getGameById(request.data.gameId);
+            var player = game.getPlayerByPid(user.pid);
+
+            this.socket.leave(game.id);
+            game.removePlayer(user.pid);
+
+            var hideCards = game.state === Dto.GameState.Voting;
+
+            this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(player, hideCards), game.id);
+
+            return null;
+        });
     }
 }
