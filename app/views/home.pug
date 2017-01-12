@@ -16,7 +16,7 @@
                                         .checkbox
                                             label
                                                 input(type='checkbox', name='spectate', [(ngModel)]='joinModel.spectate', #name='ngModel')
-                                                span.fa.fa-user-secret
+                                                span.fa.fa-user-secret(placement='top', ngbTooltip='Spectate')
                                         
                             .col-xs-5
                                 button.btn.btn-default(style='width: 100%', type='submit', [disabled]='!joinForm.form.valid')

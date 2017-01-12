@@ -4,10 +4,12 @@
             .panel.panel-default
                 .panel-heading
                     .btn-group.pull-right(*ngIf='userPid === hostPid')
-                        button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='startStopGame()')
+                        button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='startStopGame()',
+                        placement='top', [ngbTooltip]='isVoting ? "Stop" : "Start"')
                             span.fa([ngClass]='{ "fa-stop": isVoting, "fa-play": !isVoting }')
                     .btn-group.pull-right(*ngIf='userPid !== hostPid')
-                        button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='leaveGame()')
+                        button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='leaveGame()',
+                        placement='top', ngbTooltip='Leave')
                             span.fa.fa-sign-out
                     h4.panel-title
                         | Game: {{ gameId }}
