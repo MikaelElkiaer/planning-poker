@@ -12,7 +12,8 @@
                     h4.panel-title
                         | Game: {{ gameId }}
                 .panel-body(style='text-align: center')
-                    .vote([ngClass]='{ user: player.user.pid === userPid, pickable: (player.user.pid === userPid && isVoting) || isHost }', *ngFor='let player of playersList',
+                    .vote([ngClass]='{ user: player.user.pid === userPid, pickable: (player.user.pid === userPid && isVoting) || (player.user.pid !== userPid && isHost) }',
+                    *ngFor='let player of playersList',
                     (click)='(isVoting && player.user.pid === userPid && cardModal()) || (!(player.user.pid === userPid) && isHost && kickModal(player))')
                         .poker-card([innerHtml]='player.currentCard | cardText')
                         span.username([class.inactive]='!player.user.active')
