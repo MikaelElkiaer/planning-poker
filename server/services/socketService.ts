@@ -1,7 +1,15 @@
 import * as Msg from '../../shared/message';
+import { User } from '../model'
 
 export class SocketService {
-    constructor(private io: SocketIO.Server, private socket: SocketIO.Socket) { }
+    public readonly socketId: string;
+
+    constructor(
+        private io: SocketIO.Server,
+        private socket: SocketIO.Socket
+    ) {
+        this.socketId = socket.id;
+    }
 
     emitAll<T>(eventName: string, data: T) {
         var response: Msg.IEmitResponse<T> = { data };
@@ -37,5 +45,9 @@ export class SocketService {
 
     join(roomId: string) {
         this.socket.join(roomId);
+    }
+
+    leave(roomId: string) {
+        this.socket.leave(roomId);
     }
 }

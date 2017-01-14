@@ -33,8 +33,8 @@ io.use((socket, next) => {
 io.on('connection', socket => {
   var socketService = new SocketService(io, socket);
   
-  new UserService(io, socket, socketService, users);
-  new GameService(io, socket, socketService, users, games);
+  var userService = new UserService(socketService, users);
+  var gameService = new GameService(socketService, userService, games);
 });
 
 // start server

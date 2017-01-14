@@ -4,8 +4,10 @@ import { Mapper } from '../utils/mapper';
 import * as Dto from '../../shared/dto';
 
 export class UserService {
-    constructor(private io: SocketIO.Server, private socket: SocketIO.Socket, private socketService: SocketService,
-        private users: UserCollection) {
+    public readonly user: User;
+
+    constructor(private socketService: SocketService, private users: UserCollection) {
+        this.user = users.getUserById(socketService.socketId);
         this.initialize();
     }
 
@@ -21,17 +23,15 @@ export class UserService {
     }
 
     private initialize() {
-        this.socketService.emitAllExceptSender('user:connect', Mapper.mapUserToPublic(this.users.getUserById(this.socket.id)));
+        this.socketService.emitAllExceptSender('user:connect', Mapper.mapUserToPublic(this.user));
 
         this.socketService.on<null, Dto.UserConnect>('conn', () => {
-            var user = this.users.getUserById(this.socket.id);
-            return new Dto.UserConnect(user.pid, user.sid, user.userName);
+            return new Dto.UserConnect(this.user.pid, this.user.sid, this.user.userName);
         });
 
         this.socketService.on<null, null>('disconnect', () => {
-            var user = this.users.getUserById(this.socket.id);
-            user.active = false;
-            this.socketService.emitAllExceptSender('user:disconnect', Mapper.mapUserToPublic(user));
+            this.user.active = false;
+            this.socketService.emitAllExceptSender('user:disconnect', Mapper.mapUserToPublic(this.user));
             return null;
         });
 
@@ -40,14 +40,13 @@ export class UserService {
         });
 
         this.socketService.on<string, string>('change-username', request => {
-            var user = this.users.getUserById(this.socket.id);
-            var oldUsername = user.userName;
+            var oldUsername = this.user.userName;
             var newUsername = request.data;
 
             if (User.isValidUserName(newUsername, this.users)) {
-                user.userName = newUsername;
+                this.user.userName = newUsername;
 
-                this.socketService.emitAll<Dto.UserPublic>('user:change-username', Mapper.mapUserToPublic(user));
+                this.socketService.emitAll<Dto.UserPublic>('user:change-username', Mapper.mapUserToPublic(this.user));
 
                 return newUsername;
             }

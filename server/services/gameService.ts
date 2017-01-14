@@ -1,20 +1,20 @@
-import { GameCollection, UserCollection } from '../model';
-import { SocketService } from '../services';
+import { GameCollection, User } from '../model';
+import { SocketService, UserService } from '../services';
 import * as Dto from '../../shared/dto';
 import { Mapper } from '../utils/mapper';
 
 export class GameService {
-    constructor(private io: SocketIO.Server, private socket: SocketIO.Socket, private socketService: SocketService,
-        private users: UserCollection, private games: GameCollection) {
+    private readonly user: User;
+
+    constructor(private socketService: SocketService, private userService: UserService, private games: GameCollection) {
+        this.user = userService.user;
         this.initialize();
     }
 
     private initialize() {
         this.socketService.on<null, Dto.GamePublic>('create-game', request => {
-            var user = this.users.getUserById(this.socket.id);
-
             try {
-                var game = this.games.addGame(user);
+                var game = this.games.addGame(this.user);
                 return Mapper.mapGameToPublic(game);
             } catch (error) {
                 throw error;
@@ -30,20 +30,19 @@ export class GameService {
 
             var hideCards = game.state === Dto.GameState.Voting;
 
-            var user = this.users.getUserById(this.socket.id);
             if (!request.data.spectate) {
-                if (!game.getPlayerByPid(user.pid)) {
-                    game.addPlayer(user);
-                    this.socketService.emitAllInRoomExceptSender('user:join-game', Mapper.mapPlayerToPublic(game.getPlayerByPid(user.pid), hideCards), game.id);
+                if (!game.getPlayerByPid(this.user.pid)) {
+                    game.addPlayer(this.user);
+                    this.socketService.emitAllInRoomExceptSender('user:join-game', Mapper.mapPlayerToPublic(game.getPlayerByPid(this.user.pid), hideCards), game.id);
                 }
             }
             else {
-                if (game.host.user.sid === user.sid)
+                if (game.host.user.sid === this.user.sid)
                     throw `A host cannot spectate his own game`;
 
-                var player = game.getPlayerByPid(user.pid);
+                var player = game.getPlayerByPid(this.user.pid);
                 if (player) {
-                    game.removePlayer(user.pid);
+                    game.removePlayer(this.user.pid);
                     this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(player, hideCards), game.id);
                 }
             }
@@ -52,10 +51,9 @@ export class GameService {
         });
 
         this.socketService.on<Dto.ChangeGameState, null>('change-game-state', request => {
-            var user = this.users.getUserById(this.socket.id);
             var game = this.games.getGameById(request.data.gameId);
 
-            if (game.host.user.sid !== user.sid) {
+            if (game.host.user.sid !== this.user.sid) {
                 throw 'Only host can change game state';
             }
 
@@ -70,14 +68,13 @@ export class GameService {
         });
 
         this.socketService.on<Dto.ChooseCard, null>('choose-card', request => {
-            var user = this.users.getUserById(this.socket.id);
             var game = this.games.getGameById(request.data.gameId);
 
             if (game.state !== Dto.GameState.Voting) {
                 throw 'Cards can only be chosen in voting state';
             }
 
-            var player = game.getPlayerByPid(user.pid);
+            var player = game.getPlayerByPid(this.user.pid);
             player.currentCard = request.data.newCard;
 
             this.socketService.emitAllInRoomExceptSender('user:choose-card', Mapper.mapPlayerToPublic(player, true), game.id);
@@ -86,12 +83,11 @@ export class GameService {
         });
 
         this.socketService.on<Dto.LeaveGame, null>('leave-game', request => {
-            var user = this.users.getUserById(this.socket.id);
             var game = this.games.getGameById(request.data.gameId);
-            var player = game.getPlayerByPid(user.pid);
+            var player = game.getPlayerByPid(this.user.pid);
 
-            this.socket.leave(game.id);
-            game.removePlayer(user.pid);
+            this.socketService.leave(game.id);
+            game.removePlayer(this.user.pid);
 
             var hideCards = game.state === Dto.GameState.Voting;
 
@@ -101,10 +97,9 @@ export class GameService {
         });
 
         this.socketService.on<Dto.KickPlayer, null>('kick-player', request => {
-            var user = this.users.getUserById(this.socket.id);
             var game = this.games.getGameById(request.data.gameId);
             
-            if (game.host.user.sid !== user.sid) {
+            if (game.host.user.sid !== this.user.sid) {
                 throw 'Only host can change game state';
             }
 
