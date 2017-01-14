@@ -47,7 +47,7 @@ export class GameService {
                 }
             }
 
-            return Mapper.mapGameToPublic(game);
+            return Mapper.mapGameToPublic(game, hideCards);
         });
 
         this.socketService.on<Dto.ChangeGameState, null>('change-game-state', request => {

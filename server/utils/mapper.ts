@@ -17,7 +17,7 @@ export class Mapper {
     }
 
     public static mapPlayerToPublic(player: Model.Player, isVoting: boolean): Dto.PlayerPublic {
-        return new Dto.PlayerPublic(this.mapUserToPublic(player.user), (player.currentCard !== Dto.PokerCard.NotPicked && isVoting) ? Dto.PokerCard.Picked : player.currentCard);
+        return new Dto.PlayerPublic(this.mapUserToPublic(player.user), this.getVisibleCard(player.currentCard, isVoting));
     }
 
     public static mapPlayersToPublic(players: { [id: string]: Model.Player }, isVoting: boolean): { [id: string]: Dto.PlayerPublic } {
@@ -29,15 +29,19 @@ export class Mapper {
         return playersPublic;
     }
 
-    public static mapGameToPublic(game: Model.Game): Dto.GamePublic {
+    public static mapGameToPublic(game: Model.Game, isVoting: boolean): Dto.GamePublic {
         return new Dto.GamePublic(
             game.id,
             game.state,
             game.host.user.pid,
             Object.keys(game.players).reduce((prev, cur) => {
-                prev[cur] = new Dto.PlayerPublic(this.mapUserToPublic(game.players[cur].user), game.players[cur].currentCard);
+                prev[cur] = new Dto.PlayerPublic(this.mapUserToPublic(game.players[cur].user), this.getVisibleCard(game.players[cur].currentCard, isVoting));
                 return prev
             }, {})
         );
+    }
+
+    private static getVisibleCard(card: Dto.PokerCard, isVoting: boolean): Dto.PokerCard {
+        return (card !== Dto.PokerCard.NotPicked && isVoting) ? Dto.PokerCard.Picked : card;
     }
 }
