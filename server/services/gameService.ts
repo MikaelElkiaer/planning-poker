@@ -28,12 +28,10 @@ export class GameService {
             }
             this.socketService.join(request.data.gameId);
 
-            var hideCards = game.state === Dto.GameState.Voting;
-
             if (!request.data.spectate) {
                 if (!game.getPlayerByPid(this.user.pid)) {
                     game.addPlayer(this.user);
-                    this.socketService.emitAllInRoomExceptSender('user:join-game', Mapper.mapPlayerToPublic(game.getPlayerByPid(this.user.pid), hideCards), game.id);
+                    this.socketService.emitAllInRoomExceptSender('user:join-game', Mapper.mapPlayerToPublic(game.getPlayerByPid(this.user.pid), game.isVoting), game.id);
                 }
             }
             else {
@@ -43,11 +41,11 @@ export class GameService {
                 var player = game.getPlayerByPid(this.user.pid);
                 if (player) {
                     game.removePlayer(this.user.pid);
-                    this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(player, hideCards), game.id);
+                    this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(player, game.isVoting), game.id);
                 }
             }
 
-            return Mapper.mapGameToPublic(game, hideCards);
+            return Mapper.mapGameToPublic(game, game.isVoting);
         });
 
         this.socketService.on<Dto.ChangeGameState, null>('change-game-state', request => {
@@ -58,12 +56,11 @@ export class GameService {
             }
 
             game.state = request.data.gameState;
-            var isVoting = game.state === Dto.GameState.Voting;
 
-            if (isVoting)
+            if (game.isVoting)
                 game.resetCards();
 
-            this.socketService.emitAllInRoom('host:change-game-state', Mapper.mapGameToPublic(game, isVoting), game.id);
+            this.socketService.emitAllInRoom('host:change-game-state', Mapper.mapGameToPublic(game, game.isVoting), game.id);
 
             return null;
         });
@@ -71,7 +68,7 @@ export class GameService {
         this.socketService.on<Dto.ChooseCard, null>('choose-card', request => {
             var game = this.games.getGameById(request.data.gameId);
 
-            if (game.state !== Dto.GameState.Voting) {
+            if (!game.isVoting) {
                 throw 'Cards can only be chosen in voting state';
             }
 
@@ -90,9 +87,7 @@ export class GameService {
             this.socketService.leave(game.id);
             game.removePlayer(this.user.pid);
 
-            var hideCards = game.state === Dto.GameState.Voting;
-
-            this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(player, hideCards), game.id);
+            this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(player, game.isVoting), game.id);
 
             return null;
         });
@@ -107,8 +102,7 @@ export class GameService {
             var playerToBeKicked = game.getPlayerByPid(request.data.pid);
             game.removePlayer(request.data.pid);
             
-            var hideCards = game.state === Dto.GameState.Voting;
-            this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(playerToBeKicked, hideCards), game.id);
+            this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(playerToBeKicked, game.isVoting), game.id);
 
             return null;
         });

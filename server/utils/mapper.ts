@@ -16,32 +16,32 @@ export class Mapper {
         return usersPublic;
     }
 
-    public static mapPlayerToPublic(player: Model.Player, isVoting: boolean): Dto.PlayerPublic {
-        return new Dto.PlayerPublic(this.mapUserToPublic(player.user), this.getVisibleCard(player.currentCard, isVoting));
+    public static mapPlayerToPublic(player: Model.Player, hideCard: boolean): Dto.PlayerPublic {
+        return new Dto.PlayerPublic(this.mapUserToPublic(player.user), this.getVisibleCard(player.currentCard, hideCard));
     }
 
-    public static mapPlayersToPublic(players: { [id: string]: Model.Player }, isVoting: boolean): { [id: string]: Dto.PlayerPublic } {
+    public static mapPlayersToPublic(players: { [id: string]: Model.Player }, hideCard: boolean): { [id: string]: Dto.PlayerPublic } {
         var playersPublic = {};
         Object.keys(players).forEach(id => {
-            var playerPublic = this.mapPlayerToPublic(players[id], isVoting);
+            var playerPublic = this.mapPlayerToPublic(players[id], hideCard);
             playersPublic[playerPublic.user.pid] = playerPublic;
         });
         return playersPublic;
     }
 
-    public static mapGameToPublic(game: Model.Game, isVoting: boolean): Dto.GamePublic {
+    public static mapGameToPublic(game: Model.Game, hideCards: boolean): Dto.GamePublic {
         return new Dto.GamePublic(
             game.id,
             game.state,
             game.host.user.pid,
             Object.keys(game.players).reduce((prev, cur) => {
-                prev[cur] = new Dto.PlayerPublic(this.mapUserToPublic(game.players[cur].user), this.getVisibleCard(game.players[cur].currentCard, isVoting));
+                prev[cur] = new Dto.PlayerPublic(this.mapUserToPublic(game.players[cur].user), this.getVisibleCard(game.players[cur].currentCard, hideCards));
                 return prev
             }, {})
         );
     }
 
-    private static getVisibleCard(card: Dto.PokerCard, isVoting: boolean): Dto.PokerCard {
-        return (card !== Dto.PokerCard.NotPicked && isVoting) ? Dto.PokerCard.Picked : card;
+    private static getVisibleCard(card: Dto.PokerCard, hideCard: boolean): Dto.PokerCard {
+        return (card !== Dto.PokerCard.NotPicked && hideCard) ? Dto.PokerCard.Picked : card;
     }
 }

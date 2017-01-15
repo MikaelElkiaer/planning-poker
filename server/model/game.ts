@@ -6,6 +6,7 @@ export class Game {
   get players() { return this._players; }
   get host() { return this._players[this._id]; }
   state: Dto.GameState = Dto.GameState.Waiting;
+  get isVoting() { return this.state === Dto.GameState.Voting; }
   
   private _id: string;
   private _players: {[id: string]: Player};
