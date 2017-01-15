@@ -15,7 +15,7 @@ export class GameService {
         this.socketService.on<null, Dto.GamePublic>('create-game', request => {
             try {
                 var game = this.games.addGame(this.user);
-                return Mapper.mapGameToPublic(game);
+                return Mapper.mapGameToPublic(game, false);
             } catch (error) {
                 throw error;
             }
@@ -58,11 +58,12 @@ export class GameService {
             }
 
             game.state = request.data.gameState;
+            var isVoting = game.state === Dto.GameState.Voting;
 
-            if (game.state === Dto.GameState.Voting)
+            if (isVoting)
                 game.resetCards();
 
-            this.socketService.emitAllInRoom('host:change-game-state', Mapper.mapGameToPublic(game), game.id);
+            this.socketService.emitAllInRoom('host:change-game-state', Mapper.mapGameToPublic(game, isVoting), game.id);
 
             return null;
         });
