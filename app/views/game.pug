@@ -1,6 +1,6 @@
 .container-fluid
     .row
-        .col-sm-4.col-sm-offset-4
+        .col-sm-6.col-sm-offset-3
             .panel.panel-default
                 .panel-heading
                     .btn-group.pull-right(*ngIf='isHost')
@@ -10,7 +10,11 @@
                         button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='leaveGame()')
                             span.fa.fa-sign-out
                     h4.panel-title
-                        | Game: {{ gameId }}
+                        | Game # {{ gameId }}
+                        span &nbsp;[
+                        span.game-state([ngClass]='{ "text-success": isVoting, "text-danger": !isVoting }')
+                            | {{ isVoting ? 'Voting' : 'Waiting' }}
+                        span ]
                 .panel-body(style='text-align: center')
                     .vote([ngClass]='{ user: player.user.pid === userPid, pickable: (player.user.pid === userPid && isVoting) || (player.user.pid !== userPid && isHost) }',
                     *ngFor='let player of playersList',

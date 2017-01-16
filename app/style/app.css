@@ -36,10 +36,7 @@ div.poker-card {
     user-select: none;
 }
 
-.inactive {
-    color: #ee5f5b;
-}
-
 .username.inactive {
+    color: #ee5f5b;
     font-style: italic;
 }
