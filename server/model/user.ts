@@ -1,5 +1,3 @@
-import { UserCollection } from './';
-
 export class User {
   get sid() { return this._sid; }
   get pid() { return this._pid; }
@@ -29,14 +27,13 @@ export class User {
     return Math.floor((1 + Math.random()) * 0x100000000).toString(16).substring(1);
   }
 
-  static isValidUserName(username: string, users: UserCollection) {
+  static isValidUserName(username: string, users: string[]) {
     var regex = /^\w{2,12}$/;
     if (!regex.test(username))
       return false;
 
-    var ids = Object.keys(users);
-    for (var i = 0; i < ids.length; i++)
-      if (users[ids[i]].username === username)
+    for (var i = 0; i < users.length; i++)
+      if (users[i] === username)
         return false;
 
     return true;

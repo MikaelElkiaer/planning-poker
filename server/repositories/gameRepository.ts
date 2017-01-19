@@ -1,6 +1,10 @@
-import { Game, User } from './';
+import { injectable } from 'inversify';
+import 'reflect-metadata';
 
-export class GameCollection {
+import { Game, User } from '../model';
+
+@injectable()
+export class GameRepository {
   get games() { return this._games; }
   
   private _games: { [id: string]: Game };

@@ -1,4 +1,4 @@
-import { User, UserCollection, Player } from './';
+import { User, Player } from './';
 import * as Dto from '../../shared/dto';
 
 export class Game {

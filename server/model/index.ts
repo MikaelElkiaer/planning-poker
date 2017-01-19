@@ -1,5 +1,3 @@
-export * from './gameCollection'
 export * from './game'
 export * from './player'
-export * from './userCollection'
 export * from './user'

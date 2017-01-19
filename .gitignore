@@ -3,7 +3,7 @@ node_modules
 typings
 server.js*
 **/*.js
-!*.config.js
+!systemjs.config.js
 **/*.js.map
 yarn-error.log
 yarn.lock

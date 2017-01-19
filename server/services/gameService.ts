@@ -1,12 +1,16 @@
-import { GameCollection, User } from '../model';
+import { injectable } from 'inversify';
+
+import { User } from '../model';
+import { GameRepository } from '../repositories';
 import { SocketService, UserService } from '../services';
 import * as Dto from '../../shared/dto';
 import { Mapper } from '../utils/mapper';
 
+@injectable()
 export class GameService {
     private readonly user: User;
 
-    constructor(private socketService: SocketService, private userService: UserService, private games: GameCollection) {
+    constructor(private socketService: SocketService, private userService: UserService, private games: GameRepository) {
         this.user = userService.user;
         this.initialize();
     }

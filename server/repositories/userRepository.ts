@@ -1,6 +1,10 @@
-import { User } from './';
+import { injectable } from 'inversify';
+import 'reflect-metadata';
 
-export class UserCollection {
+import { User } from '../model';
+
+@injectable()
+export class UserRepository {
   private users: { [id: string]: User };
   
   constructor () {

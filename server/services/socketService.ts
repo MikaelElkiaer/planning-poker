@@ -1,6 +1,10 @@
+import { injectable } from 'inversify';
+import 'reflect-metadata';
+
 import * as Msg from '../../shared/message';
 import { User } from '../model'
 
+@injectable()
 export class SocketService {
     public readonly socketId: string;
 

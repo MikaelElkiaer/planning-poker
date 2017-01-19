@@ -1,41 +1,59 @@
 import * as express from 'express';
 import * as http from 'http';
 import * as socketio from 'socket.io';
+import { inject, injectable } from 'inversify';
+import 'reflect-metadata';
 
-import { Game, GameCollection, User, UserCollection, Player } from './model';
+import { TYPES } from './types';
+import { Game, User, Player } from './model';
+import { GameRepository, UserRepository } from './repositories';
 import { GameService, UserService, SocketService } from './services';
 import * as Dto from '../shared/dto';
 
-const app = express();
-const server = http.createServer(app);
-const io = socketio(server);
+@injectable()
+export class Server {
+  constructor(
+    @inject(TYPES.Express) private readonly app: express.Express,
+    @inject(TYPES.Server) private readonly server: http.Server,
+    @inject(TYPES.IO) private readonly io: SocketIO.Server,
+    private readonly games: GameRepository,
+    private readonly users: UserRepository
+  ) { }
 
-// Set up server and routes
-app.disable('view cache');
-app.set('port', (process.env.PORT || 5000));
-app.set('view engine', 'pug');
-app.use('/app', express.static('app'));
-app.use('/shared', express.static('shared'));
-app.use('/node_modules', express.static('node_modules'));
-app.get('/views/:name', (req, res) => { res.render(`${__dirname}/../app/views/${req.params.name}`); });
-app.get(['/', '/game/:id'], (req, res) => { res.render(`${__dirname}/../app/index`); });
+  setUpAndStart() {
+    this.setUpWebServer();
+    this.setUpNewConnectionHandler();
+    this.setUpServices();
+    this.startServer();
+  }
 
-// Initialize state
-var games = new GameCollection();
-var users = new UserCollection();
+  private setUpWebServer() {
+    this.app.disable('view cache');
+    this.app.set('port', (process.env.PORT || 5000));
+    this.app.set('view engine', 'pug');
+    this.app.use('/app', express.static('app'));
+    this.app.use('/shared', express.static('shared'));
+    this.app.use('/node_modules', express.static('node_modules'));
+    this.app.get('/views/:name', (req, res) => { res.render(`${__dirname}/../app/views/${req.params.name}`); });
+    this.app.get(['/', '/game/:id'], (req, res) => { res.render(`${__dirname}/../app/index`); });
+  }
 
-// Set handler for new sockets
-io.use((socket, next) => {
-  UserService.handleNewSocket(socket, next, users);
-});
+  private setUpNewConnectionHandler() {
+    this.io.use((socket, next) => {
+      UserService.handleNewSocket(socket, next, this.users);
+    });
+  }
 
-// Initialize services
-io.on('connection', socket => {
-  var socketService = new SocketService(io, socket);
-  
-  var userService = new UserService(socketService, users);
-  var gameService = new GameService(socketService, userService, games);
-});
+  private setUpServices() {
+    this.io.on('connection', socket => {
+      var socketService = new SocketService(this.io, socket);
 
-// start server
-server.listen(app.get('port'), () => console.log(`listening on *:${app.get('port')}`));
+      var userService = new UserService(socketService, this.users);
+      var gameService = new GameService(socketService, userService, this.games);
+    });
+  }
+
+  private startServer() {
+    this.server.listen(this.app.get('port'), () => console.log(`listening on *:${this.app.get('port')}`));
+  }
+}
