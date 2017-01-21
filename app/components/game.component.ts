@@ -118,6 +118,11 @@ export class GameComponent implements OnDestroy, OnInit {
   }
 
   leaveGame() {
+    if (this.spectate) {
+      this.router.navigate(['']);
+      return;
+    }
+    
     this.socket.emit<Dto.LeaveGame, null>('leave-game', { data: new Dto.LeaveGame(this._gameId)}, response => {
       if (response.error) {
         this.toaster.pop('error', null, response.error);
