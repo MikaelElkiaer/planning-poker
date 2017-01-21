@@ -10,6 +10,12 @@ export class UserService {
   set userName(value) { localStorage.setItem(this.USER_USERNAME_KEY, value); }
   get hasChangedName() { return localStorage.getItem(this.USER_HAS_CHANGED_NAME_KEY); }
   set hasChangedName(value) { localStorage.setItem(this.USER_HAS_CHANGED_NAME_KEY, value); }
+
+  setUser(sid: string, pid: string, userName: string) {
+    this.userSid = sid;
+    this.userPid = pid;
+    this.userName = userName;
+  }
   
   private readonly USER_SID_KEY = "UserSid";
   private readonly USER_PID_KEY = "UserPid";

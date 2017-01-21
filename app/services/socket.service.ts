@@ -11,12 +11,17 @@ export class SocketService {
 
   constructor(private user: UserService) { }
 
-  connect(userSid: string) {
+  connect(userSid: string): Promise<Dto.UserConnect> {
     this.socket = io.connect({ query: `userSid=${userSid}` });
-    this.emit<null, Dto.UserConnect>('conn', { data: null }, response => {
-      this.user.userSid = response.data.sid;
-      this.user.userPid = response.data.pid;
-      this.user.userName = response.data.userName;
+    return new Promise((resolve, reject) => {
+      this.emit<null, Dto.UserConnect>('conn', { data: null }, response => {
+        if (response.error)
+          reject(response.error);
+        else {
+          console.log("Connected to server");
+          resolve(response.data);
+        }
+      });
     });
   }
 

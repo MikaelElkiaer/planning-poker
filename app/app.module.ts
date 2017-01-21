@@ -31,8 +31,4 @@ import { SocketService } from './services/socket.service';
   providers: [ UserService, SocketService ],
   entryComponents: [ CardModalComponent, UserNameModalComponent, KickModalComponent ]
 })
-export class AppModule {
-  constructor(private socket: SocketService, private user: UserService) {
-    socket.connect(user.userSid);
-  }
-}
+export class AppModule { }

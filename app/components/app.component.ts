@@ -20,10 +20,15 @@ export class AppComponent implements OnInit {
   });
 
   constructor(private user: UserService, private socket: SocketService, private modalService: NgbModal, private toaster: ToasterService) {
-    this.userName = user.userName;
+
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    var userConnect = await this.socket.connect(this.user.userSid);
+    this.user.setUser(userConnect.sid, userConnect.pid, userConnect.userName);
+    this.userName = this.user.userName;
+    console.log("Set user name");
+
     if (!this.user.hasChangedName)
       this.userNameModal();
   }
