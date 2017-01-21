@@ -42,6 +42,8 @@ export class AppComponent implements OnInit {
     modalRef.componentInstance.userName = this.user.userName;
 
     modalRef.result.then((userName: string) => {
+      if (userName === this.userName)
+        return;
       this.socket.emit<string,string>('change-username', { data: userName }, response => {
         if (response.error) {
           this.toaster.pop('error', null, response.error);
