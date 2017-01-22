@@ -11,7 +11,8 @@
 ## Starting a local server
 
 * Install dependencies: `npm install`
-* Run start script: `npm start` (this will automatically rebuild typescript, and restart server on change)
+* Run start script: `npm start`
+ * Alternatively, for development: `npm run dev` (this will automatically rebuild typescript, and restart server on change)
 
 ## Deploying to heroku
 
