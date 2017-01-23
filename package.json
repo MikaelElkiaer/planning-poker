@@ -2,10 +2,13 @@
   "name": "planning-poker",
   "version": "1.0.0",
   "scripts": {
-    "start": "node ./server/bin/www.js",
-    "dev": "nodemon ./server/bin/www.js --ext js --watch ./server --watch ./shared --delay 3 & tsc -w",
-    "reindex": "./reindex.sh",
-    "postinstall": "tsc"
+    "start": "npm run env:prod && tsc && npm run start:prod",
+    "dev": "npm run env:dev && tsc && npm run start:dev",
+    "start:dev": "tsc -w & nodemon ./server/bin/www.js --ext js --watch ./server --watch ./shared --delay 3",
+    "start:prod": "node ./server/bin/www.js",
+    "env:dev": "cp ./app/config/environment.dev.ts ./app/config/environment.ts",
+    "env:prod": "cp ./app/config/environment.prod.ts ./app/config/environment.ts",
+    "reindex": "./reindex.sh"
   },
   "licenses": [
     {

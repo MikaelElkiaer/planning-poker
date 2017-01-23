@@ -7,3 +7,5 @@ server.js*
 **/*.js.map
 yarn-error.log
 yarn.lock
+
+app/config/environment.ts
