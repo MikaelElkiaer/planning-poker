@@ -11,8 +11,12 @@ export class SocketService {
 
   constructor(private user: UserService) { }
 
-  connect(userSid: string): Promise<Dto.UserConnect> {
-    this.socket = io.connect({ query: `userSid=${userSid}` });
+  connect(userSid: string, userName: string): Promise<Dto.UserConnect> {
+    var query = `userSid=${userSid}`;
+    if (userName)
+      query += `&userName=${userName}`;
+
+    this.socket = io.connect({ query });
     return new Promise((resolve, reject) => {
       this.emit<null, Dto.UserConnect>('conn', { data: null }, response => {
         if (response.error)

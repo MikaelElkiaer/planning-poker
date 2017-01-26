@@ -12,10 +12,10 @@ export class User {
   private _active: boolean;
   private static nextUserNumber: number = 1;
   
-  constructor() {
+  constructor(userName: string = undefined) {
     this._sid = User.createId();
     this._pid = User.createId();
-    this._userName = User.getNextUserName();
+    this._userName = userName || User.getNextUserName();
     this._active = true;
   }
 

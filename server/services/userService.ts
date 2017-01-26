@@ -18,9 +18,10 @@ export class UserService {
 
     static handleNewSocket(socket: SocketIO.Socket, next: (error?: any) => void, users: UserRepository) {
         var sid = socket.handshake.query.userSid;
+        var userName = socket.handshake.query.userName;
 
         if (!sid || !users.getUserBySid(sid))
-            users.addUser(socket.id, new User());
+            users.addUser(socket.id, new User(userName));
         else
             users.changeId(sid, socket.id, true);
 

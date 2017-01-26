@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
-    var userConnect = await this.socket.connect(this.user.userSid);
+    var userConnect = await this.socket.connect(this.user.userSid, this.user.userName);
     this.user.updateUser(userConnect.sid, userConnect.pid, userConnect.userName);
     this.userName = this.user.userName;
     console.log("Updated user");
