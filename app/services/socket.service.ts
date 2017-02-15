@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as io from 'socket.io-client';
+import { ToasterService } from 'angular2-toaster';
 
 import { UserService } from './user.service';
 import * as Dto from '../../shared/dto';
@@ -20,24 +21,21 @@ export class SocketService {
       query += `&userName=${userName}`;
 
     this.socket = io.connect({ query });
-    return new Promise((resolve, reject) => {
-      this.emit<null, Dto.UserConnect>('conn', { data: null }, response => {
-        if (response.error)
+    return this.emit<null, Dto.UserConnect>('conn');
+  }
+
+  emit<T, S>(eventName: string, request?: Msg.IEmitRequest<T>): Promise<S> {
+    return new Promise<S>((resolve, reject) => {
+      this.socket.emit(eventName, request || { data: null }, (response: Msg.IEmitResponse<S>) => {
+        if (response.error) {
+          console.error(response.error);
+          this.toaster.pop('error', null, response.error);
           reject(response.error);
+        }
         else {
-          console.log("Connected to server");
           resolve(response.data);
         }
       });
-    });
-  }
-
-  emit<T, S>(eventName: string, request: Msg.IEmitRequest<T>, callback: (arg: Msg.IEmitResponse<S>) => void) {
-    this.socket.emit(eventName, request, (...args) => {
-      var cArgs = args;
-      if (callback) {
-        callback.apply(this.socket, cArgs);
-      }
     });
   }
 

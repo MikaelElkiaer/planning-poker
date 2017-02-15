@@ -1,6 +1,5 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToasterService } from 'angular2-toaster';
 
 import { SocketService } from '../services/index';
 import * as Dto from '../../shared/dto/index';
@@ -8,7 +7,7 @@ import * as Dto from '../../shared/dto/index';
 @Component({
   templateUrl: 'views/home'
 })
-export class HomeComponent implements OnDestroy {
+export class HomeComponent implements OnDestroy, OnInit {
   users: { [id: string]: Dto.UserPublic } = { };
   joinModel: { gameId: string, spectate: boolean } = { gameId: '', spectate: false };
   get usersList() {
@@ -19,6 +18,17 @@ export class HomeComponent implements OnDestroy {
     private socket: SocketService,
     private router: Router
     ) { }
+
+  async ngOnInit() {
+    try {
+      let users = await this.socket.emit<null,{[id: string]: Dto.UserPublic}>('home', { data: null });
+
+      this.users = users;
+      console.info('Requested home users: %o', users);
+    }
+    catch (error) {
+      return;
+    }
 
     this.socket.on<Dto.UserPublic>('user:connect', response => {
       this.users[response.data.pid] = response.data;
@@ -50,15 +60,15 @@ export class HomeComponent implements OnDestroy {
     this.router.navigate(['/game', this.joinModel.gameId], { queryParams: { spectate: this.joinModel.spectate }});
   }
 
-  onCreateGame() {
+  async onCreateGame() {
     console.info('Creating game');
-    this.socket.emit<null, Dto.GamePublic>('create-game', null, response => {
-      if (response.error)
-        this.toaster.pop('error', null, response.error);
-      else {
-        console.info('Created game: %o', response.data);
-        this.router.navigate(['/game', response.data.gameId]);
-      }
-    });
+    try {
+      let game = await this.socket.emit<null, Dto.GamePublic>('create-game', null);
+      console.info('Created game: %o', game);
+      this.router.navigate(['/game', game.gameId]);
+    }
+    catch (error) {
+      return;
+    }
   }
 }

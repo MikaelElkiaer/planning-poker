@@ -28,26 +28,31 @@ export class GameComponent implements OnDestroy, OnInit {
   private players: { [id: string]: Dto.PlayerPublic } = {};
   private _hostPid: string = '';
 
-  constructor(private route: ActivatedRoute, private router: Router, private socket: SocketService, private user: UserService,
-        private modalService: NgbModal, private toaster: ToasterService) {
-    
-  }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private socket: SocketService,
+    private user: UserService,
+    private modalService: NgbModal,
+    private toaster: ToasterService
+    ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this._gameId = this.route.snapshot.params['id'];
     this.spectate = this.route.snapshot.queryParams['spectate'] == "true";
 
-    this.socket.emit<Dto.JoinGame, Dto.GamePublic>('join-game', { data: new Dto.JoinGame(this._gameId, this.spectate) }, response => {
-      if (response.error) {
-        this.toaster.pop('error', null, response.error);
+    try {
+      let game = await this.socket.emit<Dto.JoinGame, Dto.GamePublic>('join-game', { data: new Dto.JoinGame(this._gameId, this.spectate) });
+      
+      this.players = game.players;
+      this._hostPid = game.hostPid;
+      this.state = game.gameState;
+      console.info('Joined game: %o', game);
+    }
+    catch (error) {
         this.router.navigate(['']);
         return;
-      }
-      this.players = response.data.players;
-      this._hostPid = response.data.hostPid;
-      this.state = response.data.gameState;
-      console.info('Joined game: %o', response.data);
-    });
+    }
 
     this.socket.on<Dto.PlayerPublic>('user:join-game', response => {
       this.players[response.data.user.pid] = response.data;
@@ -109,61 +114,61 @@ export class GameComponent implements OnDestroy, OnInit {
     this.socket.removeAllListeners();
   }
 
-  startStopGame() {
+  async startStopGame() {
     var newState = this.state === Dto.GameState.Voting ? Dto.GameState.Waiting : Dto.GameState.Voting;
-    this.socket.emit<Dto.ChangeGameState, Dto.GamePublic>('change-game-state', { data: new Dto.ChangeGameState(this._gameId, newState) }, response => {
-      if (response.error)
-        this.toaster.pop('error', null, response.error);
-    });
+    let game = await this.socket.emit<Dto.ChangeGameState, Dto.GamePublic>('change-game-state', { data: new Dto.ChangeGameState(this._gameId, newState) });
   }
 
-  leaveGame() {
+  async leaveGame() {
     if (this.spectate) {
       this.router.navigate(['']);
       return;
     }
     
-    this.socket.emit<Dto.LeaveGame, null>('leave-game', { data: new Dto.LeaveGame(this._gameId)}, response => {
-      if (response.error) {
-        this.toaster.pop('error', null, response.error);
-        return;
-      }
-      this.router.navigate(['']);
-      console.log('Left game: %s', this.gameId);
-    });
+    try {
+      let x = await this.socket.emit<Dto.LeaveGame, void>('leave-game', { data: new Dto.LeaveGame(this._gameId) });
+    }
+    catch (error) {
+      return;
+    }
+    
+    this.router.navigate(['']);
+    console.log('Left game: %s', this.gameId);
   }
 
-  kickModal(player: Dto.PlayerPublic) {
+  async kickModal(player: Dto.PlayerPublic) {
     const modalRef = this.modalService.open(KickModalComponent, { size: 'sm' });
     modalRef.componentInstance.player = player;
 
-    modalRef.result.then(() => {
-      this.socket.emit<Dto.KickPlayer, null>('kick-player', { data: new Dto.KickPlayer(this._gameId, player.user.pid) }, response => {
-        if (response.error) {
-          this.toaster.pop('error', null, response.error);
-          return;
-        }
-        delete this.players[player.user.pid];
-        console.info('Kicked player: %o', player);
-      });
+    modalRef.result.then(async () => {
+      try {
+        let x = await this.socket.emit<Dto.KickPlayer, void>('kick-player', { data: new Dto.KickPlayer(this._gameId, player.user.pid) });
+      }
+      catch (error) {
+        return;
+      }
+      
+      delete this.players[player.user.pid];
+      console.info('Kicked player: %o', player);
     }, () => {
       return;
     });
   }
 
-  cardModal() {
+  async cardModal() {
     const modalRef = this.modalService.open(CardModalComponent, { size: 'lg' });
     modalRef.componentInstance.currentCard = this.players[this.userPid].currentCard;
 
-    modalRef.result.then(card => {
-      this.socket.emit<Dto.ChooseCard, null>('choose-card', { data: new Dto.ChooseCard(this._gameId, card) }, response => {
-        if (response.error) {
-          this.toaster.pop('error', null, response.error);
-          return;
-        }
-        this.players[this.userPid].currentCard = card;
-        console.info('Selected card: %s', card);
-      });
+    modalRef.result.then(async card => {
+      try {
+        let x = await this.socket.emit<Dto.ChooseCard, void>('choose-card', { data: new Dto.ChooseCard(this._gameId, card) });
+      }
+      catch (error) {
+        return;
+      }
+      
+      this.players[this.userPid].currentCard = card;
+      console.info('Selected card: %s', card);
     }, () => {
       return;
     });

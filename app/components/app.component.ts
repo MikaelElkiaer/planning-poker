@@ -39,26 +39,24 @@ export class AppComponent implements OnInit {
     this.navbarCollapsed = !this.navbarCollapsed;
   }
   
-  userNameModal() {
+  async userNameModal() {
     const modalRef = this.modalService.open(UserNameModalComponent, { size: 'lg' });
     modalRef.componentInstance.userName = this.user.userName;
 
-    modalRef.result.then((userName: string) => {
+    modalRef.result.then(async (userName: string) => {
       if (userName === this.userName) {
         this.user.hasChangedName = '1';
         return;
       }
-      this.socket.emit<string,string>('change-username', { data: userName }, response => {
-        if (response.error) {
-          this.toaster.pop('error', null, response.error);
-          return;
-        }
-
-        this.user.userName = response.data;
-        this.userName = response.data;
+      try {
+        let name = await this.socket.emit<string,string>('change-username', { data: userName });
+        
+        this.user.userName = name;
+        this.userName = name;
         this.user.hasChangedName = '1';
-        console.info('Changed userName to: ', response.data);
-      });
+        console.info('Changed userName to: ', name);
+      }
+      catch (error) { }
       return;
     }, () => {
       return;
