@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToasterService, ToasterConfig } from 'angular2-toaster';
+import { ToasterConfig } from 'angular2-toaster';
 
 import { SocketService, UserService } from '../services/index';
 import { UserNameModalComponent } from './index';
@@ -19,9 +19,11 @@ export class AppComponent implements OnInit {
     preventDuplicates: true
   });
 
-  constructor(private user: UserService, private socket: SocketService, private modalService: NgbModal, private toaster: ToasterService) {
-
-  }
+  constructor(
+    private user: UserService,
+    private socket: SocketService,
+    private modalService: NgbModal
+    ) { }
 
   async ngOnInit() {
     var userConnect = await this.socket.connect(this.user.userSid, this.user.userName);

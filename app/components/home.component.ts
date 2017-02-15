@@ -15,11 +15,10 @@ export class HomeComponent implements OnDestroy {
     return Object.keys(this.users).map(pid => this.users[pid]);
   }
 
-  constructor(private socket: SocketService, private router: Router, private toaster: ToasterService) {
-    this.socket.emit<null,{[id: string]: Dto.UserPublic}>('home', { data: null }, response => {
-      this.users = response.data;
-      console.info('Requested home users: %o', response.data);
-    });
+  constructor(
+    private socket: SocketService,
+    private router: Router
+    ) { }
 
     this.socket.on<Dto.UserPublic>('user:connect', response => {
       this.users[response.data.pid] = response.data;

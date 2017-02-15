@@ -9,7 +9,10 @@ import * as Msg from '../../shared/message';
 export class SocketService {
   private socket: SocketIOClient.Socket;
 
-  constructor(private user: UserService) { }
+  constructor(
+    private user: UserService,
+    private toaster: ToasterService
+    ) { }
 
   connect(userSid: string, userName: string): Promise<Dto.UserConnect> {
     var query = `userSid=${userSid}`;
