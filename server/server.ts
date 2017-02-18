@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as http from 'http';
 import * as socketio from 'socket.io';
+import * as compression from 'compression';
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
 
@@ -31,6 +32,7 @@ export class Server {
     this.app.disable('view cache');
     this.app.set('port', (process.env.PORT || 5000));
     this.app.set('view engine', 'pug');
+    this.app.use(compression());
     this.app.use('/app', express.static('app'));
     this.app.use('/shared', express.static('shared'));
     this.app.use('/node_modules', express.static('node_modules'));
