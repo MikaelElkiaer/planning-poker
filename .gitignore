@@ -1,11 +1,11 @@
 node_modules
 .vscode
 typings
-server.js*
-**/*.js
-!systemjs.config.js
-**/*.js.map
 yarn-error.log
 yarn.lock
+.yarnclean
+!systemjs.config.js
 
+*.js
+*.js.map
 app/config/environment.ts
