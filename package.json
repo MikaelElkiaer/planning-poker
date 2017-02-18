@@ -2,12 +2,14 @@
   "name": "planning-poker",
   "version": "1.0.0",
   "scripts": {
-    "start": "npm run env:prod && tsc && npm run start:prod",
+    "start": "npm run env:prod && npm run build:prod && npm run start:prod",
     "dev": "npm run env:dev && tsc && npm run start:dev",
     "start:dev": "tsc -w & nodemon ./server/bin/www.js --ext js --watch ./server --watch ./shared --delay 3",
     "start:prod": "node ./server/bin/www.js",
     "env:dev": "cp ./app/config/environment.dev.ts ./app/config/environment.ts",
     "env:prod": "cp ./app/config/environment.prod.ts ./app/config/environment.ts",
+    "build:prod": "tsc && npm run minify",
+    "minify": "./minify.sh",
     "reindex": "./reindex.sh"
   },
   "licenses": [
@@ -47,6 +49,7 @@
     "socket.io": "^1.7.2",
     "systemjs": "^0.19.43",
     "typescript": "^2.1.5",
+    "uglifyjs": "^2.4.10",
     "zone.js": "^0.7.6"
   },
   "devDependencies": {
