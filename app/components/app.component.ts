@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToasterConfig } from 'angular2-toaster';
 
-import { SocketService, UserService } from '../services/index';
+import { SocketState, SocketService, UserService } from '../services/index';
 import { UserNameModalComponent } from './index';
 
 @Component({
@@ -19,6 +19,9 @@ export class AppComponent implements OnInit {
     preventDuplicates: true
   });
 
+  private socketState: SocketState = SocketState.Uninitialized;
+  private socketStateSubscription;
+
   constructor(
     private user: UserService,
     private socket: SocketService,
@@ -26,13 +29,16 @@ export class AppComponent implements OnInit {
     ) { }
 
   async ngOnInit() {
-    var userConnect = await this.socket.connect(this.user.userSid, this.user.userName);
-    this.user.updateUser(userConnect.sid, userConnect.pid, userConnect.userName);
-    this.userName = this.user.userName;
-    console.log("Updated user");
+    this.socketStateSubscription = await this.socket.socketStateEventEmitter.subscribe(async (state: SocketState) => {
+      this.socketState = state;
 
-    if (!this.user.hasChangedName)
-      this.userNameModal();
+      if (this.socketState === SocketState.Connected) {
+        this.userName = this.user.userName;
+
+        if (!this.user.hasChangedName)
+          await this.userNameModal();
+      }
+    });
   }
 
   collapse() {

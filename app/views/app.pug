@@ -9,10 +9,12 @@ nav.navbar.navbar-default
       span.icon-bar
       span.icon-bar
       span.icon-bar
-    a.navbar-brand(routerLink='/') Planning Poker
+    a.navbar-brand(routerLink='/')
+      i.fa.fa-circle([ngClass]='{ "text-danger": socketState!==1, "text-success": socketState===1 }')
+      | &nbsp; Planning Poker
   .navbar-collapse([ngClass]='{ collapse: navbarCollapsed }')
     ul.nav.navbar-nav.navbar-right
-      li                        
+      li
         a(style='cursor: pointer;', (click)='userNameModal()') {{ userName }}
 
 router-outlet
