@@ -29,16 +29,11 @@ export class AppComponent implements OnDestroy, OnInit {
     ) { }
 
   ngOnInit() {
-    this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe((state: SocketState) => {
-      if (state === SocketState.Connected) {
-        this.userName = this.user.userName;
+    if (this.socket.state === SocketState.Connected) {
+      this.handleStateChange(this.socket.state);
+    }
 
-        if (!this.user.hasChangedName)
-          this.userNameModal();
-      }
-
-      this.socketState = state;
-    });
+    this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(state => this.handleStateChange(state));
   }
 
   ngOnDestroy() {
@@ -71,5 +66,16 @@ export class AppComponent implements OnDestroy, OnInit {
     }, () => {
       return;
     });
+  }
+
+  private handleStateChange(state: SocketState) {
+    if (state === SocketState.Connected) {
+      this.userName = this.user.userName;
+
+      if (!this.user.hasChangedName)
+        this.userNameModal();
+    }
+
+    this.socketState = state;
   }
 }

@@ -44,24 +44,11 @@ export class GameComponent implements OnDestroy, OnInit {
     this._gameId = this.route.snapshot.params['id'];
     this.spectate = this.route.snapshot.queryParams['spectate'] === "true";
 
-    this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(async (state: SocketState) => {
-      if (state === SocketState.Connected) {
-        try {
-          let game = await this.socket.emit<Dto.JoinGame, Dto.GamePublic>('join-game', { data: new Dto.JoinGame(this._gameId, this.spectate) });
-          
-          this.players = game.players;
-          this._hostPid = game.hostPid;
-          this.state = game.gameState;
-          console.info('Joined game: %o', game);
-        }
-        catch (error) {
-            this.router.navigate(['']);
-            return;
-        }
-      }
+    if (this.socket.state === SocketState.Connected) {
+      await this.handleStateChange(this.socket.state);
+    }
 
-      this.socketState = state;
-    });
+    this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(async state => this.handleStateChange(state));
 
     this.socket.on<Dto.PlayerPublic>('user:join-game', response => {
       this.players[response.data.user.pid] = response.data;
@@ -186,5 +173,24 @@ export class GameComponent implements OnDestroy, OnInit {
 
   private strcmp(a: string, b: string) {
     return (a == b) ? 0 : ((a > b) ? 1 : -1);
+  }
+
+  private async handleStateChange(state: SocketState) {
+    if (state === SocketState.Connected) {
+      try {
+        let game = await this.socket.emit<Dto.JoinGame, Dto.GamePublic>('join-game', { data: new Dto.JoinGame(this._gameId, this.spectate) });
+        
+        this.players = game.players;
+        this._hostPid = game.hostPid;
+        this.state = game.gameState;
+        console.info('Joined game: %o', game);
+      }
+      catch (error) {
+          this.router.navigate(['']);
+          return;
+      }
+    }
+
+    this.socketState = state;
   }
 }

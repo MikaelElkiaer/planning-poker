@@ -23,21 +23,11 @@ export class HomeComponent implements OnDestroy, OnInit {
     ) { }
 
   async ngOnInit() {
-    this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(async (state: SocketState) => {
-      if (state === SocketState.Connected) {
-        try {
-          let users = await this.socket.emit<null,{[id: string]: Dto.UserPublic}>('home', { data: null });
+    if (this.socket.state === SocketState.Connected) {
+      await this.handleStateChange(this.socket.state);
+    }
 
-          this.users = users;
-          console.info('Requested home users: %o', users);
-        }
-        catch (error) {
-          return;
-        }
-      }
-
-      this.socketState = state;
-    });
+    this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(async state => this.handleStateChange(state));
 
     this.socket.on<Dto.UserPublic>('user:connect', response => {
       this.users[response.data.pid] = response.data;
@@ -80,5 +70,21 @@ export class HomeComponent implements OnDestroy, OnInit {
     catch (error) {
       return;
     }
+  }
+
+  private async handleStateChange(state) {
+    if (state === SocketState.Connected) {
+      try {
+        let users = await this.socket.emit<null,{[id: string]: Dto.UserPublic}>('home', { data: null });
+
+        this.users = users;
+        console.info('Requested home users: %o', users);
+      }
+      catch (error) {
+        return;
+      }
+    }
+
+    this.socketState = state;
   }
 }

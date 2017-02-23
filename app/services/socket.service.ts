@@ -8,10 +8,11 @@ import * as Msg from '../../shared/message';
 
 @Injectable()
 export class SocketService {
+  @Output() socketStateEventEmitter: EventEmitter<SocketState> = new EventEmitter<SocketState>(true);
+  get state(): SocketState { return this.socketState; }
+
   private socket: SocketIOClient.Socket;
   private socketState: SocketState = SocketState.Disconnected;
-
-  @Output() socketStateEventEmitter: EventEmitter<SocketState> = new EventEmitter<SocketState>(true);
 
   constructor(
     private user: UserService,
