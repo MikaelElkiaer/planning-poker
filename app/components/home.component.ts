@@ -30,13 +30,13 @@ export class HomeComponent implements OnDestroy, OnInit {
 
           this.users = users;
           console.info('Requested home users: %o', users);
-
-          this.socketState = state;
         }
         catch (error) {
           return;
         }
       }
+
+      this.socketState = state;
     });
 
     this.socket.on<Dto.UserPublic>('user:connect', response => {
@@ -62,6 +62,7 @@ export class HomeComponent implements OnDestroy, OnInit {
 
   ngOnDestroy() {
     this.socket.removeAllListeners();
+    this.socketStateSubscription.unsubscribe();
   }
 
   onJoinGame() {

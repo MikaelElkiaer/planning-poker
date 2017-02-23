@@ -53,14 +53,14 @@ export class GameComponent implements OnDestroy, OnInit {
           this._hostPid = game.hostPid;
           this.state = game.gameState;
           console.info('Joined game: %o', game);
-          
-          this.socketState = state;
         }
         catch (error) {
             this.router.navigate(['']);
             return;
         }
       }
+
+      this.socketState = state;
     });
 
     this.socket.on<Dto.PlayerPublic>('user:join-game', response => {
@@ -121,6 +121,7 @@ export class GameComponent implements OnDestroy, OnInit {
 
   ngOnDestroy() {
     this.socket.removeAllListeners();
+    this.socketStateSubscription.unsubscribe();
   }
 
   async startStopGame() {

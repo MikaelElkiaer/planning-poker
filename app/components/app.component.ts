@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToasterConfig } from 'angular2-toaster';
 
@@ -9,7 +9,7 @@ import { UserNameModalComponent } from './index';
   selector: 'app',
   templateUrl: 'views/app'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnDestroy, OnInit {
   navbarCollapsed: boolean = true;
   userName: string = '???';
   toasterConfig: ToasterConfig = new ToasterConfig({
@@ -30,15 +30,19 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe((state: SocketState) => {
-      this.socketState = state;
-
-      if (this.socketState === SocketState.Connected) {
+      if (state === SocketState.Connected) {
         this.userName = this.user.userName;
 
         if (!this.user.hasChangedName)
           this.userNameModal();
       }
+
+      this.socketState = state;
     });
+  }
+
+  ngOnDestroy() {
+    this.socketStateSubscription.unsubscribe();
   }
 
   collapse() {
