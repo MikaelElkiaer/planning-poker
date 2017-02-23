@@ -19,13 +19,21 @@ export class SocketService {
   ) {
     this.initializeConnection(this.user.userSid, this.user.userName);
     this.connect();
+    this.setUpEventListeners();
   }
 
   private async connect() {
+    this.socket.connect();
     let userConnect = await this.emit<null, Dto.UserConnect>('conn');
     this.user.updateUser(userConnect.sid, userConnect.pid, userConnect.userName);
 
     this.socketState = SocketState.Connected;
+    this.socketStateEventEmitter.emit(this.socketState);
+  }
+
+  private async disconnect() {
+    this.socket.disconnect();
+    this.socketState = SocketState.Disconnected;
     this.socketStateEventEmitter.emit(this.socketState);
   }
 
@@ -60,7 +68,18 @@ export class SocketService {
     if (userName)
       query += `&userName=${userName}`;
 
-    this.socket = io.connect({ query });
+    this.socket = io.connect({ query, autoConnect: false });
+  }
+
+  private setUpEventListeners() {
+    let self = this;
+    addEventListener('online', e => {
+      self.connect();
+    });
+
+    addEventListener('offline', e => {
+      self.disconnect();
+    });
   }
 }
 
