@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import * as io from 'socket.io-client';
 import { ToasterService } from 'angular2-toaster';
 
@@ -8,20 +8,34 @@ import * as Msg from '../../shared/message';
 
 @Injectable()
 export class SocketService {
+  @Output() socketStateEventEmitter: EventEmitter<SocketState> = new EventEmitter<SocketState>(true);
+  get state(): SocketState { return this.socketState; }
+
   private socket: SocketIOClient.Socket;
+  private socketState: SocketState = SocketState.Disconnected;
 
   constructor(
     private user: UserService,
     private toaster: ToasterService
-    ) { }
+  ) {
+    this.initializeConnection(this.user.userSid, this.user.userName);
+    this.connect();
+    this.setUpEventListeners();
+  }
 
-  connect(userSid: string, userName: string): Promise<Dto.UserConnect> {
-    var query = `userSid=${userSid}`;
-    if (userName)
-      query += `&userName=${userName}`;
+  private async connect() {
+    this.socket.connect();
+    let userConnect = await this.emit<null, Dto.UserConnect>('conn');
+    this.user.updateUser(userConnect.sid, userConnect.pid, userConnect.userName);
 
-    this.socket = io.connect({ query });
-    return this.emit<null, Dto.UserConnect>('conn');
+    this.socketState = SocketState.Connected;
+    this.socketStateEventEmitter.emit(this.socketState);
+  }
+
+  private async disconnect() {
+    this.socket.disconnect();
+    this.socketState = SocketState.Disconnected;
+    this.socketStateEventEmitter.emit(this.socketState);
   }
 
   emit<T, S>(eventName: string, request?: Msg.IEmitRequest<T>): Promise<S> {
@@ -49,4 +63,29 @@ export class SocketService {
   removeAllListeners() {
     this.socket.removeAllListeners();
   }
+
+  private initializeConnection(userSid: string, userName: string) {
+    var query = `userSid=${userSid}`;
+    if (userName)
+      query += `&userName=${userName}`;
+
+    this.socket = io.connect({ query, autoConnect: false });
+  }
+
+  private setUpEventListeners() {
+    let self = this;
+    addEventListener('online', e => {
+      self.connect();
+    });
+
+    addEventListener('offline', e => {
+      self.disconnect();
+    });
+  }
+}
+
+export enum SocketState {
+  Unknown = 0,
+  Connected = 1,
+  Disconnected = 2
 }

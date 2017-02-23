@@ -12,10 +12,10 @@
                     h4.panel-title
                         | Game # {{ gameId }}
                         span &nbsp;[
-                        span.game-state([ngClass]='{ "text-success": isVoting, "text-danger": !isVoting }')
-                            | {{ isVoting ? 'Voting' : 'Waiting' }}
+                        span.game-state([ngClass]='{ "text-danger": socketState!==1, "text-success": socketState===1 && isVoting, "text-warning": socketState===1 && !isVoting }')
+                            | {{ socketState!==1 ? 'Disconnected' : (isVoting ? 'Voting' : 'Waiting') }}
                         span ]
-                .panel-body(style='text-align: center')
+                .panel-body(style='text-align: center', [hidden]='socketState!==1')
                     .vote([ngClass]='{ user: player.user.pid === userPid, pickable: (player.user.pid === userPid && isVoting) || (player.user.pid !== userPid && isHost) }',
                     *ngFor='let player of playersList',
                     (click)='(isVoting && player.user.pid === userPid && cardModal()) || (!(player.user.pid === userPid) && isHost && kickModal(player))')
@@ -24,3 +24,8 @@
                             small(*ngIf='player.user.pid === hostPid')
                                 span.fa.fa-star &nbsp;
                             | {{ player.user.userName }}
+                .panel-body([hidden]='socketState===1')
+                    .spinner(style='margin: 50px auto 50px auto')
+                        .bounce1
+                        .bounce2
+                        .bounce3

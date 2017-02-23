@@ -1,17 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToasterConfig } from 'angular2-toaster';
 
-import { SocketService, UserService } from '../services/index';
+import { SocketState, SocketService, UserService } from '../services/index';
 import { UserNameModalComponent } from './index';
 
 @Component({
   selector: 'app',
   templateUrl: 'views/app'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnDestroy, OnInit {
   navbarCollapsed: boolean = true;
-  userName: string = '';
+  userName: string = '???';
   toasterConfig: ToasterConfig = new ToasterConfig({
     limit: 5,
     timeout: 5000,
@@ -19,20 +19,25 @@ export class AppComponent implements OnInit {
     preventDuplicates: true
   });
 
+  private socketState: SocketState = SocketState.Disconnected;
+  private socketStateSubscription;
+
   constructor(
     private user: UserService,
     private socket: SocketService,
     private modalService: NgbModal
     ) { }
 
-  async ngOnInit() {
-    var userConnect = await this.socket.connect(this.user.userSid, this.user.userName);
-    this.user.updateUser(userConnect.sid, userConnect.pid, userConnect.userName);
-    this.userName = this.user.userName;
-    console.log("Updated user");
+  ngOnInit() {
+    if (this.socket.state === SocketState.Connected) {
+      this.handleStateChange(this.socket.state);
+    }
 
-    if (!this.user.hasChangedName)
-      this.userNameModal();
+    this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(state => this.handleStateChange(state));
+  }
+
+  ngOnDestroy() {
+    this.socketStateSubscription.unsubscribe();
   }
 
   collapse() {
@@ -61,5 +66,16 @@ export class AppComponent implements OnInit {
     }, () => {
       return;
     });
+  }
+
+  private handleStateChange(state: SocketState) {
+    if (state === SocketState.Connected) {
+      this.userName = this.user.userName;
+
+      if (!this.user.hasChangedName)
+        this.userNameModal();
+    }
+
+    this.socketState = state;
   }
 }
