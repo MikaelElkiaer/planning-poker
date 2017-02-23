@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { SocketService } from '../services/index';
+import { SocketState, SocketService } from '../services/index';
 import * as Dto from '../../shared/dto/index';
 
 @Component({
@@ -14,21 +14,30 @@ export class HomeComponent implements OnDestroy, OnInit {
     return Object.keys(this.users).map(pid => this.users[pid]);
   }
 
+  private socketState: SocketState = SocketState.Disconnected;
+  private socketStateSubscription;
+
   constructor(
     private socket: SocketService,
     private router: Router
     ) { }
 
   async ngOnInit() {
-    try {
-      let users = await this.socket.emit<null,{[id: string]: Dto.UserPublic}>('home', { data: null });
+    this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(async (state: SocketState) => {
+      if (state === SocketState.Connected) {
+        try {
+          let users = await this.socket.emit<null,{[id: string]: Dto.UserPublic}>('home', { data: null });
 
-      this.users = users;
-      console.info('Requested home users: %o', users);
-    }
-    catch (error) {
-      return;
-    }
+          this.users = users;
+          console.info('Requested home users: %o', users);
+
+          this.socketState = state;
+        }
+        catch (error) {
+          return;
+        }
+      }
+    });
 
     this.socket.on<Dto.UserPublic>('user:connect', response => {
       this.users[response.data.pid] = response.data;

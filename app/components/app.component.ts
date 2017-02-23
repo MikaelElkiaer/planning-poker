@@ -11,7 +11,7 @@ import { UserNameModalComponent } from './index';
 })
 export class AppComponent implements OnInit {
   navbarCollapsed: boolean = true;
-  userName: string = '';
+  userName: string = '???';
   toasterConfig: ToasterConfig = new ToasterConfig({
     limit: 5,
     timeout: 5000,
@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
     preventDuplicates: true
   });
 
-  private socketState: SocketState = SocketState.Uninitialized;
+  private socketState: SocketState = SocketState.Disconnected;
   private socketStateSubscription;
 
   constructor(
@@ -28,15 +28,15 @@ export class AppComponent implements OnInit {
     private modalService: NgbModal
     ) { }
 
-  async ngOnInit() {
-    this.socketStateSubscription = await this.socket.socketStateEventEmitter.subscribe(async (state: SocketState) => {
+  ngOnInit() {
+    this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe((state: SocketState) => {
       this.socketState = state;
 
       if (this.socketState === SocketState.Connected) {
         this.userName = this.user.userName;
 
         if (!this.user.hasChangedName)
-          await this.userNameModal();
+          this.userNameModal();
       }
     });
   }

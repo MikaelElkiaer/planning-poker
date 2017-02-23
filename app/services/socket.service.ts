@@ -9,7 +9,7 @@ import * as Msg from '../../shared/message';
 @Injectable()
 export class SocketService {
   private socket: SocketIOClient.Socket;
-  private socketState: SocketState = SocketState.Uninitialized;
+  private socketState: SocketState = SocketState.Disconnected;
 
   @Output() socketStateEventEmitter: EventEmitter<SocketState> = new EventEmitter<SocketState>(true);
 
@@ -65,7 +65,7 @@ export class SocketService {
 }
 
 export enum SocketState {
-  Uninitialized = 0,
+  Unknown = 0,
   Connected = 1,
   Disconnected = 2
 }

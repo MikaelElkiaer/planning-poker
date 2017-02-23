@@ -4,7 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToasterService } from 'angular2-toaster';
 
 import * as Dto from '../../shared/dto/index';
-import { SocketService, UserService } from '../services/index';
+import { SocketState, SocketService, UserService } from '../services/index';
 import { CardModalComponent, KickModalComponent } from './index';
 
 @Component({
@@ -28,6 +28,9 @@ export class GameComponent implements OnDestroy, OnInit {
   private players: { [id: string]: Dto.PlayerPublic } = {};
   private _hostPid: string = '';
 
+  private socketState: SocketState = SocketState.Disconnected;
+  private socketStateSubscription;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -39,20 +42,26 @@ export class GameComponent implements OnDestroy, OnInit {
 
   async ngOnInit() {
     this._gameId = this.route.snapshot.params['id'];
-    this.spectate = this.route.snapshot.queryParams['spectate'] == "true";
+    this.spectate = this.route.snapshot.queryParams['spectate'] === "true";
 
-    try {
-      let game = await this.socket.emit<Dto.JoinGame, Dto.GamePublic>('join-game', { data: new Dto.JoinGame(this._gameId, this.spectate) });
-      
-      this.players = game.players;
-      this._hostPid = game.hostPid;
-      this.state = game.gameState;
-      console.info('Joined game: %o', game);
-    }
-    catch (error) {
-        this.router.navigate(['']);
-        return;
-    }
+    this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(async (state: SocketState) => {
+      if (state === SocketState.Connected) {
+        try {
+          let game = await this.socket.emit<Dto.JoinGame, Dto.GamePublic>('join-game', { data: new Dto.JoinGame(this._gameId, this.spectate) });
+          
+          this.players = game.players;
+          this._hostPid = game.hostPid;
+          this.state = game.gameState;
+          console.info('Joined game: %o', game);
+          
+          this.socketState = state;
+        }
+        catch (error) {
+            this.router.navigate(['']);
+            return;
+        }
+      }
+    });
 
     this.socket.on<Dto.PlayerPublic>('user:join-game', response => {
       this.players[response.data.user.pid] = response.data;
