@@ -29,7 +29,7 @@ export class GameComponent implements OnDestroy, OnInit {
   private players: { [id: string]: Dto.PlayerPublic } = {};
   private _hostPid: string = '';
 
-  private socketState: SocketState = SocketState.Disconnected;
+  private socketState: SocketState;
   private socketStateSubscription;
 
   constructor(
@@ -39,15 +39,15 @@ export class GameComponent implements OnDestroy, OnInit {
     private user: UserService,
     private modalService: NgbModal,
     private toaster: ToasterService
-    ) { }
+    ) {
+      this.socketState = socket.state;
+    }
 
   async ngOnInit() {
     this._gameId = this.route.snapshot.params['id'];
     this.spectate = this.route.snapshot.queryParams['spectate'] === "true";
 
-    if (this.socket.state === SocketState.Connected) {
-      await this.handleStateChange(this.socket.state);
-    }
+    await this.handleStateChange(this.socket.state);
 
     this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(async state => this.handleStateChange(state));
 

@@ -14,18 +14,18 @@ export class HomeComponent implements OnDestroy, OnInit {
     return Object.keys(this.users).map(pid => this.users[pid]);
   }
 
-  private socketState: SocketState = SocketState.Disconnected;
+  private socketState: SocketState;
   private socketStateSubscription;
 
   constructor(
     private socket: SocketService,
     private router: Router
-    ) { }
+    ) {
+      this.socketState = socket.state;
+    }
 
   async ngOnInit() {
-    if (this.socket.state === SocketState.Connected) {
-      await this.handleStateChange(this.socket.state);
-    }
+    await this.handleStateChange(this.socket.state);
 
     this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(async state => this.handleStateChange(state));
 

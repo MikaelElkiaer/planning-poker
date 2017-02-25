@@ -26,12 +26,12 @@ export class AppComponent implements OnDestroy, OnInit {
     private user: UserService,
     private socket: SocketService,
     private modalService: NgbModal
-    ) { }
+    ) {
+      this.socketState = socket.state;
+    }
 
   ngOnInit() {
-    if (this.socket.state === SocketState.Connected) {
-      this.handleStateChange(this.socket.state);
-    }
+    this.handleStateChange(this.socket.state);
 
     this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(state => this.handleStateChange(state));
   }
