@@ -2,8 +2,8 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToasterConfig } from 'angular2-toaster';
 
-import { SocketState, SocketService, UserService } from '../services/index';
-import { UserNameModalComponent } from './index';
+import { SocketState, SocketService, UserService } from '../../services/index';
+import { UserNameModalComponent } from '../index';
 
 @Component({
   selector: 'app',
