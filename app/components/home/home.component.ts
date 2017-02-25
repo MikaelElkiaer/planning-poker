@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { SocketState, SocketService } from '../services/index';
-import * as Dto from '../../shared/dto/index';
+import { SocketState, SocketService } from '../../services/index';
+import * as Dto from '../../../shared/dto/index';
 
 @Component({
   templateUrl: 'views/home'

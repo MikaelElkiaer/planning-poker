@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import * as Dto from '../../shared/dto/index';
+import * as Dto from '../../../shared/dto/index';
 
 @Component({
     selector: 'kick-modal-component',

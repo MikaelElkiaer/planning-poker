@@ -7,7 +7,9 @@
     border: 1px solid #2e3338;
 }
 
-div.user > span.username, div.user > div.poker-card, .selected > div.poker-card {
+div.user > span.username,
+div.user > div.poker-card,
+.selected > div.poker-card {
     color: #5bc0de;
 }
 

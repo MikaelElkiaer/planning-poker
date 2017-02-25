@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import * as Dto from '../../shared/dto';
+import * as Dto from '../../../shared/dto';
 
 @Component({
   selector: 'card-modal-component',

@@ -3,12 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToasterService } from 'angular2-toaster';
 
-import * as Dto from '../../shared/dto/index';
-import { SocketState, SocketService, UserService } from '../services/index';
-import { CardModalComponent, KickModalComponent } from './index';
+import * as Dto from '../../../shared/dto/index';
+import { SocketState, SocketService, UserService } from '../../services/index';
+import { CardModalComponent, KickModalComponent } from '../index';
 
 @Component({
-  templateUrl: 'views/game'
+  templateUrl: 'views/game',
+  styleUrls: ['app/style/game.css']
 })
 export class GameComponent implements OnDestroy, OnInit {
   get gameId() { return this._gameId; }
