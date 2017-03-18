@@ -4,7 +4,7 @@
   "scripts": {
     "start": "npm run env:prod && npm run build:prod && npm run start:prod",
     "dev": "npm run env:dev && tsc && npm run start:dev",
-    "start:dev": "tsc -w & nodemon ./server/bin/www.js --ext js --watch ./server --watch ./shared --delay 3",
+    "start:dev": "tsc -w & nodemon ./server/bin/www.js --ext js --watch ./server --watch ./shared --delay 3 & browser-sync start --proxy 'localhost:5000' --files './app'",
     "start:prod": "node ./server/bin/www.js",
     "env:dev": "cp ./app/config/environment.dev.ts ./app/config/environment.ts",
     "env:prod": "cp ./app/config/environment.prod.ts ./app/config/environment.ts",
@@ -37,6 +37,7 @@
     "@types/socket.io-client": "^1.4.29",
     "angular2-toaster": "^2.0.0",
     "bootstrap": "^3.3.7",
+    "browser-sync": "^2.18.8",
     "compression": "^1.6.2",
     "core-js": "^2.4.1",
     "crypto": "^0.0.3",
