@@ -101,18 +101,9 @@ export class HomeComponent implements OnDestroy, OnInit {
     let gameViewModels: {[id: string]: GameViewModel} = {};
 
     Object.keys(games).forEach(gid => {
-      let game = games[gid];
-      let gameName = this.getGameName(game, users);
-      let playersCount = Object.keys(game.players).length;
-      let gameViewModel = new GameViewModel(game, gameName, playersCount);
-      gameViewModels[gid] = gameViewModel;
+      gameViewModels[gid] = new GameViewModel(games[gid]);
     });
 
     return gameViewModels;
-  }
-
-  private getGameName(game: Dto.GamePublic, users: {[id: string]: Dto.UserPublic }): string {
-    let hostName = users[game.hostPid].userName;
-    return `${hostName}'s game`;
   }
 }
