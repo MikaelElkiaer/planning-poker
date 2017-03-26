@@ -18,12 +18,12 @@ export class SocketService {
     private user: UserService,
     private toaster: ToasterService
   ) {
-    this.initializeConnection(this.user.userSid, this.user.userName);
     this.connect();
     this.setUpEventListeners();
   }
 
   private async connect() {
+    this.initializeConnection(this.user.userSid, this.user.userName);
     this.socket.connect();
     let userConnect = await this.emit<null, Dto.UserConnect>('conn');
     this.user.updateUser(userConnect.sid, userConnect.pid, userConnect.userName);
@@ -73,13 +73,12 @@ export class SocketService {
   }
 
   private setUpEventListeners() {
-    let self = this;
     addEventListener('online', e => {
-      self.connect();
+      this.connect();
     });
 
     addEventListener('offline', e => {
-      self.disconnect();
+      this.disconnect();
     });
   }
 }
