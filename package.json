@@ -41,7 +41,6 @@
     "@types/socket.io-client": "^1.4.29",
     "angular2-toaster": "^2.0.0",
     "bootstrap": "^3.3.7",
-    "browser-sync": "^2.18.8",
     "compression": "^1.6.2",
     "copy": "^0.3.0",
     "core-js": "^2.4.1",
@@ -60,6 +59,7 @@
     "zone.js": "^0.7.7"
   },
   "devDependencies": {
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.11.0",
+    "browser-sync": "^2.18.8"
   }
 }
