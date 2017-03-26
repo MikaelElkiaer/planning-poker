@@ -35,6 +35,7 @@ export class GameService {
             if (!request.data.spectate) {
                 if (!game.getPlayerByPid(this.user.pid)) {
                     game.addPlayer(this.user);
+                    this.socketService.emitAllExceptSender('game:state-change', Mapper.mapGameToPublic(game, true));
                     this.socketService.emitAllInRoomExceptSender('user:join-game', Mapper.mapPlayerToPublic(game.getPlayerByPid(this.user.pid), game.isVoting), game.id);
                 }
             }
@@ -91,6 +92,7 @@ export class GameService {
             this.socketService.leave(game.id);
             game.removePlayer(this.user.pid);
 
+            this.socketService.emitAllExceptSender('game:state-change', Mapper.mapGameToPublic(game, true));
             this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(player, game.isVoting), game.id);
 
             return null;

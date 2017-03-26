@@ -60,6 +60,11 @@ export class HomeComponent implements OnDestroy, OnInit {
 
       console.log('User changed name: "%s" -> "%s"', oldUserName, newUserName);
     });
+
+    this.socket.on<Dto.GamePublic>('game:state-change', response => {
+      let game = response.data;
+      this.games[game.gameId].game = game;
+    });
   }
 
   ngOnDestroy() {
