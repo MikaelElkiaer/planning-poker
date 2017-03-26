@@ -53,6 +53,11 @@ export class HomeComponent implements OnDestroy, OnInit {
       var newUserName = response.data.userName;
 
       this.users[response.data.pid].userName = newUserName;
+
+      Object.keys(this.games).forEach(gid => {
+        this.games[gid].game.players[response.data.pid].user.userName = newUserName;
+      });
+
       console.log('User changed name: "%s" -> "%s"', oldUserName, newUserName);
     });
   }
