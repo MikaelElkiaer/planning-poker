@@ -25,7 +25,7 @@
       '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
       // other libraries
       'rxjs': 'npm:rxjs',
-      'socket.io-client': 'npm:socket.io-client/socket.io.js',
+      'socket.io-client': 'npm:socket.io-client/dist/socket.io.js',
       '@ng-bootstrap/ng-bootstrap': 'npm:@ng-bootstrap/ng-bootstrap/bundles/ng-bootstrap.js',
       'angular2-toaster': 'npm:angular2-toaster/bundles/angular2-toaster.umd.js'
     },
