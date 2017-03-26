@@ -41,6 +41,15 @@ export class Mapper {
         );
     }
 
+    public static mapGamesToPublic(games: { [id: string]: Model.Game }, hideCards: boolean): { [id: string]: Dto.GamePublic} {
+        let gamesPublic = {};
+        Object.keys(games).forEach(id => {
+            let gamePublic = this.mapGameToPublic(games[id], hideCards);
+            gamesPublic[gamePublic.gameId] = gamePublic;
+        });
+        return gamesPublic;
+    }
+
     private static getVisibleCard(card: Dto.PokerCard, hideCard: boolean): Dto.PokerCard {
         return (card !== Dto.PokerCard.NotPicked && hideCard) ? Dto.PokerCard.Picked : card;
     }

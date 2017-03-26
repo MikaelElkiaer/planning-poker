@@ -75,10 +75,11 @@ export class HomeComponent implements OnDestroy, OnInit {
   private async handleStateChange(state) {
     if (state === SocketState.Connected) {
       try {
-        let users = await this.socket.emit<null,{[id: string]: Dto.UserPublic}>('home', { data: null });
+        let home = await this.socket.emit<null, Dto.Home>('home', { data: null });
 
-        this.users = users;
-        console.info('Requested home users: %o', users);
+        this.users = home.users;
+        console.info('Requested home users: %o', home.users);
+        console.info('Requested games: %o', home.games);
       }
       catch (error) {
         return;
