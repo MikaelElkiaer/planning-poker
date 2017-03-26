@@ -3,15 +3,22 @@ import { Router } from '@angular/router';
 
 import { SocketState, SocketService } from '../../services/index';
 import * as Dto from '../../../shared/dto/index';
+import { GameViewModel } from './gameViewModel';
 
 @Component({
-  templateUrl: 'views/home'
+  templateUrl: 'views/home',
+  styleUrls: ['app/style/home.css']
 })
 export class HomeComponent implements OnDestroy, OnInit {
-  users: { [id: string]: Dto.UserPublic } = { };
-  joinModel: { gameId: string, spectate: boolean } = { gameId: '', spectate: false };
+  public users: { [id: string]: Dto.UserPublic } = { };
+  public games: { [id: string]: GameViewModel } = { };
+  public joinModel: { spectate: boolean } = { spectate: false };
+  
   get usersList() {
     return Object.keys(this.users).map(pid => this.users[pid]);
+  }
+  get gamesList() {
+    return Object.keys(this.games).map(id => this.games[id]);
   }
 
   private socketState: SocketState;
@@ -55,9 +62,9 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.socketStateSubscription.unsubscribe();
   }
 
-  onJoinGame() {
-    console.info('Joining game: ', this.joinModel);
-    this.router.navigate(['/game', this.joinModel.gameId], { queryParams: { spectate: this.joinModel.spectate }});
+  onJoinGame(gameId: string) {
+    console.info('Joining game: ', gameId);
+    this.router.navigate(['/game', gameId], { queryParams: { spectate: this.joinModel.spectate }});
   }
 
   async onCreateGame() {
@@ -78,6 +85,7 @@ export class HomeComponent implements OnDestroy, OnInit {
         let home = await this.socket.emit<null, Dto.Home>('home', { data: null });
 
         this.users = home.users;
+        this.games = this.createGameViewModels(home.games, home.users);
         console.info('Requested home users: %o', home.users);
         console.info('Requested games: %o', home.games);
       }
@@ -87,5 +95,24 @@ export class HomeComponent implements OnDestroy, OnInit {
     }
 
     this.socketState = state;
+  }
+
+  private createGameViewModels(games: {[id: string]: Dto.GamePublic}, users: {[id: string]: Dto.UserPublic}): {[id: string]: GameViewModel} {
+    let gameViewModels: {[id: string]: GameViewModel} = {};
+
+    Object.keys(games).forEach(gid => {
+      let game = games[gid];
+      let gameName = this.getGameName(game, users);
+      let playersCount = Object.keys(game.players).length;
+      let gameViewModel = new GameViewModel(game, gameName, playersCount);
+      gameViewModels[gid] = gameViewModel;
+    });
+
+    return gameViewModels;
+  }
+
+  private getGameName(game: Dto.GamePublic, users: {[id: string]: Dto.UserPublic }): string {
+    let hostName = users[game.hostPid].userName;
+    return `${hostName}'s game`;
   }
 }
