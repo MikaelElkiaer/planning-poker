@@ -3,15 +3,22 @@ import { Router } from '@angular/router';
 
 import { SocketState, SocketService } from '../../services/index';
 import * as Dto from '../../../shared/dto/index';
+import { GameViewModel } from './gameViewModel';
 
 @Component({
-  templateUrl: 'views/home'
+  templateUrl: 'views/home',
+  styleUrls: ['app/style/home.css']
 })
 export class HomeComponent implements OnDestroy, OnInit {
-  users: { [id: string]: Dto.UserPublic } = { };
-  joinModel: { gameId: string, spectate: boolean } = { gameId: '', spectate: false };
+  public users: { [id: string]: Dto.UserPublic } = { };
+  public games: { [id: string]: GameViewModel } = { };
+  public joinModel: { spectate: boolean } = { spectate: false };
+  
   get usersList() {
     return Object.keys(this.users).map(pid => this.users[pid]);
+  }
+  get gamesList() {
+    return Object.keys(this.games).map(id => this.games[id]);
   }
 
   private socketState: SocketState;
@@ -46,7 +53,17 @@ export class HomeComponent implements OnDestroy, OnInit {
       var newUserName = response.data.userName;
 
       this.users[response.data.pid].userName = newUserName;
+
+      Object.keys(this.games).forEach(gid => {
+        this.games[gid].game.players[response.data.pid].user.userName = newUserName;
+      });
+
       console.log('User changed name: "%s" -> "%s"', oldUserName, newUserName);
+    });
+
+    this.socket.on<Dto.GamePublic>('game:state-change', response => {
+      let game = response.data;
+      this.games[game.gameId].game = game;
     });
   }
 
@@ -55,9 +72,9 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.socketStateSubscription.unsubscribe();
   }
 
-  onJoinGame() {
-    console.info('Joining game: ', this.joinModel);
-    this.router.navigate(['/game', this.joinModel.gameId], { queryParams: { spectate: this.joinModel.spectate }});
+  onJoinGame(gameId: string) {
+    console.info('Joining game: ', gameId);
+    this.router.navigate(['/game', gameId], { queryParams: { spectate: this.joinModel.spectate }});
   }
 
   async onCreateGame() {
@@ -75,10 +92,12 @@ export class HomeComponent implements OnDestroy, OnInit {
   private async handleStateChange(state) {
     if (state === SocketState.Connected) {
       try {
-        let users = await this.socket.emit<null,{[id: string]: Dto.UserPublic}>('home', { data: null });
+        let home = await this.socket.emit<null, Dto.Home>('home', { data: null });
 
-        this.users = users;
-        console.info('Requested home users: %o', users);
+        this.users = home.users;
+        this.games = this.createGameViewModels(home.games, home.users);
+        console.info('Requested home users: %o', home.users);
+        console.info('Requested games: %o', home.games);
       }
       catch (error) {
         return;
@@ -86,5 +105,15 @@ export class HomeComponent implements OnDestroy, OnInit {
     }
 
     this.socketState = state;
+  }
+
+  private createGameViewModels(games: {[id: string]: Dto.GamePublic}, users: {[id: string]: Dto.UserPublic}): {[id: string]: GameViewModel} {
+    let gameViewModels: {[id: string]: GameViewModel} = {};
+
+    Object.keys(games).forEach(gid => {
+      gameViewModels[gid] = new GameViewModel(games[gid]);
+    });
+
+    return gameViewModels;
   }
 }

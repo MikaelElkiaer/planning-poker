@@ -50,7 +50,7 @@ export class Server {
     this.io.on('connection', socket => {
       var socketService = new SocketService(this.io, socket);
 
-      var userService = new UserService(socketService, this.users);
+      var userService = new UserService(socketService, this.users, this.games);
       var gameService = new GameService(socketService, userService, this.games);
     });
   }

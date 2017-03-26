@@ -2,7 +2,7 @@ import { injectable } from 'inversify';
 import 'reflect-metadata';
 
 import { User } from '../model';
-import { UserRepository } from '../repositories';
+import { GameRepository, UserRepository } from '../repositories';
 import { SocketService } from '../services';
 import { Mapper } from '../utils/mapper';
 import * as Dto from '../../shared/dto';
@@ -11,7 +11,7 @@ import * as Dto from '../../shared/dto';
 export class UserService {
     public readonly user: User;
 
-    constructor(private socketService: SocketService, private users: UserRepository) {
+    constructor(private socketService: SocketService, private users: UserRepository, private games: GameRepository) {
         this.user = users.getUserById(socketService.socketId);
         this.initialize();
     }
@@ -41,8 +41,11 @@ export class UserService {
             return null;
         });
 
-        this.socketService.on<null, { [id: string]: Dto.UserPublic }>('home', request => {
-            return Mapper.mapUsersToPublic(this.users.getAll());
+        this.socketService.on<null, Dto.Home>('home', request => {
+            let users = Mapper.mapUsersToPublic(this.users.getAll());
+            let games = Mapper.mapGamesToPublic(this.games.games, true);
+
+            return new Dto.Home(users, games);
         });
 
         this.socketService.on<string, string>('change-username', request => {
