@@ -50,61 +50,6 @@ export class GameComponent implements OnDestroy, OnInit {
     await this.handleStateChange(this.socket.state);
 
     this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(async state => this.handleStateChange(state));
-
-    this.socket.on<Dto.PlayerPublic>('user:join-game', response => {
-      this.players[response.data.user.pid] = response.data;
-      console.info('Player joined: %o', response.data);
-    });
-
-    this.socket.on<Dto.UserPublic>('user:connect', response => {
-      if (!this.players[response.data.pid])
-        return;
-
-      this.players[response.data.pid].user.active = true;
-      console.info('Player active: %o', this.players[response.data.pid]);
-    });
-
-    this.socket.on<Dto.UserPublic>('user:disconnect', response => {
-      if (!this.players[response.data.pid])
-        return;
-      
-      this.players[response.data.pid].user.active = false;
-      console.info('Player inactive: %o', this.players[response.data.pid]);
-    });
-
-    this.socket.on<Dto.UserPublic>('user:change-username', response => {
-      var player = this.players[response.data.pid];
-
-      if (!player)
-        return;
-      
-      var oldName = player.user.userName;
-      var newName = response.data.userName;
-      this.players[response.data.pid].user.userName = newName;
-      console.info('Player changed name: "%s" -> "%s"', oldName, newName)
-    });
-
-    this.socket.on<Dto.GamePublic>('host:change-game-state', response => {
-      this.state = response.data.gameState;
-      this.players = response.data.players;
-      console.info('Host changed game state: %o', response.data);
-    });
-
-    this.socket.on<Dto.PlayerPublic>('user:choose-card', response => {
-      this.players[response.data.user.pid] = response.data;
-      console.info('Player chose card: %o', response.data);
-    });
-
-    this.socket.on<Dto.PlayerPublic>('user:leave-game', response => {
-      if (response.data.user.pid === this.userPid) {
-        this.toaster.pop('warning', null, `You were kicked from game with id: ${this.gameId}`);
-        this.router.navigate(['']);
-      }
-      else {
-        delete this.players[response.data.user.pid];
-        console.info('Player left: %o', response.data);
-      }
-    });
   }
 
   ngOnDestroy() {
@@ -179,6 +124,7 @@ export class GameComponent implements OnDestroy, OnInit {
   private async handleStateChange(state: SocketState) {
     if (state === SocketState.Connected) {
       try {
+        this.setUpSocketEvents();
         let game = await this.socket.emit<Dto.JoinGame, Dto.GamePublic>('join-game', { data: new Dto.JoinGame(this._gameId, this.spectate) });
         
         this.players = game.players;
@@ -193,5 +139,62 @@ export class GameComponent implements OnDestroy, OnInit {
     }
 
     this.socketState = state;
+  }
+
+  private setUpSocketEvents() {
+    this.socket.on<Dto.PlayerPublic>('user:join-game', response => {
+      this.players[response.data.user.pid] = response.data;
+      console.info('Player joined: %o', response.data);
+    });
+
+    this.socket.on<Dto.UserPublic>('user:connect', response => {
+      if (!this.players[response.data.pid])
+        return;
+
+      this.players[response.data.pid].user.active = true;
+      console.info('Player active: %o', this.players[response.data.pid]);
+    });
+
+    this.socket.on<Dto.UserPublic>('user:disconnect', response => {
+      if (!this.players[response.data.pid])
+        return;
+      
+      this.players[response.data.pid].user.active = false;
+      console.info('Player inactive: %o', this.players[response.data.pid]);
+    });
+
+    this.socket.on<Dto.UserPublic>('user:change-username', response => {
+      var player = this.players[response.data.pid];
+
+      if (!player)
+        return;
+      
+      var oldName = player.user.userName;
+      var newName = response.data.userName;
+      this.players[response.data.pid].user.userName = newName;
+      console.info('Player changed name: "%s" -> "%s"', oldName, newName)
+    });
+
+    this.socket.on<Dto.GamePublic>('host:change-game-state', response => {
+      this.state = response.data.gameState;
+      this.players = response.data.players;
+      console.info('Host changed game state: %o', response.data);
+    });
+
+    this.socket.on<Dto.PlayerPublic>('user:choose-card', response => {
+      this.players[response.data.user.pid] = response.data;
+      console.info('Player chose card: %o', response.data);
+    });
+
+    this.socket.on<Dto.PlayerPublic>('user:leave-game', response => {
+      if (response.data.user.pid === this.userPid) {
+        this.toaster.pop('warning', null, `You were kicked from game with id: ${this.gameId}`);
+        this.router.navigate(['']);
+      }
+      else {
+        delete this.players[response.data.user.pid];
+        console.info('Player left: %o', response.data);
+      }
+    });
   }
 }

@@ -35,7 +35,50 @@ export class HomeComponent implements OnDestroy, OnInit {
     await this.handleStateChange(this.socket.state);
 
     this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(async state => this.handleStateChange(state));
+  }
 
+  ngOnDestroy() {
+    this.socket.removeAllListeners();
+    this.socketStateSubscription.unsubscribe();
+  }
+
+  onJoinGame(gameId: string) {
+    console.info('Joining game: ', gameId);
+    this.router.navigate(['/game', gameId], { queryParams: { spectate: this.joinModel.spectate }});
+  }
+
+  async onCreateGame() {
+    console.info('Creating game');
+    try {
+      let game = await this.socket.emit<null, Dto.GamePublic>('create-game', null);
+      console.info('Created game: %o', game);
+      this.router.navigate(['/game', game.gameId]);
+    }
+    catch (error) {
+      return;
+    }
+  }
+
+  private async handleStateChange(state) {
+    if (state === SocketState.Connected) {
+      try {
+        this.setUpSocketEvents();
+        let home = await this.socket.emit<null, Dto.Home>('home', { data: null });
+
+        this.users = home.users;
+        this.games = this.createGameViewModels(home.games, home.users);
+        console.info('Requested home users: %o', home.users);
+        console.info('Requested games: %o', home.games);
+      }
+      catch (error) {
+        return;
+      }
+    }
+
+    this.socketState = state;
+  }
+
+  private setUpSocketEvents() {
     this.socket.on<Dto.UserPublic>('user:connect', response => {
       this.users[response.data.pid] = response.data;
       console.info('User connected: %o', response.data);
@@ -65,46 +108,6 @@ export class HomeComponent implements OnDestroy, OnInit {
       let game = response.data;
       this.games[game.gameId].game = game;
     });
-  }
-
-  ngOnDestroy() {
-    this.socket.removeAllListeners();
-    this.socketStateSubscription.unsubscribe();
-  }
-
-  onJoinGame(gameId: string) {
-    console.info('Joining game: ', gameId);
-    this.router.navigate(['/game', gameId], { queryParams: { spectate: this.joinModel.spectate }});
-  }
-
-  async onCreateGame() {
-    console.info('Creating game');
-    try {
-      let game = await this.socket.emit<null, Dto.GamePublic>('create-game', null);
-      console.info('Created game: %o', game);
-      this.router.navigate(['/game', game.gameId]);
-    }
-    catch (error) {
-      return;
-    }
-  }
-
-  private async handleStateChange(state) {
-    if (state === SocketState.Connected) {
-      try {
-        let home = await this.socket.emit<null, Dto.Home>('home', { data: null });
-
-        this.users = home.users;
-        this.games = this.createGameViewModels(home.games, home.users);
-        console.info('Requested home users: %o', home.users);
-        console.info('Requested games: %o', home.games);
-      }
-      catch (error) {
-        return;
-      }
-    }
-
-    this.socketState = state;
   }
 
   private createGameViewModels(games: {[id: string]: Dto.GamePublic}, users: {[id: string]: Dto.UserPublic}): {[id: string]: GameViewModel} {
