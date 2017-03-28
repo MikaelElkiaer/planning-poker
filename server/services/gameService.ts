@@ -19,6 +19,7 @@ export class GameService {
         this.socketService.on<null, Dto.GamePublic>('create-game', request => {
             try {
                 var game = this.games.addGame(this.user);
+                this.socketService.emitAllExceptSender('game:create', Mapper.mapGameToPublic(game, game.isVoting));
                 return Mapper.mapGameToPublic(game, false, this.user);
             } catch (error) {
                 throw error;
@@ -89,13 +90,24 @@ export class GameService {
             var game = this.games.getGameById(request.data.gameId);
             var player = game.getPlayerByPid(this.user.pid);
 
-            this.socketService.leave(game.id);
-            game.removePlayer(this.user.pid);
+            if (player.user === game.host.user) {
+                Object.keys(game.players).forEach(pid => {
+                    let playerToBeKicked = game.getPlayerByPid(pid);
+                    this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(playerToBeKicked, game.isVoting, this.user), game.id);
+                });
+                this.socketService.leave(game.id);
+                this.games.removeGame(game.id);
+                this.socketService.emitAllExceptSender('game:host-quit', Mapper.mapGameToPublic(game, true));
+            }
+            else {
+                this.socketService.leave(game.id);
+                game.removePlayer(this.user.pid);
 
-            this.socketService.emitAllExceptSender('game:state-change', Mapper.mapGameToPublic(game, true));
-            this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(player, game.isVoting), game.id);
+                this.socketService.emitAllExceptSender('game:state-change', Mapper.mapGameToPublic(game, true));
+                this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(player, game.isVoting), game.id);
 
-            return null;
+                return null;
+            }
         });
 
         this.socketService.on<Dto.KickPlayer, null>('kick-player', request => {

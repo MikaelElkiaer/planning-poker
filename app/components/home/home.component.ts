@@ -108,6 +108,16 @@ export class HomeComponent implements OnDestroy, OnInit {
       let game = response.data;
       this.games[game.gameId].game = game;
     });
+
+    this.socket.on<Dto.GamePublic>('game:create', response => {
+      let game = response.data;
+      this.games[game.gameId] = new GameViewModel(game);
+    });
+
+    this.socket.on<Dto.GamePublic>('game:host-quit', response => {
+      let game = response.data;
+      delete this.games[game.gameId];
+    });
   }
 
   private createGameViewModels(games: {[id: string]: Dto.GamePublic}, users: {[id: string]: Dto.UserPublic}): {[id: string]: GameViewModel} {

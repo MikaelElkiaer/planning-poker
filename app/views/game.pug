@@ -6,11 +6,11 @@
                     .btn-group.pull-right(*ngIf='isHost')
                         button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='startStopGame()')
                             span.fa([ngClass]='{ "fa-stop": isVoting, "fa-play": !isVoting }')
-                    .btn-group.pull-right(*ngIf='!isHost')
+                    .btn-group.pull-left
                         button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='leaveGame()')
                             span.fa.fa-sign-out
                     h4.panel-title
-                        | Game # {{ gameId }}
+                        | &nbsp; Game # {{ gameId }}
                         span &nbsp;[
                         span.game-state([ngClass]='{ "text-danger": socketState!==1, "text-success": socketState===1 && isVoting, "text-warning": socketState===1 && !isVoting }')
                             | {{ socketState!==1 ? 'Disconnected' : (isVoting ? 'Voting' : 'Waiting') }}
