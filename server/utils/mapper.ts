@@ -16,41 +16,41 @@ export class Mapper {
         return usersPublic;
     }
 
-    public static mapPlayerToPublic(player: Model.Player, hideCard: boolean): Dto.PlayerPublic {
-        return new Dto.PlayerPublic(this.mapUserToPublic(player.user), this.getVisibleCard(player.currentCard, hideCard));
+    public static mapPlayerToPublic(player: Model.Player, hideCard: boolean, requestingUser: Dto.UserPublic = null): Dto.PlayerPublic {
+        return new Dto.PlayerPublic(this.mapUserToPublic(player.user), this.getVisibleCard(player, hideCard, requestingUser));
     }
 
-    public static mapPlayersToPublic(players: { [id: string]: Model.Player }, hideCard: boolean): { [id: string]: Dto.PlayerPublic } {
+    public static mapPlayersToPublic(players: { [id: string]: Model.Player }, hideCard: boolean, requestingUser: Dto.UserPublic = null): { [id: string]: Dto.PlayerPublic } {
         var playersPublic = {};
         Object.keys(players).forEach(id => {
-            var playerPublic = this.mapPlayerToPublic(players[id], hideCard);
+            var playerPublic = this.mapPlayerToPublic(players[id], hideCard, requestingUser);
             playersPublic[playerPublic.user.pid] = playerPublic;
         });
         return playersPublic;
     }
 
-    public static mapGameToPublic(game: Model.Game, hideCards: boolean): Dto.GamePublic {
+    public static mapGameToPublic(game: Model.Game, hideCards: boolean, requestingUser: Dto.UserPublic = null): Dto.GamePublic {
         return new Dto.GamePublic(
             game.id,
             game.state,
             game.host.user.pid,
             Object.keys(game.players).reduce((prev, cur) => {
-                prev[cur] = new Dto.PlayerPublic(this.mapUserToPublic(game.players[cur].user), this.getVisibleCard(game.players[cur].currentCard, hideCards));
+                prev[cur] = new Dto.PlayerPublic(this.mapUserToPublic(game.players[cur].user), this.getVisibleCard(game.players[cur], hideCards, requestingUser));
                 return prev
             }, {})
         );
     }
 
-    public static mapGamesToPublic(games: { [id: string]: Model.Game }, hideCards: boolean): { [id: string]: Dto.GamePublic} {
+    public static mapGamesToPublic(games: { [id: string]: Model.Game }, hideCards: boolean, requestingUser: Dto.UserPublic = null): { [id: string]: Dto.GamePublic} {
         let gamesPublic = {};
         Object.keys(games).forEach(id => {
-            let gamePublic = this.mapGameToPublic(games[id], hideCards);
+            let gamePublic = this.mapGameToPublic(games[id], hideCards, requestingUser);
             gamesPublic[gamePublic.gameId] = gamePublic;
         });
         return gamesPublic;
     }
 
-    private static getVisibleCard(card: Dto.PokerCard, hideCard: boolean): Dto.PokerCard {
-        return (card !== Dto.PokerCard.NotPicked && hideCard) ? Dto.PokerCard.Picked : card;
+    private static getVisibleCard(player: Dto.PlayerPublic, hideCard: boolean, requestingUser: Dto.UserPublic = null): Dto.PokerCard {
+        return (hideCard && player.currentCard !== Dto.PokerCard.NotPicked && (requestingUser === null || requestingUser.pid !== player.user.pid)) ? Dto.PokerCard.Picked : player.currentCard;
     }
 }

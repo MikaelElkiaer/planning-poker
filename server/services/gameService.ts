@@ -19,7 +19,7 @@ export class GameService {
         this.socketService.on<null, Dto.GamePublic>('create-game', request => {
             try {
                 var game = this.games.addGame(this.user);
-                return Mapper.mapGameToPublic(game, false);
+                return Mapper.mapGameToPublic(game, false, this.user);
             } catch (error) {
                 throw error;
             }
@@ -50,7 +50,7 @@ export class GameService {
                 }
             }
 
-            return Mapper.mapGameToPublic(game, game.isVoting);
+            return Mapper.mapGameToPublic(game, game.isVoting, this.user);
         });
 
         this.socketService.on<Dto.ChangeGameState, null>('change-game-state', request => {
@@ -108,7 +108,7 @@ export class GameService {
             var playerToBeKicked = game.getPlayerByPid(request.data.pid);
             game.removePlayer(request.data.pid);
             
-            this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(playerToBeKicked, game.isVoting), game.id);
+            this.socketService.emitAllInRoomExceptSender('user:leave-game', Mapper.mapPlayerToPublic(playerToBeKicked, game.isVoting, this.user), game.id);
 
             return null;
         });
