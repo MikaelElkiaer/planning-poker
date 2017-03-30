@@ -60,6 +60,12 @@ export class SocketService {
     });
   }
 
+  removeListeners(events: SocketEvent[]) {
+    events.forEach(e => {
+      this.socket.removeEventListener(e.eventName, e.callback);
+    });
+  }
+
   removeAllListeners() {
     this.socket.removeAllListeners();
   }
@@ -81,6 +87,13 @@ export class SocketService {
       this.disconnect();
     });
   }
+}
+
+export class SocketEvent {
+  constructor(
+    public eventName: string,
+    public callback: (arg: Msg.IOnResponse<any>) => void
+  ) {}
 }
 
 export enum SocketState {
