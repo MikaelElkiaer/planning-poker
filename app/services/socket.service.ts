@@ -62,12 +62,8 @@ export class SocketService {
 
   removeListeners(events: SocketEvent[]) {
     events.forEach(e => {
-      this.socket.removeEventListener(e.eventName, e.callback);
+      this.socket.removeEventListener(e.eventName);
     });
-  }
-
-  removeAllListeners() {
-    this.socket.removeAllListeners();
   }
 
   private initializeConnection(userSid: string, userName: string) {
