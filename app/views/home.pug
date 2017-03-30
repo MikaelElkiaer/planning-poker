@@ -7,21 +7,26 @@
                         button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='onCreateGame()')
                             span.fa.fa-plus
                     h3.panel-title Games
-                .panel-body
+                .panel-body([hidden]='!isConnected')
                     button.btn.btn-default.game(*ngFor='let gvm of gamesList', (click)='onJoinGame(gvm.game.gameId)')
                         p {{ gvm.gameName }}
                         p {{ gvm.playersCount }} player(s)
+                .panel-body([hidden]='isConnected')
+                    .spinner(style='margin: 10px auto 10px auto;')
+                        .bounce1
+                        .bounce2
+                        .bounce3
     .row
         .col-sm-4.col-sm-offset-4
             .panel.panel-default
                 .panel-heading
                     h3.panel-title Active Users
-                .panel-body.text-center([hidden]='socketState!==1')
+                .panel-body.text-center([hidden]='!isConnected')
                     span(style='margin: 0px 10px; display: inline-block;',
                             *ngFor='let user of usersList')
                         i.fa.fa-user
                         | &nbsp;{{user.userName}}
-                .panel-body([hidden]='socketState===1')
+                .panel-body([hidden]='isConnected')
                     .spinner(style='margin: 10px auto 10px auto;')
                         .bounce1
                         .bounce2

@@ -1,15 +1,16 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { SocketState, SocketService } from '../../services/index';
 import * as Dto from '../../../shared/dto/index';
 import { GameViewModel } from './gameViewModel';
+import { SocketComponent } from '../shared/index';
 
 @Component({
   templateUrl: 'views/home',
   styleUrls: ['app/style/home.css']
 })
-export class HomeComponent implements OnDestroy, OnInit {
+export class HomeComponent extends SocketComponent {
   public users: { [id: string]: Dto.UserPublic } = { };
   public games: { [id: string]: GameViewModel } = { };
   public joinModel: { spectate: boolean } = { spectate: false };
@@ -21,26 +22,12 @@ export class HomeComponent implements OnDestroy, OnInit {
     return Object.keys(this.games).map(id => this.games[id]);
   }
 
-  private socketState: SocketState;
-  private socketStateSubscription;
-
   constructor(
-    private socket: SocketService,
-    private router: Router
+    private router: Router,
+    socket: SocketService
     ) {
-      this.socketState = socket.state;
+      super(socket);
     }
-
-  async ngOnInit() {
-    await this.handleStateChange(this.socket.state);
-
-    this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(async state => this.handleStateChange(state));
-  }
-
-  ngOnDestroy() {
-    this.socket.removeAllListeners();
-    this.socketStateSubscription.unsubscribe();
-  }
 
   onJoinGame(gameId: string) {
     console.info('Joining game: ', gameId);
@@ -50,7 +37,7 @@ export class HomeComponent implements OnDestroy, OnInit {
   async onCreateGame() {
     console.info('Creating game');
     try {
-      let game = await this.socket.emit<null, Dto.GamePublic>('create-game', null);
+      let game = await this.emit<null, Dto.GamePublic>('create-game', null);
       console.info('Created game: %o', game);
       this.router.navigate(['/game', game.gameId]);
     }
@@ -59,11 +46,11 @@ export class HomeComponent implements OnDestroy, OnInit {
     }
   }
 
-  private async handleStateChange(state) {
+  async handleStateChange(state) {
     if (state === SocketState.Connected) {
       try {
         this.setUpSocketEvents();
-        let home = await this.socket.emit<null, Dto.Home>('home', { data: null });
+        let home = await this.emit<null, Dto.Home>('home', { data: null });
 
         this.users = home.users;
         this.games = this.createGameViewModels(home.games, home.users);
@@ -74,22 +61,20 @@ export class HomeComponent implements OnDestroy, OnInit {
         return;
       }
     }
-
-    this.socketState = state;
   }
 
   private setUpSocketEvents() {
-    this.socket.on<Dto.UserPublic>('user:connect', response => {
+    this.on<Dto.UserPublic>('user:connect', response => {
       this.users[response.data.pid] = response.data;
       console.info('User connected: %o', response.data);
     });
 
-    this.socket.on<Dto.UserPublic>('user:disconnect', response => {
+    this.on<Dto.UserPublic>('user:disconnect', response => {
       delete this.users[response.data.pid];
       console.info('User disconnected: %o', response.data);
     });
 
-    this.socket.on<Dto.UserPublic>('user:change-username', response => {
+    this.on<Dto.UserPublic>('user:change-username', response => {
       var user = this.users[response.data.pid];
 
       var oldUserName = user.userName;
@@ -104,17 +89,17 @@ export class HomeComponent implements OnDestroy, OnInit {
       console.log('User changed name: "%s" -> "%s"', oldUserName, newUserName);
     });
 
-    this.socket.on<Dto.GamePublic>('game:state-change', response => {
+    this.on<Dto.GamePublic>('game:state-change', response => {
       let game = response.data;
       this.games[game.gameId].game = game;
     });
 
-    this.socket.on<Dto.GamePublic>('game:create', response => {
+    this.on<Dto.GamePublic>('game:create', response => {
       let game = response.data;
       this.games[game.gameId] = new GameViewModel(game);
     });
 
-    this.socket.on<Dto.GamePublic>('game:host-quit', response => {
+    this.on<Dto.GamePublic>('game:host-quit', response => {
       let game = response.data;
       delete this.games[game.gameId];
     });

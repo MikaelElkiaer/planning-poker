@@ -1,7 +1,8 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToasterConfig } from 'angular2-toaster';
 
+import { SocketComponent } from '../shared/index';
 import { SocketState, SocketService, UserService } from '../../services/index';
 import { UserNameModalComponent } from '../index';
 
@@ -9,36 +10,19 @@ import { UserNameModalComponent } from '../index';
   selector: 'app',
   templateUrl: 'views/app'
 })
-export class AppComponent implements OnDestroy, OnInit {
-  navbarCollapsed: boolean = true;
-  userName: string = '???';
-  toasterConfig: ToasterConfig = new ToasterConfig({
-    limit: 5,
-    timeout: 5000,
-    mouseoverTimerStop: true,
-    preventDuplicates: true
-  });
-
-  private socketState: SocketState = SocketState.Disconnected;
-  private socketStateSubscription;
+export class AppComponent extends SocketComponent {
+  public navbarCollapsed: boolean = true;
+  public userName: string = '???';
+  public toasterConfig: ToasterConfig = 
+    new ToasterConfig({ limit: 5, timeout: 5000, mouseoverTimerStop: true, preventDuplicates: true });
 
   constructor(
     private user: UserService,
-    private socket: SocketService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    socket: SocketService
     ) {
-      this.socketState = socket.state;
+      super(socket);
     }
-
-  ngOnInit() {
-    this.handleStateChange(this.socket.state);
-
-    this.socketStateSubscription = this.socket.socketStateEventEmitter.subscribe(state => this.handleStateChange(state));
-  }
-
-  ngOnDestroy() {
-    this.socketStateSubscription.unsubscribe();
-  }
 
   collapse() {
     this.navbarCollapsed = !this.navbarCollapsed;
@@ -54,7 +38,7 @@ export class AppComponent implements OnDestroy, OnInit {
         return;
       }
       try {
-        let name = await this.socket.emit<string,string>('change-username', { data: userName });
+        let name = await this.emit<string,string>('change-username', { data: userName });
         
         this.user.userName = name;
         this.userName = name;
@@ -68,14 +52,12 @@ export class AppComponent implements OnDestroy, OnInit {
     });
   }
 
-  private handleStateChange(state: SocketState) {
+  handleStateChange(state: SocketState) {
     if (state === SocketState.Connected) {
       this.userName = this.user.userName;
 
       if (!this.user.hasChangedName)
         this.userNameModal();
     }
-
-    this.socketState = state;
   }
 }
