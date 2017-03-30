@@ -128,8 +128,6 @@ export class GameComponent extends SocketComponent {
           return;
       }
     }
-
-    this.socketState = state;
   }
 
   private setUpSocketEvents() {

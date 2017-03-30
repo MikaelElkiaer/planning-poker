@@ -15,8 +15,6 @@ export class AppComponent extends SocketComponent {
   public userName: string = '???';
   public toasterConfig: ToasterConfig = 
     new ToasterConfig({ limit: 5, timeout: 5000, mouseoverTimerStop: true, preventDuplicates: true });
-  
-  public get isConnected() { return this.socketState === SocketState.Connected; }
 
   constructor(
     private user: UserService,

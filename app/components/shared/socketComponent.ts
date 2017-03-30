@@ -4,9 +4,11 @@ import { SocketEvent, SocketService, SocketState } from '../../services/socket.s
 import * as Msg from '../../../shared/message';
 
 export abstract class SocketComponent implements OnDestroy, OnInit {
-    protected socketState: SocketState = SocketState.Disconnected;
+    private socketState: SocketState = SocketState.Disconnected;
     private events: SocketEvent[] = [];
     private socketStateSubscription = undefined;
+
+    protected get isConnected() { return this.socketState === SocketState.Connected; }
 
     constructor(
         private readonly socket: SocketService
