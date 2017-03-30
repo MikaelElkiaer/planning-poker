@@ -26,12 +26,12 @@ export abstract class SocketComponent implements OnDestroy, OnInit {
         this.events = [];
     }
 
-    private onStateChange(newSocketState: SocketState) {
-        this.handleStateChange(newSocketState);
+    private async onStateChange(newSocketState: SocketState) {
+        await this.handleStateChange(newSocketState);
         this.socketState = newSocketState;
     }
 
-    protected abstract handleStateChange(state: SocketState);
+    protected abstract async handleStateChange(state: SocketState);
 
     protected emit<T, S>(eventName: string, request: Msg.IEmitRequest<T>): Promise<S> {
         return this.socket.emit<T, S>(eventName, request);
