@@ -13,6 +13,7 @@
       // our app is within the app folder
       app: 'app',
       dto: 'shared/dto',
+      events: 'shared/events',
       message: 'shared/message',
       // angular bundles
       '@angular/core': 'npm:@angular/core/bundles/core.umd.js',
@@ -36,6 +37,10 @@
         defaultExtension: 'js'
       },
       dto: {
+        main: './index',
+        defaultExtension: 'js'
+      },
+      events: {
         main: './index',
         defaultExtension: 'js'
       },

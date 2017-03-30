@@ -7,6 +7,7 @@ import * as Dto from '../../../shared/dto/index';
 import { SocketState, SocketService, UserService } from '../../services/index';
 import { CardModalComponent, KickModalComponent } from '../index';
 import { SocketComponent } from '../shared/index';
+import { CLIENT_EVENTS as C, SERVER_EVENTS as S } from '../../../shared/events/index';
 
 @Component({
   templateUrl: 'views/game',
@@ -50,7 +51,7 @@ export class GameComponent extends SocketComponent {
 
   async startStopGame() {
     var newState = this.state === Dto.GameState.Voting ? Dto.GameState.Waiting : Dto.GameState.Voting;
-    let game = await this.emit<Dto.ChangeGameState, Dto.GamePublic>('change-game-state', { data: new Dto.ChangeGameState(this._gameId, newState) });
+    let game = await this.emit<Dto.ChangeGameState, Dto.GamePublic>(S.changeGameState, { data: new Dto.ChangeGameState(this._gameId, newState) });
   }
 
   async leaveGame() {
@@ -60,7 +61,7 @@ export class GameComponent extends SocketComponent {
     }
     
     try {
-      let x = await this.emit<Dto.LeaveGame, void>('leave-game', { data: new Dto.LeaveGame(this._gameId) });
+      let x = await this.emit<Dto.LeaveGame, void>(S.leaveGame, { data: new Dto.LeaveGame(this._gameId) });
     }
     catch (error) {
       return;
@@ -76,7 +77,7 @@ export class GameComponent extends SocketComponent {
 
     modalRef.result.then(async () => {
       try {
-        let x = await this.emit<Dto.KickPlayer, void>('kick-player', { data: new Dto.KickPlayer(this._gameId, player.user.pid) });
+        let x = await this.emit<Dto.KickPlayer, void>(S.kickPlayer, { data: new Dto.KickPlayer(this._gameId, player.user.pid) });
       }
       catch (error) {
         return;
@@ -95,7 +96,7 @@ export class GameComponent extends SocketComponent {
 
     modalRef.result.then(async card => {
       try {
-        let x = await this.emit<Dto.ChooseCard, void>('choose-card', { data: new Dto.ChooseCard(this._gameId, card) });
+        let x = await this.emit<Dto.ChooseCard, void>(S.chooseCard, { data: new Dto.ChooseCard(this._gameId, card) });
       }
       catch (error) {
         return;
@@ -116,7 +117,7 @@ export class GameComponent extends SocketComponent {
     if (state === SocketState.Connected) {
       try {
         this.setUpSocketEvents();
-        let game = await this.emit<Dto.JoinGame, Dto.GamePublic>('join-game', { data: new Dto.JoinGame(this._gameId, this.spectate) });
+        let game = await this.emit<Dto.JoinGame, Dto.GamePublic>(S.joinGame, { data: new Dto.JoinGame(this._gameId, this.spectate) });
         
         this.players = game.players;
         this._hostPid = game.hostPid;
@@ -131,12 +132,12 @@ export class GameComponent extends SocketComponent {
   }
 
   private setUpSocketEvents() {
-    this.on<Dto.PlayerPublic>('user:join-game', response => {
+    this.on<Dto.PlayerPublic>(C.user.joinGame, response => {
       this.players[response.data.user.pid] = response.data;
       console.info('Player joined: %o', response.data);
     });
 
-    this.on<Dto.UserPublic>('user:connect', response => {
+    this.on<Dto.UserPublic>(C.user.connect, response => {
       if (!this.players[response.data.pid])
         return;
 
@@ -144,7 +145,7 @@ export class GameComponent extends SocketComponent {
       console.info('Player active: %o', this.players[response.data.pid]);
     });
 
-    this.on<Dto.UserPublic>('user:disconnect', response => {
+    this.on<Dto.UserPublic>(C.user.disconnect, response => {
       if (!this.players[response.data.pid])
         return;
       
@@ -152,7 +153,7 @@ export class GameComponent extends SocketComponent {
       console.info('Player inactive: %o', this.players[response.data.pid]);
     });
 
-    this.on<Dto.UserPublic>('user:change-username', response => {
+    this.on<Dto.UserPublic>(C.user.changeUserName, response => {
       var player = this.players[response.data.pid];
 
       if (!player)
@@ -164,18 +165,18 @@ export class GameComponent extends SocketComponent {
       console.info('Player changed name: "%s" -> "%s"', oldName, newName)
     });
 
-    this.on<Dto.GamePublic>('host:change-game-state', response => {
+    this.on<Dto.GamePublic>(C.host.changeGameState, response => {
       this.state = response.data.gameState;
       this.players = response.data.players;
       console.info('Host changed game state: %o', response.data);
     });
 
-    this.on<Dto.PlayerPublic>('user:choose-card', response => {
+    this.on<Dto.PlayerPublic>(C.user.chooseCard, response => {
       this.players[response.data.user.pid] = response.data;
       console.info('Player chose card: %o', response.data);
     });
 
-    this.on<Dto.PlayerPublic>('user:leave-game', response => {
+    this.on<Dto.PlayerPublic>(C.user.leaveGame, response => {
       if (response.data.user.pid === this.userPid) {
         this.toaster.pop('warning', null, `You were kicked from game with id: ${this.gameId}`);
         this.router.navigate(['']);

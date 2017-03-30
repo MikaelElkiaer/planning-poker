@@ -5,6 +5,7 @@ import { ToasterConfig } from 'angular2-toaster';
 import { SocketComponent } from '../shared/index';
 import { SocketState, SocketService, UserService } from '../../services/index';
 import { UserNameModalComponent } from '../index';
+import { CLIENT_EVENTS as C, SERVER_EVENTS as S } from '../../../shared/events/index';
 
 @Component({
   selector: 'app',
@@ -38,7 +39,7 @@ export class AppComponent extends SocketComponent {
         return;
       }
       try {
-        let name = await this.emit<string,string>('change-username', { data: userName });
+        let name = await this.emit<string,string>(S.changeUserName, { data: userName });
         
         this.user.userName = name;
         this.userName = name;
