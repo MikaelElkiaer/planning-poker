@@ -10,11 +10,11 @@ nav.navbar.navbar-default
       span.icon-bar
       span.icon-bar
     a.navbar-brand(routerLink='/')
-      i.fa.fa-circle([ngClass]='{ "text-danger": socketState!==1, "text-success": socketState===1 }')
+      i.fa.fa-circle([ngClass]='{ "text-danger": !isConnected, "text-success": isConnected }')
       | &nbsp; Planning Poker
   .navbar-collapse([ngClass]='{ collapse: navbarCollapsed }')
     ul.nav.navbar-nav.navbar-right
       li
-        a(style='cursor: pointer;', (click)='socketState === 1 && userNameModal()') {{ userName }}
+        a(style='cursor: pointer;', (click)='isConnected && userNameModal()') {{ userName }}
 
 router-outlet
