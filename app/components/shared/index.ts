@@ -1,1 +1,1 @@
-export * from './socketComponent';
+export * from './socketComponent'
