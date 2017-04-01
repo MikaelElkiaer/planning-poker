@@ -13,8 +13,8 @@
     "build:watch": "tsc -w",
     "serve": "nodemon ./server/bin/www.js --ext js --watch ./server --watch ./shared --delay 3",
     "browser-sync": "browser-sync start --ws --reload-debounce 2500 --proxy localhost:5000 --files app/**/*.js app/style/*.css app/views/*.pug",
-    "minify": "./minify.sh",
-    "reindex": "./reindex.sh"
+    "minify": "bash ./minify.sh",
+    "reindex": "bash ./reindex.sh"
   },
   "licenses": [
     {
