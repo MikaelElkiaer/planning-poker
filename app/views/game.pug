@@ -1,31 +1,29 @@
 .container-fluid
-    .row
-        .col-sm-6.col-sm-offset-3
-            .panel.panel-default
-                .panel-heading
-                    .btn-group.pull-right(*ngIf='isHost')
-                        button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='startStopGame()')
+    .row.justify-content-md-center
+        .col-sm-6
+            .card
+                .card-header.clearfix
+                    .btn-group.float-right(*ngIf='isHost')
+                        button.btn.btn-secondary.btn-sm(type='button', (click)='startStopGame()')
                             span.fa([ngClass]='{ "fa-stop": isVoting, "fa-play": !isVoting }')
-                    .btn-group.pull-left
-                        button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='leaveGame()')
+                    .btn-group.float-left
+                        button.btn.btn-secondary.btn-sm(type='button', (click)='leaveGame()')
                             span.fa.fa-sign-out
-                    h4.panel-title
-                        | &nbsp; Game # {{ gameId }}
-                        span &nbsp;[
+                    span.align-middle &nbsp; Game \#{{ gameId }}
+                        | &nbsp;[&nbsp;
                         span.game-state([ngClass]='{ "text-danger": !isConnected, "text-success": isConnected && isVoting, "text-warning": isConnected && !isVoting }')
                             | {{ !isConnected ? 'Disconnected' : (isVoting ? 'Voting' : 'Waiting') }}
-                        span ]
-                .panel-body(style='text-align: center', [hidden]='!isConnected')
-                    .vote([ngClass]='{ user: player.user.pid === userPid, pickable: (player.user.pid === userPid && isVoting) || (player.user.pid !== userPid && isHost) }',
+                        | &nbsp;]
+                .card-block.text-center([hidden]='!isConnected')
+                    .vote([ngClass]='{ user: player.user.pid === userPid, pickable: (player.user.pid === userPid && isVoting) || (player.user.pid !== userPid && isHos) }',
                     *ngFor='let player of playersList',
                     (click)='(isVoting && player.user.pid === userPid && cardModal()) || (!(player.user.pid === userPid) && isHost && kickModal(player))')
                         .poker-card([innerHtml]='player.currentCard | cardText')
                         span.username([class.inactive]='!player.user.active')
-                            small(*ngIf='player.user.pid === hostPid')
-                                span.fa.fa-star &nbsp;
+                            span.fa.fa-star(*ngIf='player.user.pid === hostPid') &nbsp;
                             | {{ player.user.userName }}
-                .panel-body([hidden]='isConnected')
-                    .spinner(style='margin: 50px auto 50px auto')
+                .card-block([hidden]='isConnected')
+                    .spinner.align-middle
                         .bounce1
                         .bounce2
                         .bounce3

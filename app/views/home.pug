@@ -1,33 +1,32 @@
 .container-fluid
-    .row
-        .col-sm-4.col-sm-offset-4
-            .panel.panel-default
-                .panel-heading
+    .row.justify-content-md-center
+        .col-sm-4
+            .card
+                .card-header
                     .btn-group.pull-right
-                        button.btn.btn-default.btn-sm(type='button', style='margin-top: -3px', (click)='onCreateGame()')
+                        button.btn.btn-secondary.btn-sm(type='button', (click)='onCreateGame()')
                             span.fa.fa-plus
-                    h3.panel-title Games
-                .panel-body([hidden]='!isConnected')
-                    button.btn.btn-default.game(*ngFor='let gvm of gamesList', (click)='onJoinGame(gvm.game.gameId)')
+                    span.align-middle Games
+                .card-block([hidden]='!isConnected')
+                    button.btn.btn-secondary.game(*ngFor='let gvm of gamesList', (click)='onJoinGame(gvm.game.gameId)')
                         p {{ gvm.gameName }}
                         p {{ gvm.playersCount }} player(s)
-                .panel-body([hidden]='isConnected')
-                    .spinner(style='margin: 10px auto 10px auto;')
+                .card-block([hidden]='isConnected')
+                    .spinner
                         .bounce1
                         .bounce2
                         .bounce3
-    .row
-        .col-sm-4.col-sm-offset-4
-            .panel.panel-default
-                .panel-heading
-                    h3.panel-title Active Users
-                .panel-body.text-center([hidden]='!isConnected')
-                    span(style='margin: 0px 10px; display: inline-block;',
-                            *ngFor='let user of usersList')
+    .row.justify-content-md-center.mt-2
+        .col-sm-4
+            .card
+                .card-header
+                    span.align-middle Active Users
+                .card-block.text-center([hidden]='!isConnected')
+                    span.d-inline-block.mx-2(*ngFor='let user of usersList')
                         i.fa.fa-user
                         | &nbsp;{{user.userName}}
-                .panel-body([hidden]='isConnected')
-                    .spinner(style='margin: 10px auto 10px auto;')
+                .card-block([hidden]='isConnected')
+                    .spinner
                         .bounce1
                         .bounce2
                         .bounce3

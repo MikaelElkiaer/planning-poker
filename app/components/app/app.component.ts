@@ -25,7 +25,7 @@ export class AppComponent extends SocketComponent {
       super(socket);
     }
 
-  collapse() {
+  toggleCollapse() {
     this.navbarCollapsed = !this.navbarCollapsed;
   }
   

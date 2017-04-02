@@ -1,14 +1,15 @@
 .modal-header
+  h4.modal-title Kick player: {{ player.userName }}
   button.close(type='button', aria-label='Close', (click)='activeModal.dismiss()')
     span(aria-hidden='true') &times;
-  h4.modal-title Kick player: {{ player.userName }}
 .modal-body
-  form.form-horizontal(name='kickPlayerForm', (submit)='activeModal.close()', #kickPlayerForm='ngForm')
-    .form-group
-      .col-xs-6
-        button.btn.btn-danger(type='submit', style='width: 100%;')
-          span.fa.fa-ban
-          | &nbsp;Kick
-      .col-xs-6
-        button.btn.btn-default(type='button', style='width: 100%;', (click)='activeModal.dismiss()')
-          | Cancel
+  .container
+    form(name='kickPlayerForm', (submit)='activeModal.close()', #kickPlayerForm='ngForm')
+      .form-group.row
+        .col-6
+          button.btn.btn-danger.w-100(type='submit')
+            span.fa.fa-ban
+            | &nbsp;Kick
+        .col-6
+          button.btn.btn-secondary.w-100(type='button', (click)='activeModal.dismiss()')
+            | Cancel

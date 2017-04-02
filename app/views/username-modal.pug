@@ -1,14 +1,15 @@
 .modal-header
+  h4.modal-title Change username
   button.close(type='button', aria-label='Close', (click)='activeModal.dismiss()')
     span(aria-hidden='true') &times;
-  h4.modal-title Change username
 .modal-body
-  form.form-horizontal(name='changeUserNameForm', (submit)='activeModal.close(userName)', #changeUserNameForm='ngForm')
-    .form-group
-      .col-xs-9
-        input.form-control(type='text', autofocus, name='userName', width='12', placeholder='User Name',
-        required, pattern='[a-zA-Z0-9]{2,12}', minlength='2', maxlength='12',
-        [(ngModel)]='userName', #name='ngModel')
-      .col-xs-3
-        button.btn.btn-success.pull-right(type='submit', style='width: 100%;', [disabled]='!changeUserNameForm.form.valid')
-          | Save
+  .container
+    form(name='changeUserNameForm', (submit)='activeModal.close(userName)', #changeUserNameForm='ngForm')
+      .form-group.row
+        .col-9
+          input.form-control(type='text', autofocus, name='userName', width='12', placeholder='User Name',
+          required, pattern='[a-zA-Z0-9]{2,12}', minlength='2', maxlength='12',
+          [(ngModel)]='userName', #name='ngModel')
+        .col-3
+          button.btn.btn-success.w-100(type='submit', [disabled]='!changeUserNameForm.form.valid')
+            | Save

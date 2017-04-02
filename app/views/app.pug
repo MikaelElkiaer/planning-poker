@@ -1,20 +1,18 @@
 template(ngbModalContainer)
 toaster-container([toasterconfig]='toasterConfig')
 
-nav.navbar.navbar-default
-  .container-fluid
-  .navbar-header
-    button.navbar-toggle(type='button', (click)='collapse()')
-      span.sr-only Toggle navigation
-      span.icon-bar
-      span.icon-bar
-      span.icon-bar
-    a.navbar-brand(routerLink='/')
-      i.fa.fa-circle([ngClass]='{ "text-danger": !isConnected, "text-success": isConnected }')
-      | &nbsp; Planning Poker
-  .navbar-collapse([ngClass]='{ collapse: navbarCollapsed }')
-    ul.nav.navbar-nav.navbar-right
-      li
-        a(style='cursor: pointer;', (click)='isConnected && userNameModal()') {{ userName }}
+nav.navbar.sticky-top.navbar-toggleable-md.navbar-inverse.bg-inverse.mb-4
+  button.navbar-toggler.navbar-toggler-right(type='button', (click)='toggleCollapse()')
+    span.navbar-toggler-icon
+  a.navbar-brand(routerLink='/')
+    i.fa.fa-circle([ngClass]='{ "text-danger": !isConnected, "text-success": isConnected }')
+    | &nbsp; Planning Poker
+  .collapse.navbar-collapse([class.show]='!navbarCollapsed')
+    ul.navbar-nav.mr-auto
+    ul.navbar-nav
+      li.nav-item
+        a.nav-link(role='button', (click)='userNameModal()')
+          i.fa.fa-cog
+          | &nbsp; {{ userName }}
 
 router-outlet
