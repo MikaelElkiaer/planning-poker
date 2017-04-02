@@ -15,7 +15,7 @@
                             | {{ !isConnected ? 'Disconnected' : (isVoting ? 'Voting' : 'Waiting') }}
                         | &nbsp;]
                 .card-block.text-center([hidden]='!isConnected')
-                    .vote([ngClass]='{ user: player.user.pid === userPid, pickable: (player.user.pid === userPid && isVoting) || (player.user.pid !== userPid && isHos) }',
+                    .vote([ngClass]='{ user: player.user.pid === userPid, pickable: (player.user.pid === userPid && isVoting) || (player.user.pid !== userPid && isHost) }',
                     *ngFor='let player of playersList',
                     (click)='(isVoting && player.user.pid === userPid && cardModal()) || (!(player.user.pid === userPid) && isHost && kickModal(player))')
                         .poker-card([innerHtml]='player.currentCard | cardText')

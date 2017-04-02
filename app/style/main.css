@@ -1,0 +1,48 @@
+.vote {
+    display: inline-block;
+    margin: 0.4rem;
+    padding: 0.8rem;
+    text-align: center;
+    border-radius: 0.5rem;
+}
+
+span.username {
+    display: block;
+    margin-top: 0.2rem;
+}
+
+div.user > span.username,
+div.user > div.poker-card,
+.selected > div.poker-card {
+    color: #0275d8;
+}
+
+.pickable:hover {
+    cursor:  pointer;
+    background-color: #e6e6e6;
+}
+
+div.poker-card {
+    background-color: #ffffff;
+    color: #1c1e22;
+    box-shadow: 0.1rem 0.1rem 0.3rem #1c1e22;
+    margin: auto;
+    padding-top: calc(50% - 1rem);
+    width: 4.5rem;
+    height: 6rem;
+    font-size: 2rem;
+    text-align: center;
+    border: 0.1rem solid #1c1e22;
+    border-radius: 5px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.username.inactive {
+    color: #d9534f;
+    font-style: italic;
+}

@@ -5,8 +5,7 @@ import * as Dto from '../../../shared/dto';
 
 @Component({
   selector: 'card-modal-component',
-  templateUrl: 'views/card-modal',
-  styleUrls: ['app/style/game.css']
+  templateUrl: 'views/card-modal'
 })
 export class CardModalComponent {
   @Input() currentCard: Dto.PokerCard = Dto.PokerCard.NotPicked;

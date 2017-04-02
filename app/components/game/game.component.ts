@@ -10,8 +10,7 @@ import { SocketComponent } from '../shared/index';
 import { CLIENT_EVENTS as C, SERVER_EVENTS as S } from '../../../shared/events/index';
 
 @Component({
-  templateUrl: 'views/game',
-  styleUrls: ['app/style/game.css']
+  templateUrl: 'views/game'
 })
 export class GameComponent extends SocketComponent {
   get gameId() { return this._gameId; }

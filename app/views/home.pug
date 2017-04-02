@@ -8,9 +8,11 @@
                             span.fa.fa-plus
                     span.align-middle Games
                 .card-block([hidden]='!isConnected')
-                    button.btn.btn-secondary.game(*ngFor='let gvm of gamesList', (click)='onJoinGame(gvm.game.gameId)')
-                        p {{ gvm.gameName }}
-                        p {{ gvm.playersCount }} player(s)
+                    .list-group
+                        a.list-group-item.list-group-item-action.justify-content-between(role='button', [routerLink]='["/game", gvm.gameId]',
+                                *ngFor='let gvm of gamesList')
+                            | {{ gvm.gameName }}
+                            span.badge.badge-default.badge-pill {{ gvm.playersCount }}
                 .card-block([hidden]='isConnected')
                     .spinner
                         .bounce1

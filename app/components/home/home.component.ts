@@ -8,8 +8,7 @@ import { SocketComponent } from '../shared/index';
 import { CLIENT_EVENTS as C, SERVER_EVENTS as S } from '../../../shared/events/index';
 
 @Component({
-  templateUrl: 'views/home',
-  styleUrls: ['app/style/home.css']
+  templateUrl: 'views/home'
 })
 export class HomeComponent extends SocketComponent {
   public users: { [id: string]: Dto.UserPublic } = { };
@@ -29,11 +28,6 @@ export class HomeComponent extends SocketComponent {
     ) {
       super(socket);
     }
-
-  onJoinGame(gameId: string) {
-    console.info('Joining game: ', gameId);
-    this.router.navigate(['/game', gameId], { queryParams: { spectate: this.joinModel.spectate }});
-  }
 
   async onCreateGame() {
     console.info('Creating game');
