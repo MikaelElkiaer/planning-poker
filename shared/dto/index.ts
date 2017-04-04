@@ -1,5 +1,6 @@
 export * from './changeGameState'
 export * from './chooseCard'
+export * from './gameConfig'
 export * from './gamePublic'
 export * from './gameState'
 export * from './home'
