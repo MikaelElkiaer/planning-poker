@@ -6,12 +6,12 @@
     border-radius: 0.5rem;
 }
 
-.username {
+span.username {
     display: block;
     margin-top: 0.2rem;
 }
 
-div.user > .username,
+div.user > span.username,
 div.user > div.poker-card,
 .selected > div.poker-card {
     color: #0275d8;

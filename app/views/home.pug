@@ -4,14 +4,14 @@
             .card
                 .card-header
                     .btn-group.pull-right
-                        button.btn.btn-secondary.btn(type='button', (click)='onCreateGame()')
+                        button.btn.btn-secondary.btn-sm(type='button', (click)='onCreateGame()')
                             span.fa.fa-plus
-                    h3.align-middle Games
+                    span.align-middle Games
                 .card-block([hidden]='!isConnected')
                     .list-group
                         a.list-group-item.list-group-item-action.justify-content-between(role='button', [routerLink]='["/game", gvm.gameId]',
                                 *ngFor='let gvm of gamesList')
-                            h5.d-inline {{ gvm.gameName }}
+                            | {{ gvm.gameName }}
                             span.badge.badge-default.badge-pill {{ gvm.playersCount }}
                 .card-block([hidden]='isConnected')
                     .spinner
@@ -22,11 +22,11 @@
         .col-sm-4
             .card
                 .card-header
-                    h3.align-middle Active Users
+                    span.align-middle Active Users
                 .card-block.text-center([hidden]='!isConnected')
                     span.d-inline-block.mx-2(*ngFor='let user of usersList')
                         i.fa.fa-user
-                        h5.d-inline &nbsp;{{user.userName}}
+                        | &nbsp;{{user.userName}}
                 .card-block([hidden]='isConnected')
                     .spinner
                         .bounce1

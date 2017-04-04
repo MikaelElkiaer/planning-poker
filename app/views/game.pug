@@ -4,12 +4,12 @@
             .card
                 .card-header.text-center.clearfix
                     .btn-group.float-right(*ngIf='isHost')
-                        button.btn.btn-secondary(type='button', (click)='startStopGame()')
+                        button.btn.btn-secondary.btn-sm(type='button', (click)='startStopGame()')
                             span.fa([ngClass]='{ "fa-stop": isVoting, "fa-play": !isVoting }')
                     .btn-group.float-left
-                        button.btn.btn-secondary(type='button', (click)='leaveGame()')
+                        button.btn.btn-secondary.btn-sm(type='button', (click)='leaveGame()')
                             span.fa.fa-sign-out
-                    h3.align-middle([ngClass]='{ "text-danger": !isConnected, "text-success": isConnected && isVoting, "text-warning": isConnected && !isVoting }')
+                    span.align-middle([ngClass]='{ "text-danger": !isConnected, "text-success": isConnected && isVoting, "text-warning": isConnected && !isVoting }')
                         | {{ !isConnected ? 'Disconnected' : (isVoting ? 'Voting' : 'Waiting') }}
                 .card-block.text-center([hidden]='!isConnected')
                     .vote([ngClass]='{ user: player.user.pid === userPid, pickable: (player.user.pid === userPid && isVoting) || (player.user.pid !== userPid && isHost) }',
@@ -18,7 +18,7 @@
                         .poker-card([innerHtml]='player.currentCard | cardText')
                         span.username([class.inactive]='!player.user.active')
                             span.fa.fa-star(*ngIf='player.user.pid === hostPid') &nbsp;
-                            h5.d-inline {{ player.user.userName }}
+                            | {{ player.user.userName }}
                 .card-block([hidden]='isConnected')
                     .spinner.align-middle
                         .bounce1
