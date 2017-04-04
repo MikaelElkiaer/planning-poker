@@ -37,7 +37,8 @@ export class Mapper {
             Object.keys(game.players).reduce((prev, cur) => {
                 prev[cur] = new Dto.PlayerPublic(this.mapUserToPublic(game.players[cur].user), this.getVisibleCard(game.players[cur], hideCards, requestingUser));
                 return prev
-            }, {})
+            }, {}),
+            game.config
         );
     }
 
