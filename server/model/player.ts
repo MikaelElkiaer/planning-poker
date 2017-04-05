@@ -12,4 +12,8 @@ export class Player {
   constructor(user: User) {
     this._user = user;
   }
+
+  hasPicked(): boolean {
+    return this.currentCard !== Dto.PokerCard.NotPicked;
+  }
 }

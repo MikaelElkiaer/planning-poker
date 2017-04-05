@@ -2,10 +2,12 @@ import { User, Player } from './';
 import * as Dto from '../../shared/dto';
 
 export class Game {
+  state: Dto.GameState = Dto.GameState.Waiting;
+  config: Dto.GameConfig = new Dto.GameConfig(true);
+  
   get id() { return this._id; }
   get players() { return this._players; }
   get host() { return this._players[this._id]; }
-  state: Dto.GameState = Dto.GameState.Waiting;
   get isVoting() { return this.state === Dto.GameState.Voting; }
   
   private _id: string;
@@ -39,5 +41,9 @@ export class Game {
 
   resetCards(): void {
     Object.keys(this._players).forEach(pid => this._players[pid].currentCard = Dto.PokerCard.NotPicked);
+  }
+
+  allPlayersPicked(): boolean {
+    return Object.keys(this._players).reduce((p, c) => p && this._players[c].hasPicked(), true)
   }
 }

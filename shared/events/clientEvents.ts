@@ -13,6 +13,7 @@ export let CLIENT_EVENTS = {
         create: 'game:create'
     },
     host: {
-        changeGameState: 'host:changeGameState'
+        changeGameState: 'host:changeGameState',
+        changeGameConfig: 'host:changeGameConfig'
     }
 }

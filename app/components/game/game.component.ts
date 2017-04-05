@@ -1,11 +1,11 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ToasterService } from 'angular2-toaster';
 
 import * as Dto from '../../../shared/dto/index';
 import { SocketState, SocketService, UserService } from '../../services/index';
-import { CardModalComponent, KickModalComponent } from '../index';
+import { CardModalComponent, ConfigModalComponent, KickModalComponent } from '../index';
 import { SocketComponent } from '../shared/index';
 import { CLIENT_EVENTS as C, SERVER_EVENTS as S } from '../../../shared/events/index';
 
@@ -24,6 +24,7 @@ export class GameComponent extends SocketComponent {
   get isVoting() { return this.state === Dto.GameState.Voting; }
   get isHost() { return this.hostPid === this.userPid; }
   state: Dto.GameState = Dto.GameState.Waiting;
+  config: Dto.GameConfig = undefined;
 
   private _gameId: string;
   private spectate: boolean;
@@ -108,6 +109,27 @@ export class GameComponent extends SocketComponent {
     });
   }
 
+  async configModal() {
+    const modalRef = this.modalService.open(ConfigModalComponent, { size: 'lg' });
+    let componentInstance = (modalRef.componentInstance as ConfigModalComponent);
+    componentInstance.config = this.config;
+    componentInstance.isHost = this.isHost;
+
+    modalRef.result.then(async (newConfig: Dto.GameConfig) => {
+      try {
+        let config = await this.emit<Dto.ChangeGameConfig, Dto.GameConfig>(S.changeGameConfig, { data: new Dto.ChangeGameConfig(this.gameId, newConfig) });
+        this.config = config;
+        
+        console.info('Updated config: ', config);
+      }
+      catch (error) {
+        return;
+      }
+    }, () => {
+      return;
+    });
+  }
+
   private strcmp(a: string, b: string) {
     return (a == b) ? 0 : ((a > b) ? 1 : -1);
   }
@@ -121,6 +143,7 @@ export class GameComponent extends SocketComponent {
         this.players = game.players;
         this._hostPid = game.hostPid;
         this.state = game.gameState;
+        this.config = game.config;
         console.info('Joined game: %o', game);
       }
       catch (error) {
@@ -184,6 +207,11 @@ export class GameComponent extends SocketComponent {
         delete this.players[response.data.user.pid];
         console.info('Player left: %o', response.data);
       }
+    });
+
+    this.on<Dto.GamePublic>(C.host.changeGameConfig, response => {
+      this.config = response.data.config;
+      console.info('Host changed game config: %o', response.data.config);
     });
   }
 }
