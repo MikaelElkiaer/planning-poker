@@ -1,3 +1,4 @@
+export * from './changeGameConfig'
 export * from './changeGameState'
 export * from './chooseCard'
 export * from './gameConfig'

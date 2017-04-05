@@ -8,5 +8,6 @@ export let SERVER_EVENTS = {
     chooseCard: 'chooseCard',
     leaveGame: 'leaveGame',
     kickPlayer: 'kickPlayer',
-    changeUserName: 'changeUserName'
+    changeUserName: 'changeUserName',
+    changeGameConfig: 'changeGameConfig'
 }

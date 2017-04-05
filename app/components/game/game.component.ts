@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ToasterService } from 'angular2-toaster';
 
 import * as Dto from '../../../shared/dto/index';
@@ -109,10 +109,25 @@ export class GameComponent extends SocketComponent {
     });
   }
 
-  configModal() {
+  async configModal() {
     const modalRef = this.modalService.open(ConfigModalComponent, { size: 'lg' });
-    modalRef.componentInstance.config = this.config;
-    modalRef.componentInstance.isHost = this.isHost;
+    let componentInstance = (modalRef.componentInstance as ConfigModalComponent);
+    componentInstance.config = this.config;
+    componentInstance.isHost = this.isHost;
+
+    modalRef.result.then(async (newConfig: Dto.GameConfig) => {
+      try {
+        let config = await this.emit<Dto.ChangeGameConfig, Dto.GameConfig>(S.changeGameConfig, { data: new Dto.ChangeGameConfig(this.gameId, newConfig) });
+        this.config = config;
+        
+        console.info('Updated config: ', config);
+      }
+      catch (error) {
+        return;
+      }
+    }, () => {
+      return;
+    });
   }
 
   private strcmp(a: string, b: string) {
@@ -192,6 +207,11 @@ export class GameComponent extends SocketComponent {
         delete this.players[response.data.user.pid];
         console.info('Player left: %o', response.data);
       }
+    });
+
+    this.on<Dto.GamePublic>(C.host.changeGameConfig, response => {
+      this.config = response.data.config;
+      console.info('Host changed game config: %o', response.data.config);
     });
   }
 }

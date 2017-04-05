@@ -1,5 +1,5 @@
 export class GameConfig {
     constructor(
-        public autoResetOnAllChosen: boolean
+        public autoEnd: boolean
     ) {}
 }

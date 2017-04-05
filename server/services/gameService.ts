@@ -85,7 +85,7 @@ export class GameService {
 
             this.socketService.emitAllInRoomExceptSender(C.user.chooseCard, Mapper.mapPlayerToPublic(player, true), game.id);
 
-            if (game.config.autoResetOnAllChosen && game.allPlayersPicked()) {
+            if (game.config.autoEnd && game.allPlayersPicked()) {
                 game.state = Dto.GameState.Waiting;
                 this.socketService.emitAllInRoom(C.host.changeGameState, Mapper.mapGameToPublic(game, game.isVoting), game.id);
             }
@@ -130,6 +130,20 @@ export class GameService {
             this.socketService.emitAllInRoomExceptSender(C.user.leaveGame, Mapper.mapPlayerToPublic(playerToBeKicked, game.isVoting, this.user), game.id);
 
             return null;
+        });
+
+        this.socketService.on<Dto.ChangeGameConfig, Dto.GameConfig>(S.changeGameConfig, request => {
+            var game = this.games.getGameById(request.data.gameId);
+
+            if (game.host.user.sid !== this.user.sid) {
+                throw 'Only host can change game state';
+            }
+
+            game.config = request.data.gameConfig;
+
+            this.socketService.emitAllInRoomExceptSender(C.host.changeGameConfig, Mapper.mapGameToPublic(game, game.isVoting, this.user), game.id);
+
+            return game.config;
         });
     }
 }

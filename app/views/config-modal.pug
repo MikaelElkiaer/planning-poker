@@ -11,7 +11,7 @@
                     input.form-check-input(type='checkbox', name='autoEnd',
                         [(ngModel)]='config.autoEnd', #name='ngModel')
                     |  Automatically end round when all players have picked a card
-        .form-group.row
+        .form-group.row(*ngIf='isHost')
             .col-sm-10
             .col-sm-2
                 button.btn.btn-success.w-100(type='submit', [disabled]='!configForm.form.valid') Save
