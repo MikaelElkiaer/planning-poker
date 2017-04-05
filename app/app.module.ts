@@ -6,7 +6,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToasterModule } from 'angular2-toaster';
 
 import { AppComponent, HomeComponent, GameComponent } from './components/index';
-import { CardModalComponent, KickModalComponent, UserNameModalComponent } from './components/index';
+import { CardModalComponent, ConfigModalComponent, KickModalComponent, UserNameModalComponent } from './components/index';
 import { CardTextPipe } from './pipes/cardText.pipe';
 import { UserService, SocketService } from './services/index';
 
@@ -21,9 +21,9 @@ import { UserService, SocketService } from './services/index';
     NgbModule.forRoot(),
     ToasterModule
   ],
-  declarations: [ AppComponent, HomeComponent, GameComponent, CardModalComponent, UserNameModalComponent, CardTextPipe, KickModalComponent ],
+  declarations: [ AppComponent, HomeComponent, GameComponent, CardModalComponent, ConfigModalComponent, UserNameModalComponent, CardTextPipe, KickModalComponent ],
   bootstrap:    [ AppComponent ],
   providers: [ UserService, SocketService ],
-  entryComponents: [ CardModalComponent, UserNameModalComponent, KickModalComponent ]
+  entryComponents: [ CardModalComponent, ConfigModalComponent, UserNameModalComponent, KickModalComponent ]
 })
 export class AppModule { }

@@ -3,12 +3,12 @@
         .col-sm-6
             .card
                 .card-header.text-center.clearfix
-                    .btn-group.float-right(*ngIf='isHost')
-                        button.btn.btn-secondary.btn-sm(type='button', (click)='startStopGame()')
-                            span.fa([ngClass]='{ "fa-stop": isVoting, "fa-play": !isVoting }')
-                    .btn-group.float-left
-                        button.btn.btn-secondary.btn-sm(type='button', (click)='leaveGame()')
-                            span.fa.fa-sign-out
+                    button.btn.btn-secondary.btn-sm.float-right.ml-2(type='button', (click)='startStopGame()', *ngIf='isHost')
+                        span.fa([ngClass]='{ "fa-stop": isVoting, "fa-play": !isVoting }')
+                    button.btn.btn-secondary.btn-sm.float-right(type='button', (click)='configModal()')
+                        span.fa.fa-cog
+                    button.btn.btn-secondary.btn-sm.float-left(type='button', (click)='leaveGame()')
+                        span.fa.fa-sign-out
                     span.align-middle([ngClass]='{ "text-danger": !isConnected, "text-success": isConnected && isVoting, "text-warning": isConnected && !isVoting }')
                         | {{ !isConnected ? 'Disconnected' : (isVoting ? 'Voting' : 'Waiting') }}
                 .card-block.text-center([hidden]='!isConnected')
