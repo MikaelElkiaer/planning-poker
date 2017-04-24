@@ -28,7 +28,7 @@ export class GameComponent extends SocketComponent {
 
   private _gameId: string;
   private spectate: boolean;
-  private players: { [id: string]: Dto.PlayerPublic } = {};
+  private players: { [id: string]: Dto.Player } = {};
   private _hostPid: string = '';
 
   constructor(
@@ -51,7 +51,7 @@ export class GameComponent extends SocketComponent {
 
   async startStopGame() {
     var newState = this.state === Dto.GameState.Voting ? Dto.GameState.Waiting : Dto.GameState.Voting;
-    let game = await this.emit<Dto.ChangeGameState, Dto.GamePublic>(S.changeGameState, { data: new Dto.ChangeGameState(this._gameId, newState) });
+    let game = await this.emit<Dto.ChangeGameState, Dto.Game>(S.changeGameState, { data: new Dto.ChangeGameState(this._gameId, newState) });
   }
 
   async leaveGame() {
@@ -71,7 +71,7 @@ export class GameComponent extends SocketComponent {
     console.log('Left game: %s', this.gameId);
   }
 
-  async kickModal(player: Dto.PlayerPublic) {
+  async kickModal(player: Dto.Player) {
     const modalRef = this.modalService.open(KickModalComponent, { size: 'sm' });
     modalRef.componentInstance.player = player;
 
@@ -138,7 +138,7 @@ export class GameComponent extends SocketComponent {
     if (state === SocketState.Connected) {
       try {
         this.setUpSocketEvents();
-        let game = await this.emit<Dto.JoinGame, Dto.GamePublic>(S.joinGame, { data: new Dto.JoinGame(this._gameId, this.spectate) });
+        let game = await this.emit<Dto.JoinGame, Dto.Game>(S.joinGame, { data: new Dto.JoinGame(this._gameId, this.spectate) });
         
         this.players = game.players;
         this._hostPid = game.hostPid;
@@ -154,12 +154,12 @@ export class GameComponent extends SocketComponent {
   }
 
   private setUpSocketEvents() {
-    this.on<Dto.PlayerPublic>(C.user.joinGame, response => {
+    this.on<Dto.Player>(C.user.joinGame, response => {
       this.players[response.data.user.pid] = response.data;
       console.info('Player joined: %o', response.data);
     });
 
-    this.on<Dto.UserPublic>(C.user.connect, response => {
+    this.on<Dto.User>(C.user.connect, response => {
       if (!this.players[response.data.pid])
         return;
 
@@ -167,7 +167,7 @@ export class GameComponent extends SocketComponent {
       console.info('Player active: %o', this.players[response.data.pid]);
     });
 
-    this.on<Dto.UserPublic>(C.user.disconnect, response => {
+    this.on<Dto.User>(C.user.disconnect, response => {
       if (!this.players[response.data.pid])
         return;
       
@@ -175,7 +175,7 @@ export class GameComponent extends SocketComponent {
       console.info('Player inactive: %o', this.players[response.data.pid]);
     });
 
-    this.on<Dto.UserPublic>(C.user.changeUserName, response => {
+    this.on<Dto.User>(C.user.changeUserName, response => {
       var player = this.players[response.data.pid];
 
       if (!player)
@@ -187,18 +187,18 @@ export class GameComponent extends SocketComponent {
       console.info('Player changed name: "%s" -> "%s"', oldName, newName)
     });
 
-    this.on<Dto.GamePublic>(C.host.changeGameState, response => {
+    this.on<Dto.Game>(C.host.changeGameState, response => {
       this.state = response.data.gameState;
       this.players = response.data.players;
       console.info('Host changed game state: %o', response.data);
     });
 
-    this.on<Dto.PlayerPublic>(C.user.chooseCard, response => {
+    this.on<Dto.Player>(C.user.chooseCard, response => {
       this.players[response.data.user.pid] = response.data;
       console.info('Player chose card: %o', response.data);
     });
 
-    this.on<Dto.PlayerPublic>(C.user.leaveGame, response => {
+    this.on<Dto.Player>(C.user.leaveGame, response => {
       if (response.data.user.pid === this.userPid) {
         this.toaster.pop('warning', null, `You were kicked from game with id: ${this.gameId}`);
         this.router.navigate(['']);
@@ -209,7 +209,7 @@ export class GameComponent extends SocketComponent {
       }
     });
 
-    this.on<Dto.GamePublic>(C.host.changeGameConfig, response => {
+    this.on<Dto.Game>(C.host.changeGameConfig, response => {
       this.config = response.data.config;
       console.info('Host changed game config: %o', response.data.config);
     });

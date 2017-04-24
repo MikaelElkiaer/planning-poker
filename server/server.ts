@@ -8,7 +8,7 @@ import 'reflect-metadata';
 import { TYPES } from './types';
 import { Game, User, Player } from './model';
 import { GameRepository, UserRepository } from './repositories';
-import { GameService, UserService, SocketService } from './services';
+import { GameSocketService, UserSocketService, SocketService } from './services';
 import * as Dto from '../shared/dto';
 
 @injectable()
@@ -42,7 +42,7 @@ export class Server {
 
   private setUpNewConnectionHandler() {
     this.io.use((socket, next) => {
-      UserService.handleNewSocket(socket, next, this.users);
+      UserSocketService.handleNewSocket(socket, next, this.users);
     });
   }
 
@@ -50,8 +50,8 @@ export class Server {
     this.io.on('connection', socket => {
       var socketService = new SocketService(this.io, socket);
 
-      var userService = new UserService(socketService, this.users, this.games);
-      var gameService = new GameService(socketService, userService, this.games);
+      var userService = new UserSocketService(socketService, this.users, this.games);
+      var gameService = new GameSocketService(socketService, userService, this.games);
     });
   }
 

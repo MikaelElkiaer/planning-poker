@@ -11,7 +11,7 @@ import { CLIENT_EVENTS as C, SERVER_EVENTS as S } from '../../../shared/events/i
   templateUrl: 'views/home'
 })
 export class HomeComponent extends SocketComponent {
-  public users: { [id: string]: Dto.UserPublic } = { };
+  public users: { [id: string]: Dto.User } = { };
   public games: { [id: string]: GameViewModel } = { };
   public joinModel: { spectate: boolean } = { spectate: false };
   
@@ -32,7 +32,7 @@ export class HomeComponent extends SocketComponent {
   async onCreateGame() {
     console.info('Creating game');
     try {
-      let game = await this.emit<null, Dto.GamePublic>(S.createGame, null);
+      let game = await this.emit<null, Dto.Game>(S.createGame, null);
       console.info('Created game: %o', game);
       this.router.navigate(['/game', game.gameId]);
     }
@@ -45,7 +45,7 @@ export class HomeComponent extends SocketComponent {
     if (state === SocketState.Connected) {
       try {
         this.setUpSocketEvents();
-        let home = await this.emit<null, Dto.Home>(S.home, { data: null });
+        let home = await this.emit<null, Dto.Lobby>(S.home, { data: null });
 
         this.users = home.users;
         this.games = this.createGameViewModels(home.games, home.users);
@@ -59,17 +59,17 @@ export class HomeComponent extends SocketComponent {
   }
 
   private setUpSocketEvents() {
-    this.on<Dto.UserPublic>(C.user.connect, response => {
+    this.on<Dto.User>(C.user.connect, response => {
       this.users[response.data.pid] = response.data;
       console.info('User connected: %o', response.data);
     });
 
-    this.on<Dto.UserPublic>(C.user.disconnect, response => {
+    this.on<Dto.User>(C.user.disconnect, response => {
       delete this.users[response.data.pid];
       console.info('User disconnected: %o', response.data);
     });
 
-    this.on<Dto.UserPublic>(C.user.changeUserName, response => {
+    this.on<Dto.User>(C.user.changeUserName, response => {
       var user = this.users[response.data.pid];
 
       var oldUserName = user.userName;
@@ -84,23 +84,23 @@ export class HomeComponent extends SocketComponent {
       console.log('User changed name: "%s" -> "%s"', oldUserName, newUserName);
     });
 
-    this.on<Dto.GamePublic>(C.game.stateChange, response => {
+    this.on<Dto.Game>(C.game.stateChange, response => {
       let game = response.data;
       this.games[game.gameId].game = game;
     });
 
-    this.on<Dto.GamePublic>(C.game.create, response => {
+    this.on<Dto.Game>(C.game.create, response => {
       let game = response.data;
       this.games[game.gameId] = new GameViewModel(game);
     });
 
-    this.on<Dto.GamePublic>(C.game.hostQuit, response => {
+    this.on<Dto.Game>(C.game.hostQuit, response => {
       let game = response.data;
       delete this.games[game.gameId];
     });
   }
 
-  private createGameViewModels(games: {[id: string]: Dto.GamePublic}, users: {[id: string]: Dto.UserPublic}): {[id: string]: GameViewModel} {
+  private createGameViewModels(games: {[id: string]: Dto.Game}, users: {[id: string]: Dto.User}): {[id: string]: GameViewModel} {
     let gameViewModels: {[id: string]: GameViewModel} = {};
 
     Object.keys(games).forEach(gid => {

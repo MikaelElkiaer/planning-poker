@@ -1,3 +1,3 @@
-export * from './gameService'
+export * from './gameSocketService'
 export * from './socketService'
-export * from './userService'
+export * from './userSocketService'

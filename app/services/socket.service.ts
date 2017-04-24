@@ -38,9 +38,9 @@ export class SocketService {
     this.socketStateEventEmitter.emit(this.socketState);
   }
 
-  emit<T, S>(eventName: string, request?: Msg.IEmitRequest<T>): Promise<S> {
+  emit<T, S>(eventName: string, request?: Msg.IRequest<T>): Promise<S> {
     return new Promise<S>((resolve, reject) => {
-      this.socket.emit(eventName, request || { data: null }, (response: Msg.IEmitResponse<S>) => {
+      this.socket.emit(eventName, request || { data: null }, (response: Msg.IResponse<S>) => {
         if (response.error) {
           console.error(response.error);
           this.toaster.pop('error', null, response.error);
@@ -53,7 +53,7 @@ export class SocketService {
     });
   }
 
-  on<T>(eventName, callback: (arg: Msg.IOnResponse<T>) => void) {
+  on<T>(eventName, callback: (arg: Msg.IEvent<T>) => void) {
     this.socket.on(eventName, (...args) => {
       var cArgs = args;
       callback.apply(this.socket, cArgs);
@@ -88,7 +88,7 @@ export class SocketService {
 export class SocketEvent {
   constructor(
     public eventName: string,
-    public callback: (arg: Msg.IOnResponse<any>) => void
+    public callback: (arg: Msg.IEvent<any>) => void
   ) {}
 }
 

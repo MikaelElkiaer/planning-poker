@@ -1,22 +1,18 @@
 import { injectable } from 'inversify';
-import 'reflect-metadata';
 
+import { IEventService, IRequestService, IRoomService } from "../interfaces";
 import * as Msg from '../../shared/message';
-import { User } from '../model'
 
 @injectable()
-export class SocketService {
+export class SocketService implements IEventService, IRequestService, IRoomService {
     public readonly socketId: string;
 
-    constructor(
-        private io: SocketIO.Server,
-        private socket: SocketIO.Socket
-    ) {
+    constructor(private io: SocketIO.Server, private socket: SocketIO.Socket) {
         this.socketId = socket.id;
     }
 
     emitAll<T>(eventName: string, data: T) {
-        var response: Msg.IEmitResponse<T> = { data };
+        var response: Msg.IResponse<T> = { data };
         this.io.emit(eventName, response);
     }
 
@@ -32,7 +28,7 @@ export class SocketService {
         this.socket.broadcast.to(roomId).emit(eventName, { data });
     }
 
-    on<T,S>(eventName: string, cb: (request: Msg.IEmitRequest<T>) => S) {
+    on<T,S>(eventName: string, cb: (request: Msg.IRequest<T>) => S) {
         this.socket.on(eventName, (data, callback) => {
             if (callback) {
                 try {

@@ -1,9 +1,9 @@
-import { UserPublic } from './userPublic';
-import { GamePublic } from './gamePublic';
+import { User } from './user';
+import { Game } from './game';
 
-export class Home {
+export class Lobby {
     constructor(
-        public users: {[id: string]: UserPublic},
-        public games: {[id: string]: GamePublic}
+        public users: {[id: string]: User},
+        public games: {[id: string]: Game}
     ) {}
 }

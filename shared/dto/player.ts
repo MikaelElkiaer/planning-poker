@@ -1,9 +1,9 @@
-import { UserPublic } from './userPublic';
+import { User } from './user';
 import { PokerCard } from './pokerCard';
 
-export class PlayerPublic {
+export class Player {
     constructor(
-        public user: UserPublic,
+        public user: User,
         public currentCard: PokerCard
     ) {}
 }

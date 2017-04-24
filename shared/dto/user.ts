@@ -1,4 +1,4 @@
-export class UserPublic {
+export class User {
     constructor(
         public pid: string,
         public userName: string,

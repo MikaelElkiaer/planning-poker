@@ -5,7 +5,7 @@ import { Container } from "inversify";
 
 import { TYPES } from './types';
 import { GameRepository, UserRepository } from './repositories';
-import { GameService, SocketService, UserService } from './services';
+import { GameSocketService, SocketService, UserSocketService } from './services';
 import { Server } from'./server';
 
 

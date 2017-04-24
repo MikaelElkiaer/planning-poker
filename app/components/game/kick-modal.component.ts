@@ -8,7 +8,7 @@ import * as Dto from '../../../shared/dto/index';
     templateUrl: 'views/kick-modal'
 })
 export class KickModalComponent {
-  @Input() player: Dto.PlayerPublic;
+  @Input() player: Dto.Player;
 
   constructor(public activeModal: NgbActiveModal) {}
 }
