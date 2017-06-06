@@ -1,7 +1,6 @@
 import * as Dto from '../../shared/dto';
 import * as Msg from '../../shared/message';
 import { IGameService } from "../../shared/interfaces";
-import { CLIENT_EVENTS as C } from '../../shared/events/clientEvents';
 import { SERVER_EVENTS as S } from '../../shared/events/serverEvents';
 import { IEventService } from "../interfaces";
 
