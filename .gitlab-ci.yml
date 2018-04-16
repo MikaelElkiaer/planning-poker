@@ -14,6 +14,7 @@ build:
       - node_modules/
       - server/
       - shared/
+      - Dockerfile
   script:
     - npm install
     - npm run build:prod
