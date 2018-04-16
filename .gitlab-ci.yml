@@ -43,5 +43,5 @@ deploy:
   script:
     - docker stop planning-poker || true
     - docker rm planning-poker || true
-    - docker run -d --name planning-poker --restart always --network bridge planning-poker:$CI_COMMIT_TAG
+    - docker run -d --name planning-poker --restart always --network bridge -p 5003:80 planning-poker:$CI_COMMIT_TAG
   
