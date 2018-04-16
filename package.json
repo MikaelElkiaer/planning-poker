@@ -9,7 +9,7 @@
     "env:dev": "bash -c 'cp ./app/config/environment.dev.ts ./app/config/environment.ts'",
     "env:prod": "bash -c 'cp ./app/config/environment.prod.ts ./app/config/environment.ts'",
     "build": "tsc",
-    "build:prod": "npm-run-all build minify",
+    "build:prod": "npm-run-all env:prod build minify",
     "build:watch": "tsc -w",
     "serve": "nodemon ./server/bin/www.js --ext js --watch ./server --watch ./shared --delay 3",
     "browser-sync": "browser-sync start --ws --reload-debounce 2500 --proxy localhost:5000 --files app/**/*.js app/style/*.css app/views/*.pug",
