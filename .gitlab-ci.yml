@@ -15,6 +15,7 @@ build:
       - server/
       - shared/
   script:
+    - npm install
     - npm run build:prod
 
 release:
