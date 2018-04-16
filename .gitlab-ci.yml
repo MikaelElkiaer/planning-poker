@@ -1,4 +1,5 @@
 build:
+  stage: build
   only:
     - tags
   image: node:9
@@ -12,6 +13,7 @@ build:
     - npm run build:prod
 
 release:
+  stage: release
   only:
     - tags
   variables:
@@ -23,6 +25,7 @@ release:
     - docker build -t planning-poker:$CI_COMMIT_TAG .
 
 deploy:
+  stage: deploy
   only:
     - tags
   when: manual
